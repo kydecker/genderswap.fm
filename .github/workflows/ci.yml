@@ -34,7 +34,7 @@ jobs:
           version: 8
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -65,7 +65,7 @@ jobs:
           version: 8
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -99,7 +99,7 @@ jobs:
           version: 8
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
@@ -129,7 +129,7 @@ jobs:
 
       - name: Store Artifacts from Failed Tests
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: test-results/
