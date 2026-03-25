@@ -4,8 +4,8 @@
 
   let { title, description, datePublished, dateModified, children } = $props();
 
-  const formattedPublishDate = dayjs(datePublished).format('MMMM D, YYYY');
-  const formattedModifiedDate = dayjs(dateModified).format('MMMM D, YYYY');
+  const formattedPublishDate = $derived(dayjs(datePublished).format('MMMM D, YYYY'));
+  const formattedModifiedDate = $derived(dayjs(dateModified).format('MMMM D, YYYY'));
 </script>
 
 <svelte:head>

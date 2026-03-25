@@ -17,6 +17,8 @@
 
   let { data } = $props();
 
+  // superForm takes a one-time snapshot; server round-trips sync via applyAction.
+  // svelte-ignore state_referenced_locally
   const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
     dataType: 'json',
     scrollToError: 'smooth'

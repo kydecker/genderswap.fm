@@ -229,7 +229,7 @@ export async function GET({ params, url }) {
   const png = sharp(Buffer.from(svg)).png();
   const response = await png.toBuffer();
 
-  return new Response(response, {
+  return new Response(new Uint8Array(response), {
     status: 200,
     headers: {
       'Content-Type': 'image/png'

@@ -16,7 +16,7 @@
   const isNew = $derived(page.url.searchParams.get('new') === 'true');
 
   dayjs.extend(relativeTime);
-  const formattedDate = dayjs(data.created_at).fromNow();
+  const formattedDate = $derived(dayjs(data.created_at).fromNow());
 
   onMount(async () => {
     const fireConfetti = (placement: 'left' | 'right' | 'bottom') => {

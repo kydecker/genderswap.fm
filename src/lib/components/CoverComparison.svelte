@@ -5,12 +5,11 @@
 
   let { cover }: { cover: Cover } = $props();
 
-  const { original: originalSong, cover: coverSong } = cover;
-
-  let coveredAs: string = $state('');
-  if (slugify(originalSong.name) !== slugify(coverSong.name)) {
-    coveredAs = coverSong.name;
-  }
+  const originalSong = $derived(cover.original);
+  const coverSong = $derived(cover.cover);
+  const coveredAs = $derived(
+    slugify(originalSong.name) !== slugify(coverSong.name) ? coverSong.name : ''
+  );
 </script>
 
 <div class="compare">
