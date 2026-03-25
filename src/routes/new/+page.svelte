@@ -122,9 +122,7 @@
         <div class="banner success">
           <p>
             Hi, Helen! This is Eva, the person who made this site. You've made more contributions
-            than anyone else and I would love to say thanks. :) <a href="mailto:hey@evadecker.com"
-              >hey@evadecker.com</a
-            >
+            than anyone else and I would love to say thanks. :) <a href="mailto:hi@ky.fyi">hi@ky.fyi</a>
           </p>
         </div>
       {/if}

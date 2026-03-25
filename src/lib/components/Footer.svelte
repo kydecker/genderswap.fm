@@ -7,11 +7,11 @@
 <footer>
   <nav class="nav">
     <span class="credits">
-      A project by <a href="https://evadecker.com">Eva Decker</a>
+      A project by <a href="https://ky.fyi">Ky Decker</a>
     </span>
     <div class="links">
       <a href="/about">About</a>
-      <a href="https://github.com/evadecker/genderswap.fm">GitHub</a>
+      <a href="https://github.com/kydecker/genderswap.fm">GitHub</a>
       <a href="/random">Random</a>
     </div>
   </nav>

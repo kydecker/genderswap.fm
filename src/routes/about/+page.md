@@ -39,4 +39,4 @@ Unfortunately, no. Because I rely on the Spotify API to search tracks and store 
 
 ## Can I give you money?
 
-If you'd like! I do pay out of my own pocket for hosting, database storage, fonts, and more. If you enjoy this resource and want to chip in toward my costs, you can [send me some dollars via Kofi](https://ko-fi.com/evadecker).
+If you'd like! I do pay out of my own pocket for hosting, database storage, fonts, and more. If you enjoy this resource and want to chip in toward my costs, you can [send me some dollars via Kofi](https://ko-fi.com/kydecker).
