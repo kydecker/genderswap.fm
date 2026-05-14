@@ -53,7 +53,7 @@
     "prettier-plugin-svelte": "^3.5.1",
     "sass": "^1.99.0",
     "supabase": "^2.91.0",
-    "svelte": "^5.55.3",
+    "svelte": "^5.55.7",
     "svelte-check": "^4.4.6",
     "svelte-sequential-preprocessor": "^2.0.3",
     "sveltekit-superforms": "^2.30.1",
