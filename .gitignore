@@ -5,6 +5,7 @@ node_modules
 /.svelte-kit
 /.vercel
 /.netlify
+/.wrangler
 /.lighthouseci
 /package
 .env

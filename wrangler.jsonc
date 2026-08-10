@@ -1,0 +1,7 @@
+{
+  "name": "genderswap-fm",
+  "compatibility_date": "2026-08-10", // Update to the day you deploy
+  "assets": {
+    "directory": "./dist",
+  }
+}
