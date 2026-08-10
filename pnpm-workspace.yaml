@@ -1,5 +1,8 @@
-ignoredBuiltDependencies:
-  - esbuild
-
-onlyBuiltDependencies:
-  - workerd
+packages:
+  - genderswap-fm
+allowBuilds:
+  '@parcel/watcher': false
+  '@tsparticles/engine': true
+  esbuild: false
+  svelte-preprocess: false
+  workerd: true
