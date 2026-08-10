@@ -39,7 +39,7 @@
     "@melt-ui/svelte": "^0.86.6",
     "@playwright/test": "^1.62.1",
     "@sveltejs/kit": "^2.70.2",
-    "@sveltejs/vite-plugin-svelte": "^4.0.4",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@testing-library/svelte": "^5.4.2",
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
