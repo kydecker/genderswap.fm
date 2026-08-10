@@ -8,6 +8,7 @@ node_modules
 /.wrangler
 /.lighthouseci
 /package
+dist/
 .env
 .env.*
 !.env.example
