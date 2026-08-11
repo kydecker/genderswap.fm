@@ -25,7 +25,7 @@
     "test:integration": "playwright test",
     "test:unit": "vitest",
     "test:unit-coverage": "vitest --coverage",
-    "dbtypegen": "supabase gen types typescript --project-id qbmycnemttkukygnvmbu > src/types/db-generated.types.ts",
+    "dbtypegen": "supabase gen types typescript --project-id qbmycnemttkukygnvmbu > src/lib/types/db-generated.types.ts",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },

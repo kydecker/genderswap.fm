@@ -14,7 +14,8 @@
       "!**/node_modules",
       "!**/playwright-report",
       "!worker-configuration.d.ts",
-      "!**/.vscode"
+      "!**/.vscode",
+      "!**/db-generated.types.ts"
     ]
   },
   "formatter": {

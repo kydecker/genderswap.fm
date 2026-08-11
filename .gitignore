@@ -21,6 +21,7 @@ package/
 .wrangler/
 .svelte-kit/
 .lighthouseci/
+supabase/
 
 # Env
 .env
