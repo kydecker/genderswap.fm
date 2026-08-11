@@ -84,7 +84,10 @@ export const actions = {
       description: string;
       contributor: string;
     }) => {
-      const row: Omit<Tables<"covers">, "id" | "created_at" | "tags"> = {
+      const row: Omit<
+        Tables<"covers">,
+        "id" | "created_at" | "tags" | "fts"
+      > = {
         original_id: original.id,
         cover_id: cover.id,
         slug: slugifyCover(cover.name, cover.artists[0].name),
