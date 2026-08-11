@@ -5,8 +5,10 @@ node_modules
 /.svelte-kit
 /.vercel
 /.netlify
+/.wrangler
 /.lighthouseci
 /package
+dist/
 .env
 .env.*
 !.env.example

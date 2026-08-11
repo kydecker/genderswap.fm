@@ -25,6 +25,7 @@
     "@radix-ui/colors": "^3.0.0",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "@supabase/supabase-js": "^2.111.0",
+    "@sveltejs/adapter-cloudflare": "^7.2.9",
     "@tsparticles/confetti": "^3.9.1",
     "dayjs": "^1.11.21",
     "satori": "^0.29.0",
@@ -37,9 +38,8 @@
     "@melt-ui/pp": "^0.3.2",
     "@melt-ui/svelte": "^0.86.6",
     "@playwright/test": "^1.62.1",
-    "@sveltejs/adapter-netlify": "^6.0.4",
     "@sveltejs/kit": "^2.70.2",
-    "@sveltejs/vite-plugin-svelte": "^4.0.4",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@testing-library/svelte": "^5.4.2",
     "@typescript-eslint/eslint-plugin": "^8.65.0",
     "@typescript-eslint/parser": "^8.65.0",
@@ -62,7 +62,8 @@
     "unplugin-icons": "^23.0.1",
     "vite": "^6.4.3",
     "vitest": "^3.2.6",
+    "wrangler": "^4.120.0",
     "zod": "^4.4.3"
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@11.21.0"
 }
