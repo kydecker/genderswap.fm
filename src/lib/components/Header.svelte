@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Logo from './Logo.svelte';
-  import NewCoverIcon from './NewCoverIcon.svelte';
+import Logo from "./Logo.svelte";
+import NewCoverIcon from "./NewCoverIcon.svelte";
 </script>
 
 <header>
@@ -13,7 +13,7 @@
   </nav>
 </header>
 
-<style lang="scss">
+<style>
   header {
     width: 100%;
     position: sticky;

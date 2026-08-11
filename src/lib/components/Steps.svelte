@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { children } = $props();
+let { children } = $props();
 </script>
 
 <ol class="steps">

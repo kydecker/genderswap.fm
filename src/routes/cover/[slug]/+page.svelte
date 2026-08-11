@@ -1,84 +1,89 @@
 <script lang="ts">
-  import CoverComparison from '$lib/components/CoverComparison.svelte';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
-  import TagCloud from '$lib/components/TagCloud.svelte';
-  import Tag from '$lib/components/Tag.svelte';
-  import { TAGS } from '$lib/constants';
-  import { page } from '$app/state';
-  import { onMount } from 'svelte';
-  import { confetti, type ConfettiOptions } from '@tsparticles/confetti';
-  import { getArtistLink, getSortedTags } from '$lib/helpers.js';
-  import Sparkle from '$lib/components/Sparkle.svelte';
+import { type ConfettiOptions, confetti } from "@tsparticles/confetti";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { onMount } from "svelte";
+import { page } from "$app/state";
+import CoverComparison from "$lib/components/CoverComparison.svelte";
+import Sparkle from "$lib/components/Sparkle.svelte";
+import Tag from "$lib/components/Tag.svelte";
+import TagCloud from "$lib/components/TagCloud.svelte";
+import { TAGS } from "$lib/constants";
+import { getArtistLink, getSortedTags } from "$lib/helpers.js";
 
-  let { data } = $props();
+let { data } = $props();
 
-  const isNew = $derived(page.url.searchParams.get('new') === 'true');
+const isNew = $derived(page.url.searchParams.get("new") === "true");
 
-  dayjs.extend(relativeTime);
-  const formattedDate = $derived(dayjs(data.created_at).fromNow());
+dayjs.extend(relativeTime);
+const formattedDate = $derived(dayjs(data.created_at).fromNow());
 
-  onMount(async () => {
-    const fireConfetti = (placement: 'left' | 'right' | 'bottom') => {
-      const center = 90;
+onMount(async () => {
+  const fireConfetti = (placement: "left" | "right" | "bottom") => {
+    const center = 90;
 
-      const minWidth = 400;
-      const maxWidth = 1600;
+    const minWidth = 400;
+    const maxWidth = 1600;
 
-      const interpolate = (minValue: number, maxValue: number) =>
-        ((window.innerWidth - minWidth) / (maxWidth - minWidth)) * (maxValue - minValue) + minValue;
+    const interpolate = (minValue: number, maxValue: number) =>
+      ((window.innerWidth - minWidth) / (maxWidth - minWidth)) *
+        (maxValue - minValue) +
+      minValue;
 
-      const scalar = interpolate(1.4, 1.8);
-      const velocity = interpolate(85, 120);
-      const angle = interpolate(20, 45);
-      const count = interpolate(40, 80);
-      const spread = interpolate(8, 20);
+    const scalar = interpolate(1.4, 1.8);
+    const velocity = interpolate(85, 120);
+    const angle = interpolate(20, 45);
+    const count = interpolate(40, 80);
+    const spread = interpolate(8, 20);
 
-      const sharedProps: Partial<ConfettiOptions> = {
-        scalar: scalar,
-        colors: ['#ff69b4'],
-        shapes: ['square'],
-        gravity: 2,
-        ticks: 30,
-        disableForReducedMotion: true
-      };
-
-      const directionalProps: Record<'left' | 'right' | 'bottom', Partial<ConfettiOptions>> = {
-        left: {
-          count,
-          startVelocity: velocity - 10,
-          angle: center - angle,
-          origin: { x: 0, y: 1 },
-          spread
-        },
-        right: {
-          count,
-          startVelocity: velocity - 10,
-          angle: center + angle,
-          origin: { x: 1, y: 1 },
-          spread
-        },
-        bottom: {
-          count: count * 2,
-          startVelocity: velocity,
-          angle: center,
-          origin: { x: 0.5, y: 1 },
-          spread: spread * 2.5
-        }
-      };
-
-      confetti({
-        ...sharedProps,
-        ...directionalProps[placement]
-      });
+    const sharedProps: Partial<ConfettiOptions> = {
+      scalar: scalar,
+      colors: ["#ff69b4"],
+      shapes: ["square"],
+      gravity: 2,
+      ticks: 30,
+      disableForReducedMotion: true,
     };
 
-    if (isNew) {
-      setTimeout(() => fireConfetti('left'), 1000);
-      setTimeout(() => fireConfetti('right'), 1600);
-      setTimeout(() => fireConfetti('bottom'), 3000);
-    }
-  });
+    const directionalProps: Record<
+      "left" | "right" | "bottom",
+      Partial<ConfettiOptions>
+    > = {
+      left: {
+        count,
+        startVelocity: velocity - 10,
+        angle: center - angle,
+        origin: { x: 0, y: 1 },
+        spread,
+      },
+      right: {
+        count,
+        startVelocity: velocity - 10,
+        angle: center + angle,
+        origin: { x: 1, y: 1 },
+        spread,
+      },
+      bottom: {
+        count: count * 2,
+        startVelocity: velocity,
+        angle: center,
+        origin: { x: 0.5, y: 1 },
+        spread: spread * 2.5,
+      },
+    };
+
+    confetti({
+      ...sharedProps,
+      ...directionalProps[placement],
+    });
+  };
+
+  if (isNew) {
+    setTimeout(() => fireConfetti("left"), 1000);
+    setTimeout(() => fireConfetti("right"), 1600);
+    setTimeout(() => fireConfetti("bottom"), 3000);
+  }
+});
 </script>
 
 <svelte:head>
@@ -120,7 +125,7 @@
   >
 </footer>
 
-<style lang="scss">
+<style>
   .header {
     padding-block-start: var(--space-xl);
     padding-block-end: var(--space-3xl);

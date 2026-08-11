@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import dayjs from 'dayjs';
+import dayjs from "dayjs";
+import { page } from "$app/state";
 
-  let { title, description, datePublished, dateModified, children } = $props();
+let { title, description, datePublished, dateModified, children } = $props();
 
-  const formattedPublishDate = $derived(dayjs(datePublished).format('MMMM D, YYYY'));
-  const formattedModifiedDate = $derived(dayjs(dateModified).format('MMMM D, YYYY'));
+const formattedPublishDate = $derived(
+  dayjs(datePublished).format("MMMM D, YYYY"),
+);
+const formattedModifiedDate = $derived(
+  dayjs(dateModified).format("MMMM D, YYYY"),
+);
 </script>
 
 <svelte:head>
@@ -34,7 +38,7 @@
   </section>
 </article>
 
-<style lang="scss" global>
+<style global>
   .prose {
     box-sizing: content-box;
     max-inline-size: 54ch;

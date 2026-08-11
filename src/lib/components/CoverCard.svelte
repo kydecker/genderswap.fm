@@ -1,27 +1,29 @@
 <script lang="ts">
-  import { smartquotes } from '$lib/helpers';
+import { smartquotes } from "$lib/helpers";
 
-  type Album = {
-    name: string;
-    artists: string[];
-    album_img: string[];
-  };
+type Album = {
+  name: string;
+  artists: string[];
+  album_img: string[];
+};
 
-  let {
-    original,
-    cover,
-    slug,
-    lazy
-  }: { original?: Album; cover?: Album; slug?: string; lazy?: boolean } = $props();
+let {
+  original,
+  cover,
+  slug,
+  lazy,
+}: { original?: Album; cover?: Album; slug?: string; lazy?: boolean } =
+  $props();
 
-  const isSkeleton = $derived(!original && !cover && !slug);
+const isSkeleton = $derived(!original && !cover && !slug);
 
-  function formatArtists(artists: string[]) {
-    const maxArtists = 2;
-    return artists.length > maxArtists
-      ? artists.slice(0, maxArtists).join(', ') + ` +${artists.length - maxArtists}`
-      : artists.join(', ');
-  }
+function formatArtists(artists: string[]) {
+  const maxArtists = 2;
+  return artists.length > maxArtists
+    ? artists.slice(0, maxArtists).join(", ") +
+        ` +${artists.length - maxArtists}`
+    : artists.join(", ");
+}
 </script>
 
 <div class="coverCard" class:placeholder={isSkeleton} aria-hidden={isSkeleton || undefined}>
@@ -67,7 +69,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   .coverCard {
     position: relative;
     height: 100%;

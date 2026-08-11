@@ -1,4 +1,4 @@
-import { supabase } from '$lib/supabase';
+import { supabase } from "$lib/supabase";
 
 export type ExistingCover = {
   original: {
@@ -14,21 +14,21 @@ export type ExistingCover = {
 
 // Given a Spotify track ID, returns a new Track object with the earliest release of that song
 export async function GET({ url }) {
-  const id = url.searchParams.get('id');
+  const id = url.searchParams.get("id");
 
   if (!id) {
-    throw new Error('No ID provided');
+    throw new Error("No ID provided");
   }
 
   const { data: existingCover } = await supabase
-    .from('covers')
+    .from("covers")
     .select(
       `slug,
       created_at,
       original:original_id(name, artists),
-      cover:cover_id(artists)`
+      cover:cover_id(artists)`,
     )
-    .eq('cover_id', id)
+    .eq("cover_id", id)
     .returns<ExistingCover>()
     .single();
 

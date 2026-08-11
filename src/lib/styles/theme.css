@@ -1,70 +1,73 @@
-@import '@radix-ui/colors/mauve.css';
-@import '@radix-ui/colors/mauve-alpha.css';
-@import '@radix-ui/colors/mauve-dark.css';
-@import '@radix-ui/colors/mauve-dark-alpha.css';
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/mauve-alpha.css";
+@import "@radix-ui/colors/mauve-dark.css";
+@import "@radix-ui/colors/mauve-dark-alpha.css";
 
-@import '@radix-ui/colors/pink.css';
-@import '@radix-ui/colors/pink-alpha.css';
-@import '@radix-ui/colors/pink-dark.css';
-@import '@radix-ui/colors/pink-dark-alpha.css';
+@import "@radix-ui/colors/pink.css";
+@import "@radix-ui/colors/pink-alpha.css";
+@import "@radix-ui/colors/pink-dark.css";
+@import "@radix-ui/colors/pink-dark-alpha.css";
 
-@import '@radix-ui/colors/purple.css';
-@import '@radix-ui/colors/purple-alpha.css';
-@import '@radix-ui/colors/purple-dark.css';
-@import '@radix-ui/colors/purple-dark-alpha.css';
+@import "@radix-ui/colors/purple.css";
+@import "@radix-ui/colors/purple-alpha.css";
+@import "@radix-ui/colors/purple-dark.css";
+@import "@radix-ui/colors/purple-dark-alpha.css";
 
-@import '@radix-ui/colors/orange.css';
-@import '@radix-ui/colors/orange-alpha.css';
-@import '@radix-ui/colors/orange-dark.css';
-@import '@radix-ui/colors/orange-dark-alpha.css';
+@import "@radix-ui/colors/orange.css";
+@import "@radix-ui/colors/orange-alpha.css";
+@import "@radix-ui/colors/orange-dark.css";
+@import "@radix-ui/colors/orange-dark-alpha.css";
 
-@import '@radix-ui/colors/green.css';
-@import '@radix-ui/colors/green-alpha.css';
-@import '@radix-ui/colors/green-dark.css';
-@import '@radix-ui/colors/green-dark-alpha.css';
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/green-alpha.css";
+@import "@radix-ui/colors/green-dark.css";
+@import "@radix-ui/colors/green-dark-alpha.css";
 
-@import '@radix-ui/colors/red.css';
-@import '@radix-ui/colors/red-alpha.css';
-@import '@radix-ui/colors/red-dark.css';
-@import '@radix-ui/colors/red-dark-alpha.css';
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/red-alpha.css";
+@import "@radix-ui/colors/red-dark.css";
+@import "@radix-ui/colors/red-dark-alpha.css";
 
-@import '@radix-ui/colors/white-alpha.css';
-@import '@radix-ui/colors/black-alpha.css';
+@import "@radix-ui/colors/white-alpha.css";
+@import "@radix-ui/colors/black-alpha.css";
 
 @font-face {
-  font-family: 'Labil Grotesk';
+  font-family: "Labil Grotesk";
   font-style: normal;
   font-weight: 400;
   font-display: fallback;
-  src: url('/fonts/LabilGrotesk-Regular.woff2') format('woff2'),
-    url('/fonts/LabilGrotesk-Regular.woff') format('woff');
+  src:
+    url("/fonts/LabilGrotesk-Regular.woff2") format("woff2"),
+    url("/fonts/LabilGrotesk-Regular.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Labil Grotesk';
+  font-family: "Labil Grotesk";
   font-style: italic;
   font-weight: 400;
   font-display: fallback;
-  src: url('/fonts/LabilGrotesk-RegularItalic.woff2') format('woff2'),
-    url('/fonts/LabilGrotesk-RegularItalic.woff') format('woff');
+  src:
+    url("/fonts/LabilGrotesk-RegularItalic.woff2") format("woff2"),
+    url("/fonts/LabilGrotesk-RegularItalic.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Labil Grotesk';
+  font-family: "Labil Grotesk";
   font-style: normal;
   font-weight: 700;
   font-display: fallback;
-  src: url('/fonts/LabilGrotesk-Bold.woff2') format('woff2'),
-    url('/fonts/LabilGrotesk-Bold.woff') format('woff');
+  src:
+    url("/fonts/LabilGrotesk-Bold.woff2") format("woff2"),
+    url("/fonts/LabilGrotesk-Bold.woff") format("woff");
 }
 
 /* Font fallbacks */
 /* Manually sized via https://screenspan.net/fallback */
 @font-face {
-  font-family: 'Labil Grotesk fallback';
+  font-family: "Labil Grotesk fallback";
   font-style: normal;
   font-weight: 400;
-  src: local('Arial');
+  src: local("Arial");
   size-adjust: 101%;
   ascent-override: 102%;
   descent-override: 23%;
@@ -72,10 +75,10 @@
 }
 
 @font-face {
-  font-family: 'Labil Grotesk fallback';
+  font-family: "Labil Grotesk fallback";
   font-style: normal;
   font-weight: bold;
-  src: local('Arial Bold');
+  src: local("Arial Bold");
   ascent-override: 102%;
   descent-override: 23%;
   line-gap-override: normal;
@@ -83,10 +86,10 @@
 
 :root {
   /* Font families */
-  --font-sans: 'Labil Grotesk', 'Labil Grotesk fallback', system-ui, sans-serif;
+  --font-sans: "Labil Grotesk", "Labil Grotesk fallback", system-ui, sans-serif;
 
-  --font-stable: 'salt' off;
-  --font-unstable: 'salt' 1, 'ss01' 1, 'ss02' 1, 'ss03' 1, 'ss04' 1;
+  --font-stable: "salt" off;
+  --font-unstable: "salt" 1, "ss01" 1, "ss02" 1, "ss03" 1, "ss04" 1;
 
   /* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
   --step--1: clamp(0.8333rem, 0.7754rem + 0.2899vi, 1rem);
@@ -134,13 +137,17 @@
 
   /* Shadows */
   /* https://shadows.brumm.af/ */
-  --shadow-album-s: 0px 0.4px 0.7px rgba(0, 0, 0, 0.12), 0px 1.2px 1.9px rgba(0, 0, 0, 0.111),
+  --shadow-album-s:
+    0px 0.4px 0.7px rgba(0, 0, 0, 0.12), 0px 1.2px 1.9px rgba(0, 0, 0, 0.111),
     0px 3.1px 4.4px rgba(0, 0, 0, 0.101), 0px 12px 12px rgba(0, 0, 0, 0.081);
-  --shadow-album-l: 0px 1.1px 1.8px rgba(0, 0, 0, 0.12), 0px 3.2px 5.2px rgba(0, 0, 0, 0.111),
+  --shadow-album-l:
+    0px 1.1px 1.8px rgba(0, 0, 0, 0.12), 0px 3.2px 5.2px rgba(0, 0, 0, 0.111),
     0px 8.3px 11.6px rgba(0, 0, 0, 0.101), 0px 32px 32px rgba(0, 0, 0, 0.081);
-  --shadow-album-inset-s: inset 0 -1px 1px rgba(0, 0, 0, 0.05),
+  --shadow-album-inset-s:
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05),
     inset 0 -0.5px 0.5px rgba(0, 0, 0, 0.15);
-  --shadow-album-inset-l: inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+  --shadow-album-inset-l:
+    inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
 
   color-scheme: light dark;
 }

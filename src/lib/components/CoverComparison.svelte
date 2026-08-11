@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { getArtistLink, slugify, smartquotes } from '$lib/helpers';
-  import type { Cover } from '../../routes/cover/[slug]/+page.server';
-  import SpotifyIcon from '~icons/ri/spotify-fill';
+import { getArtistLink, slugify, smartquotes } from "$lib/helpers";
+import SpotifyIcon from "~icons/ri/spotify-fill";
+import type { Cover } from "../../routes/cover/[slug]/+page.server";
 
-  let { cover }: { cover: Cover } = $props();
+let { cover }: { cover: Cover } = $props();
 
-  const originalSong = $derived(cover.original);
-  const coverSong = $derived(cover.cover);
-  const coveredAs = $derived(
-    slugify(originalSong.name) !== slugify(coverSong.name) ? coverSong.name : ''
-  );
+const originalSong = $derived(cover.original);
+const coverSong = $derived(cover.cover);
+const coveredAs = $derived(
+  slugify(originalSong.name) !== slugify(coverSong.name) ? coverSong.name : "",
+);
 </script>
 
 <div class="compare">
@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   @keyframes dim {
     0% {
       opacity: 1;

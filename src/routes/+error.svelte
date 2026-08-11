@@ -21,7 +21,7 @@
   <a href="/random" class="button">Get random cover</a>
 </div>
 
-<style lang="scss">
+<style>
   .container {
     display: flex;
     flex-direction: column;

@@ -1,17 +1,34 @@
+# Node
+node_modules/
+package-lock.json
+
+# Workflow & Editor
+.idea
+.eslintcache
+.stylelintcache
+stats.json
+
+# macOS
 .DS_Store
-node_modules
-/build
-/test-results
-/.svelte-kit
-/.vercel
-/.netlify
-/.wrangler
-/.lighthouseci
-/package
+
+# Build output
 dist/
+build/
+package/
+*.tsbuildinfo
+.vercel/
+.netlify/
+.wrangler/
+.svelte-kit/
+.lighthouseci/
+
+# Env
 .env
 .env.*
 !.env.example
+
+# Tests
 coverage
+/test-results
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

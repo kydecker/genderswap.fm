@@ -1,101 +1,107 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import CoverCard from '$lib/components/CoverCard.svelte';
-  import { goto } from '$app/navigation';
-  import { TAGS, ORDERED_TAG_GROUPS } from '$lib/constants.js';
-  import type { Enums } from '$lib/types/types.js';
-  import ArrowRightIcon from '~icons/ri/arrow-right-line';
-  import ArrowLeftIcon from '~icons/ri/arrow-left-line';
-  import SearchIcon from '~icons/ri/search-line';
-  import CloseCircleIcon from '~icons/ri/close-circle-fill';
-  import { scale } from 'svelte/transition';
-  import type { FocusEventHandler, FormEventHandler, KeyboardEventHandler } from 'svelte/elements';
+import type {
+  FocusEventHandler,
+  FormEventHandler,
+  KeyboardEventHandler,
+} from "svelte/elements";
+import { scale } from "svelte/transition";
+import { goto } from "$app/navigation";
+import { page } from "$app/state";
+import CoverCard from "$lib/components/CoverCard.svelte";
+import { ORDERED_TAG_GROUPS, TAGS } from "$lib/constants.js";
+import type { Enums } from "$lib/types/types.js";
+import ArrowLeftIcon from "~icons/ri/arrow-left-line";
+import ArrowRightIcon from "~icons/ri/arrow-right-line";
+import CloseCircleIcon from "~icons/ri/close-circle-fill";
+import SearchIcon from "~icons/ri/search-line";
 
-  let { data } = $props();
+let { data } = $props();
 
-  let isFocused = $state(false);
-  let currentQuery = $state('');
-  let currentPage = $derived(Number(page.url.searchParams.get('page')) || 1);
-  let currentTag = $derived(page.url.searchParams.get('tag') as Enums<'tags'> | null);
+let isFocused = $state(false);
+let currentQuery = $state("");
+let currentPage = $derived(Number(page.url.searchParams.get("page")) || 1);
+let currentTag = $derived(
+  page.url.searchParams.get("tag") as Enums<"tags"> | null,
+);
 
-  $effect(() => {
-    if (!isFocused) {
-      currentQuery = page.url.searchParams.get('q') || '';
-    }
-  });
+$effect(() => {
+  if (!isFocused) {
+    currentQuery = page.url.searchParams.get("q") || "";
+  }
+});
 
-  let debounceTimer: ReturnType<typeof setTimeout>;
-  const debounce = (callback: () => void) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(callback, 250);
-  };
+let debounceTimer: ReturnType<typeof setTimeout>;
+const debounce = (callback: () => void) => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(callback, 250);
+};
 
-  const handleSearch: FormEventHandler<HTMLInputElement> = (e) => {
-    currentQuery = e.currentTarget.value;
+const handleSearch: FormEventHandler<HTMLInputElement> = (e) => {
+  currentQuery = e.currentTarget.value;
+  const newURL = new URL(page.url);
+  newURL.searchParams.delete("page");
+
+  if (currentQuery) {
+    newURL.searchParams.set("q", currentQuery);
+  } else {
+    newURL.searchParams.delete("q");
+  }
+
+  debounce(() => goto(newURL, { keepFocus: true, replaceState: true }));
+};
+
+const handleClearSearch = () => {
+  const newURL = new URL(page.url);
+  newURL.searchParams.delete("tag");
+  newURL.searchParams.delete("q");
+  goto(newURL, { keepFocus: true, replaceState: true });
+};
+
+const handleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+  if (e.key === "Backspace" && currentQuery === "") {
+    handleClearSearch();
+  }
+};
+
+const handleFocus: FocusEventHandler<HTMLInputElement> = () => {
+  isFocused = true;
+};
+
+const handleBlur: FocusEventHandler<HTMLInputElement> = () => {
+  isFocused = false;
+};
+
+const handleTagClick = (tag: Enums<"tags"> | null) => {
+  const newURL = new URL(page.url);
+  newURL.searchParams.delete("page");
+
+  if (currentTag === tag || tag === null) {
+    newURL.searchParams.delete("tag");
+  } else {
+    newURL.searchParams.set("tag", tag);
+  }
+
+  goto(newURL);
+};
+
+const handleBack = () => {
+  if (currentPage > 1) {
     const newURL = new URL(page.url);
-    newURL.searchParams.delete('page');
+    const newPage = currentPage - 1;
 
-    if (currentQuery) {
-      newURL.searchParams.set('q', currentQuery);
-    } else {
-      newURL.searchParams.delete('q');
-    }
-
-    debounce(() => goto(newURL, { keepFocus: true, replaceState: true }));
-  };
-
-  const handleClearSearch = () => {
-    const newURL = new URL(page.url);
-    newURL.searchParams.delete('tag');
-    newURL.searchParams.delete('q');
-    goto(newURL, { keepFocus: true, replaceState: true });
-  };
-
-  const handleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Backspace' && currentQuery === '') {
-      handleClearSearch();
-    }
-  };
-
-  const handleFocus: FocusEventHandler<HTMLInputElement> = () => {
-    isFocused = true;
-  };
-
-  const handleBlur: FocusEventHandler<HTMLInputElement> = () => {
-    isFocused = false;
-  };
-
-  const handleTagClick = (tag: Enums<'tags'> | null) => {
-    const newURL = new URL(page.url);
-    newURL.searchParams.delete('page');
-
-    if (currentTag === tag || tag === null) {
-      newURL.searchParams.delete('tag');
-    } else {
-      newURL.searchParams.set('tag', tag);
-    }
+    newPage === 1
+      ? newURL.searchParams.delete("page")
+      : newURL.searchParams.set("page", newPage.toString());
 
     goto(newURL);
-  };
+  }
+};
 
-  const handleBack = () => {
-    if (currentPage > 1) {
-      const newURL = new URL(page.url);
-      const newPage = currentPage - 1;
-
-      newPage === 1
-        ? newURL.searchParams.delete('page')
-        : newURL.searchParams.set('page', newPage.toString());
-
-      goto(newURL);
-    }
-  };
-
-  const handleNext = () => {
-    const newURL = new URL(page.url);
-    newURL.searchParams.set('page', (currentPage + 1).toString());
-    goto(newURL);
-  };
+const handleNext = () => {
+  const newURL = new URL(page.url);
+  newURL.searchParams.set("page", (currentPage + 1).toString());
+  goto(newURL);
+};
 </script>
 
 <svelte:head>
@@ -206,7 +212,7 @@
   {error.message}
 {/await}
 
-<style lang="scss">
+<style>
   header {
     padding-inline: var(--space-m);
   }

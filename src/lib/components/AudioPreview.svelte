@@ -1,38 +1,38 @@
 <script lang="ts">
-  import type { MouseEventHandler } from 'svelte/elements';
+import type { MouseEventHandler } from "svelte/elements";
 
-  let { src, title }: { src: string; title: string } = $props();
+let { src, title }: { src: string; title: string } = $props();
 
-  let playState = $state('paused');
-  let audio: HTMLAudioElement;
-  let time = $state(0);
-  let duration = $state(0);
-  const percent = $derived((time / duration) * 100);
+let playState = $state("paused");
+let audio: HTMLAudioElement;
+let time = $state(0);
+let duration = $state(0);
+const percent = $derived((time / duration) * 100);
 
-  const play = () => {
-    audio.play();
-    playState = 'playing';
-  };
+const play = () => {
+  audio.play();
+  playState = "playing";
+};
 
-  const pauseAndReset = () => {
-    audio.pause();
-    audio.currentTime = 0;
-    playState = 'paused';
-  };
+const pauseAndReset = () => {
+  audio.pause();
+  audio.currentTime = 0;
+  playState = "paused";
+};
 
-  const handleButtonClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
+const handleButtonClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+  e.preventDefault();
 
-    if (playState === 'paused') {
-      play();
-    } else {
-      pauseAndReset();
-    }
-  };
+  if (playState === "paused") {
+    play();
+  } else {
+    pauseAndReset();
+  }
+};
 
-  $effect(() => {
-    if (percent > 99.5) pauseAndReset();
-  });
+$effect(() => {
+  if (percent > 99.5) pauseAndReset();
+});
 </script>
 
 <div
@@ -87,7 +87,7 @@
   </button>
 </div>
 
-<style lang="scss">
+<style>
   .progress {
     line-height: 0;
     border-radius: var(--radius-full);

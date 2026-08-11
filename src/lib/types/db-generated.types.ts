@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export interface Database {
   public: {
@@ -12,7 +18,7 @@ export interface Database {
           id: number;
           original_id: string;
           slug: string;
-          tags: Database['public']['Enums']['tags'][] | null;
+          tags: Database["public"]["Enums"]["tags"][] | null;
         };
         Insert: {
           contributor?: string | null;
@@ -22,7 +28,7 @@ export interface Database {
           id?: number;
           original_id: string;
           slug: string;
-          tags?: Database['public']['Enums']['tags'][] | null;
+          tags?: Database["public"]["Enums"]["tags"][] | null;
         };
         Update: {
           contributor?: string | null;
@@ -32,23 +38,23 @@ export interface Database {
           id?: number;
           original_id?: string;
           slug?: string;
-          tags?: Database['public']['Enums']['tags'][] | null;
+          tags?: Database["public"]["Enums"]["tags"][] | null;
         };
         Relationships: [
           {
-            foreignKeyName: 'covers_cover_id_fkey';
-            columns: ['cover_id'];
+            foreignKeyName: "covers_cover_id_fkey";
+            columns: ["cover_id"];
             isOneToOne: false;
-            referencedRelation: 'songs';
-            referencedColumns: ['id'];
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: 'covers_original_id_fkey';
-            columns: ['original_id'];
+            foreignKeyName: "covers_original_id_fkey";
+            columns: ["original_id"];
             isOneToOne: false;
-            referencedRelation: 'songs';
-            referencedColumns: ['id'];
-          }
+            referencedRelation: "songs";
+            referencedColumns: ["id"];
+          },
         ];
       };
       songs: {
@@ -62,7 +68,7 @@ export interface Database {
           danceability: number | null;
           duration_ms: number | null;
           energy: number | null;
-          gender: Database['public']['Enums']['gender'][];
+          gender: Database["public"]["Enums"]["gender"][];
           id: string;
           instrumentalness: number | null;
           key: number | null;
@@ -86,7 +92,7 @@ export interface Database {
           danceability?: number | null;
           duration_ms?: number | null;
           energy?: number | null;
-          gender: Database['public']['Enums']['gender'][];
+          gender: Database["public"]["Enums"]["gender"][];
           id: string;
           instrumentalness?: number | null;
           key?: number | null;
@@ -110,7 +116,7 @@ export interface Database {
           danceability?: number | null;
           duration_ms?: number | null;
           energy?: number | null;
-          gender?: Database['public']['Enums']['gender'][];
+          gender?: Database["public"]["Enums"]["gender"][];
           id?: string;
           instrumentalness?: number | null;
           key?: number | null;
@@ -137,33 +143,33 @@ export interface Database {
       };
     };
     Enums: {
-      gender: 'male' | 'female' | 'other';
+      gender: "male" | "female" | "other";
       tags:
-        | 'acousticness_up'
-        | 'acousticness_down'
-        | 'danceability_up'
-        | 'danceability_down'
-        | 'duration_up'
-        | 'duration_down'
-        | 'energy_up'
-        | 'energy_down'
-        | 'instrumentalness_up'
-        | 'instrumentalness_down'
-        | 'key_change'
-        | 'tempo_up'
-        | 'tempo_down'
-        | 'time_signature_change'
-        | 'transition_ftm'
-        | 'transition_mtf'
-        | 'valence_up'
-        | 'valence_down'
-        | 'years_apart_10'
-        | 'years_apart_20'
-        | 'years_apart_30'
-        | 'years_apart_40'
-        | 'years_apart_50'
-        | 'transition_ftf'
-        | 'transition_mtm';
+        | "acousticness_up"
+        | "acousticness_down"
+        | "danceability_up"
+        | "danceability_down"
+        | "duration_up"
+        | "duration_down"
+        | "energy_up"
+        | "energy_down"
+        | "instrumentalness_up"
+        | "instrumentalness_down"
+        | "key_change"
+        | "tempo_up"
+        | "tempo_down"
+        | "time_signature_change"
+        | "transition_ftm"
+        | "transition_mtf"
+        | "valence_up"
+        | "valence_down"
+        | "years_apart_10"
+        | "years_apart_20"
+        | "years_apart_30"
+        | "years_apart_40"
+        | "years_apart_50"
+        | "transition_ftf"
+        | "transition_mtm";
     };
     CompositeTypes: {
       [_ in never]: never;
