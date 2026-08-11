@@ -1,51 +1,51 @@
 <script lang="ts">
-  import {
-    getReadableTitle,
-    getYearsEarlierText,
-    removeSongExtraText,
-    smartquotes
-  } from '$lib/helpers';
-  import type { Track } from '@spotify/web-api-ts-sdk';
-  import { slide } from 'svelte/transition';
-  import CloseCircleIcon from '~icons/ri/close-circle-line';
-  import HistoryIcon from '~icons/ri/history-line';
-  import CheckIcon from '~icons/ri/check-line';
-  import AlertIcon from '~icons/ri/alert-line';
-  import type { MouseEventHandler } from 'svelte/elements';
-  import type { ExistingCover } from '../../routes/api/getCover/+server';
-  import dayjs from 'dayjs';
-  import relativeTime from 'dayjs/plugin/relativeTime';
-  import AudioPreview from './AudioPreview.svelte';
+import type { Track } from "@spotify/web-api-ts-sdk";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import type { MouseEventHandler } from "svelte/elements";
+import { slide } from "svelte/transition";
+import {
+  getReadableTitle,
+  getYearsEarlierText,
+  removeSongExtraText,
+  smartquotes,
+} from "$lib/helpers";
+import AlertIcon from "~icons/ri/alert-line";
+import CheckIcon from "~icons/ri/check-line";
+import CloseCircleIcon from "~icons/ri/close-circle-line";
+import HistoryIcon from "~icons/ri/history-line";
+import type { ExistingCover } from "../../routes/api/getCover/+server";
+import AudioPreview from "./AudioPreview.svelte";
 
-  let {
-    song,
-    existingCover,
-    earlierRelease,
-    onUseEarlierRelease,
-    onClearSelection
-  }: {
-    song: Track;
-    existingCover: ExistingCover | null;
-    earlierRelease: Track | null;
-    onUseEarlierRelease: () => void;
-    onClearSelection: () => void;
-  } = $props();
+let {
+  song,
+  existingCover,
+  earlierRelease,
+  onUseEarlierRelease,
+  onClearSelection,
+}: {
+  song: Track;
+  existingCover: ExistingCover | null;
+  earlierRelease: Track | null;
+  onUseEarlierRelease: () => void;
+  onClearSelection: () => void;
+} = $props();
 
-  dayjs.extend(relativeTime);
+dayjs.extend(relativeTime);
 
-  let wasKeepThisReleaseClicked = $state(false);
-  let wasEarlierReleaseClicked = $state(false);
+let wasKeepThisReleaseClicked = $state(false);
+let wasEarlierReleaseClicked = $state(false);
 
-  const handleKeepThisRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    wasKeepThisReleaseClicked = true;
-  };
+const handleKeepThisRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
+  e.preventDefault();
+  wasKeepThisReleaseClicked = true;
+};
 
-  const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    onUseEarlierRelease();
-    wasEarlierReleaseClicked = true;
-  };
+const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
+  e.preventDefault();
+  onUseEarlierRelease();
+  wasEarlierReleaseClicked = true;
+};
 </script>
 
 <div class="selectedSong">
@@ -123,7 +123,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .selectedSong {
     background: var(--mauve-3);
     border-radius: var(--radius-l);

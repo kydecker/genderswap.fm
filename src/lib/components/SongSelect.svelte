@@ -1,137 +1,141 @@
 <script lang="ts">
-  import SongPreview from '$lib/components/SongPreview.svelte';
-  import type { Track } from '@spotify/web-api-ts-sdk';
-  import { createCombobox, melt } from '@melt-ui/svelte';
-  import ErrorMessage from './ErrorMessage.svelte';
-  import SearchIcon from '~icons/ri/search-line';
-  import { scale } from 'svelte/transition';
-  import { encodeSearchQuery } from '$lib/helpers';
-  import type { ExistingCover } from '../../routes/api/getCover/+server';
+import { createCombobox, melt } from "@melt-ui/svelte";
+import type { Track } from "@spotify/web-api-ts-sdk";
+import { scale } from "svelte/transition";
+import SongPreview from "$lib/components/SongPreview.svelte";
+import { encodeSearchQuery } from "$lib/helpers";
+import SearchIcon from "~icons/ri/search-line";
+import type { ExistingCover } from "../../routes/api/getCover/+server";
+import ErrorMessage from "./ErrorMessage.svelte";
 
-  let {
-    name,
-    value = $bindable(),
-    errors
-  }: { name: string; value: Track | undefined; errors: string[] | undefined } = $props();
+let {
+  name,
+  value = $bindable(),
+  errors,
+}: {
+  name: string;
+  value: Track | undefined;
+  errors: string[] | undefined;
+} = $props();
 
-  let discoveredEarlierRelease: Track | null = $state(null);
-  let discoveredExistingCover: ExistingCover | null = $state(null);
-  let searchResults: Track[] | undefined = $state(undefined);
+let discoveredEarlierRelease: Track | null = $state(null);
+let discoveredExistingCover: ExistingCover | null = $state(null);
+let searchResults: Track[] | undefined = $state(undefined);
 
-  let debounceTimer: ReturnType<typeof setTimeout>;
-  const debounce = (callback: () => void) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(callback, 250);
-  };
+let debounceTimer: ReturnType<typeof setTimeout>;
+const debounce = (callback: () => void) => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(callback, 250);
+};
 
-  const {
-    elements: { menu, input, option, label },
-    states: { open, inputValue, touchedInput, selected },
-    helpers: { isSelected, isHighlighted }
-  } = createCombobox<Track>({
-    preventScroll: false,
-    positioning: {
-      placement: 'bottom',
-      flip: false,
-      sameWidth: true
-    },
-    onSelectedChange: ({ next }) => {
-      if (next) {
-        debounce(() => {
-          checkForEarlierRelease(next.value);
-          checkForExistingCover(next.value);
-        });
-        value = next.value;
-      }
-      return next;
-    }
-  });
-
-  selected.set(value ? { value } : undefined);
-
-  const checkForExistingCover = async (track: Track) => {
-    try {
-      const response = await fetch(`/api/getCover?id=${track.id}`, {
-        method: 'GET'
+const {
+  elements: { menu, input, option, label },
+  states: { open, inputValue, touchedInput, selected },
+  helpers: { isSelected, isHighlighted },
+} = createCombobox<Track>({
+  preventScroll: false,
+  positioning: {
+    placement: "bottom",
+    flip: false,
+    sameWidth: true,
+  },
+  onSelectedChange: ({ next }) => {
+    if (next) {
+      debounce(() => {
+        checkForEarlierRelease(next.value);
+        checkForExistingCover(next.value);
       });
+      value = next.value;
+    }
+    return next;
+  },
+});
 
-      if (response.ok) discoveredExistingCover = await response.json();
+selected.set(value ? { value } : undefined);
+
+const checkForExistingCover = async (track: Track) => {
+  try {
+    const response = await fetch(`/api/getCover?id=${track.id}`, {
+      method: "GET",
+    });
+
+    if (response.ok) discoveredExistingCover = await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+};
+
+const checkForEarlierRelease = async (track: Track) => {
+  try {
+    const response = await fetch(`/api/getEarliestRelease?id=${track.id}`, {
+      method: "GET",
+    });
+
+    if (response.ok) discoveredEarlierRelease = await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+};
+
+const search = async (query: string | undefined) => {
+  if (!query || query === "") {
+    searchResults = undefined;
+    return;
+  }
+
+  if (query.trim().startsWith("https://open.spotify.com")) {
+    const trackId = query.split("/track/")[1].split("?")[0];
+
+    try {
+      const response = await fetch(`/api/getSpotifyTrack?id=${trackId}`, {
+        method: "GET",
+      });
+      const data = await response.json();
+
+      // Skip dropdown/user selection since there's only one result
+      selected.set({ value: data });
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
       }
     }
-  };
-
-  const checkForEarlierRelease = async (track: Track) => {
+  } else {
     try {
-      const response = await fetch(`/api/getEarliestRelease?id=${track.id}`, {
-        method: 'GET'
+      const encoded = encodeSearchQuery(query);
+      const response = await fetch(`/api/getSpotifyResults?q=${encoded}`, {
+        method: "GET",
       });
-
-      if (response.ok) discoveredEarlierRelease = await response.json();
+      const data = await response.json();
+      searchResults = data;
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
       }
     }
-  };
+  }
+};
 
-  const search = async (query: string | undefined) => {
-    if (!query || query === '') {
-      searchResults = undefined;
-      return;
-    }
+const handleClearSelection = () => {
+  discoveredExistingCover = null;
+  discoveredEarlierRelease = null;
+  inputValue.set("");
+  value = undefined;
+};
 
-    if (query.trim().startsWith('https://open.spotify.com')) {
-      const trackId = query.split('/track/')[1].split('?')[0];
+const handleUseEarlierRelease = async () => {
+  const earlierRelease = await discoveredEarlierRelease;
+  if (earlierRelease) value = earlierRelease;
+};
 
-      try {
-        const response = await fetch(`/api/getSpotifyTrack?id=${trackId}`, {
-          method: 'GET'
-        });
-        const data = await response.json();
-
-        // Skip dropdown/user selection since there's only one result
-        selected.set({ value: data });
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        }
-      }
-    } else {
-      try {
-        const encoded = encodeSearchQuery(query);
-        const response = await fetch(`/api/getSpotifyResults?q=${encoded}`, {
-          method: 'GET'
-        });
-        const data = await response.json();
-        searchResults = data;
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        }
-      }
-    }
-  };
-
-  const handleClearSelection = () => {
-    discoveredExistingCover = null;
-    discoveredEarlierRelease = null;
-    inputValue.set('');
-    value = undefined;
-  };
-
-  const handleUseEarlierRelease = async () => {
-    const earlierRelease = await discoveredEarlierRelease;
-    if (earlierRelease) value = earlierRelease;
-  };
-
-  $effect(() => {
-    if ($touchedInput) {
-      debounce(() => search($inputValue));
-    }
-  });
+$effect(() => {
+  if ($touchedInput) {
+    debounce(() => search($inputValue));
+  }
+});
 </script>
 
 <fieldset {name}>
@@ -198,7 +202,7 @@
   {/if}
 </fieldset>
 
-<style lang="scss">
+<style>
   fieldset {
     all: unset;
   }

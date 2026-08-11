@@ -1,10 +1,11 @@
 <script lang="ts">
-  let {
-    text,
-    count,
-    url,
-    isActive
-  }: { text: string; count?: number | null; url: string; isActive?: boolean } = $props();
+let {
+  text,
+  count,
+  url,
+  isActive,
+}: { text: string; count?: number | null; url: string; isActive?: boolean } =
+  $props();
 </script>
 
 {#if url}
@@ -23,7 +24,7 @@
   </div>
 {/if}
 
-<style lang="scss">
+<style>
   .tag {
     all: unset;
     display: inline-flex;

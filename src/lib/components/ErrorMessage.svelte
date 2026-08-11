@@ -1,7 +1,7 @@
 <script lang="ts">
-  import ErrorIcon from '~icons/ri/error-warning-line';
+import ErrorIcon from "~icons/ri/error-warning-line";
 
-  let { error, banner = false }: { error: string; banner?: boolean } = $props();
+let { error, banner = false }: { error: string; banner?: boolean } = $props();
 </script>
 
 <div class="error" class:banner>
@@ -9,7 +9,7 @@
   <span class="errorMessage">{error}</span>
 </div>
 
-<style lang="scss">
+<style>
   .error {
     display: flex;
     align-items: center;

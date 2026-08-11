@@ -13,7 +13,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   @keyframes grow-and-shrink {
     0% {
       transform: scale(0);

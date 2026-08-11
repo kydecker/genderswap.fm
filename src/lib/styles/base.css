@@ -3,7 +3,8 @@ html {
   height: 100%;
 }
 
-html, body {
+html,
+body {
   color: var(--mauve-12);
   background-color: var(--mauve-1);
 }
@@ -26,8 +27,6 @@ body {
   font-synthesis: none;
   font-feature-settings: var(--font-stable);
 }
-
-
 
 ::selection {
   background: var(--pink-5);

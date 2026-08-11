@@ -70,7 +70,7 @@
   </svg>
 </a>
 
-<style lang="scss">
+<style>
   @keyframes wiggle {
     from {
       transform: rotate(-10deg);

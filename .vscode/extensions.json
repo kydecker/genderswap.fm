@@ -1,4 +1,7 @@
 {
-  "recommendations": ["astro-build.astro-vscode"],
-  "unwantedRecommendations": []
+  "recommendations": [
+    "deque-systems.vscode-axe-linter",
+    "biomejs.biome"
+  ],
+  "unwantedRecommendations": ["esbenp.prettier-vscode"]
 }

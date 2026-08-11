@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { theme } from '$lib/stores/theme';
-  import SunIcon from '~icons/ri/sun-line';
-  import MoonIcon from '~icons/ri/moon-line';
+import { theme } from "$lib/stores/theme";
+import MoonIcon from "~icons/ri/moon-line";
+import SunIcon from "~icons/ri/sun-line";
 </script>
 
 <footer>
@@ -37,7 +37,7 @@
   </div>
 </footer>
 
-<style lang="scss">
+<style>
   footer {
     width: 100%;
     padding-inline: var(--space-m);

@@ -4,5 +4,6 @@ allowBuilds:
   '@parcel/watcher': false
   '@tsparticles/engine': true
   esbuild: false
+  simple-git-hooks: true
   svelte-preprocess: false
   workerd: true

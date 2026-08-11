@@ -1,29 +1,33 @@
 <script lang="ts">
-  import { createToggleGroup, melt } from '@melt-ui/svelte';
-  import MenIcon from '~icons/ri/men-line';
-  import WomenIcon from '~icons/ri/women-line';
-  import SparklingIcon from '~icons/ri/sparkling-line';
-  import ErrorMessage from '$lib/components/ErrorMessage.svelte';
-  import type { Enums } from '$lib/types/types';
+import { createToggleGroup, melt } from "@melt-ui/svelte";
+import ErrorMessage from "$lib/components/ErrorMessage.svelte";
+import type { Enums } from "$lib/types/types";
+import MenIcon from "~icons/ri/men-line";
+import SparklingIcon from "~icons/ri/sparkling-line";
+import WomenIcon from "~icons/ri/women-line";
 
-  let {
-    name,
-    value = $bindable(),
-    errors
-  }: { name: string; value: Enums<'gender'>[]; errors: string[] | undefined } = $props();
+let {
+  name,
+  value = $bindable(),
+  errors,
+}: {
+  name: string;
+  value: Enums<"gender">[];
+  errors: string[] | undefined;
+} = $props();
 
-  const {
-    elements: { root, item },
-    states: { value: innerValue }
-  } = createToggleGroup({
-    type: 'multiple',
-    onValueChange: ({ next }) => {
-      value = next as Enums<'gender'>[];
-      return next;
-    }
-  });
+const {
+  elements: { root, item },
+  states: { value: innerValue },
+} = createToggleGroup({
+  type: "multiple",
+  onValueChange: ({ next }) => {
+    value = next as Enums<"gender">[];
+    return next;
+  },
+});
 
-  innerValue.set(value);
+innerValue.set(value);
 </script>
 
 <fieldset use:melt={$root} class="genderSelect" {name}>
@@ -54,7 +58,7 @@
   </div>
 </fieldset>
 
-<style lang="scss">
+<style>
   .genderSelect {
     all: unset;
   }

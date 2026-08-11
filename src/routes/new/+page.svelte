@@ -1,51 +1,51 @@
 <script lang="ts">
-  import { superForm } from 'sveltekit-superforms';
-  import Steps from '$lib/components/Steps.svelte';
-  import Step from '$lib/components/Step.svelte';
-  import SongSelect from '$lib/components/SongSelect.svelte';
-  import GenderSelect from '$lib/components/GenderSelect.svelte';
-  import autosize from 'svelte-autosize';
-  import { getMaxCharacterHelpText } from '$lib/helpers';
-  import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from '$lib/constants';
-  import ErrorMessage from '$lib/components/ErrorMessage.svelte';
-  import { browser } from '$app/environment';
-  import { page } from '$app/state';
-  import LoaderIcon from '~icons/ri/loader-4-line';
-  import AlertIcon from '~icons/ri/alert-line';
-  import type { FormEventHandler } from 'svelte/elements';
-  import NewCoverIcon from '$lib/components/NewCoverIcon.svelte';
+import type { FormEventHandler } from "svelte/elements";
+import autosize from "svelte-autosize";
+import { superForm } from "sveltekit-superforms";
+import { browser } from "$app/environment";
+import { page } from "$app/state";
+import ErrorMessage from "$lib/components/ErrorMessage.svelte";
+import GenderSelect from "$lib/components/GenderSelect.svelte";
+import NewCoverIcon from "$lib/components/NewCoverIcon.svelte";
+import SongSelect from "$lib/components/SongSelect.svelte";
+import Step from "$lib/components/Step.svelte";
+import Steps from "$lib/components/Steps.svelte";
+import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from "$lib/constants";
+import { getMaxCharacterHelpText } from "$lib/helpers";
+import AlertIcon from "~icons/ri/alert-line";
+import LoaderIcon from "~icons/ri/loader-4-line";
 
-  let { data } = $props();
+let { data } = $props();
 
-  // superForm takes a one-time snapshot; server round-trips sync via applyAction.
-  // svelte-ignore state_referenced_locally
-  const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
-    dataType: 'json',
-    scrollToError: 'smooth'
-  });
+// superForm takes a one-time snapshot; server round-trips sync via applyAction.
+// svelte-ignore state_referenced_locally
+const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
+  dataType: "json",
+  scrollToError: "smooth",
+});
 
-  $form.contributor = browser ? (window.localStorage.getItem('contributor') ?? '') : '';
+$form.contributor = browser
+  ? (window.localStorage.getItem("contributor") ?? "")
+  : "";
 
-  const isHelen = $derived($form.contributor.toLowerCase().trim() === 'helen');
+const isHelen = $derived($form.contributor.toLowerCase().trim() === "helen");
 
-  const handleDescriptionInput: FormEventHandler<HTMLTextAreaElement> = (e) => {
-    $form.description = e.currentTarget.value;
-    // Replace any newlines with spaces and trim
-    $form.description = $form.description.replace(/\r?\n|\r/g, ' ').trimStart();
+const handleDescriptionInput: FormEventHandler<HTMLTextAreaElement> = (e) => {
+  $form.description = e.currentTarget.value;
+  // Replace any newlines with spaces and trim
+  $form.description = $form.description.replace(/\r?\n|\r/g, " ").trimStart();
+};
 
-    $form.description = $form.description;
-  };
+const handleContributorInput: FormEventHandler<HTMLInputElement> = (e) => {
+  $form.contributor = e.currentTarget.value;
+  // Trim spaces
+  $form.contributor = $form.contributor.trimStart();
+};
 
-  const handleContributorInput: FormEventHandler<HTMLInputElement> = (e) => {
-    $form.contributor = e.currentTarget.value;
-    // Trim spaces
-    $form.contributor = $form.contributor.trimStart();
-  };
-
-  const handleSubmit = () => {
-    // Save name to local storage for reuse
-    if (browser) window.localStorage.setItem('contributor', $form.contributor);
-  };
+const handleSubmit = () => {
+  // Save name to local storage for reuse
+  if (browser) window.localStorage.setItem("contributor", $form.contributor);
+};
 </script>
 
 <svelte:head>
@@ -150,7 +150,7 @@
 
 <!-- Missing toasts error handling -->
 
-<style lang="scss">
+<style>
   .submitForm {
     inline-size: 100%;
     max-inline-size: 50ch;
