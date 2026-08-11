@@ -62,6 +62,7 @@
     "unplugin-icons": "^23.0.1",
     "vite": "^6.4.3",
     "vitest": "^3.2.6",
+    "wrangler": "^4.120.0",
     "zod": "^4.4.3"
   },
   "packageManager": "pnpm@11.21.0"
