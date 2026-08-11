@@ -110,12 +110,11 @@ const coveredAs = $derived(
       overflow-y: hidden;
       grid-template-columns: 85vw 85vw;
       scroll-snap-type: x mandatory;
-      // Hide scrollbars on Chrome, Safari
       &::-webkit-scrollbar {
         display: none;
       }
-      -ms-overflow-style: none; // Edge
-      scrollbar-width: none; // Firefox
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   }
 
