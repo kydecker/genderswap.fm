@@ -1,24 +1,25 @@
+import { eq } from "drizzle-orm";
 import satori from "satori";
 import sharp from "sharp";
 import { TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
-import { supabase } from "$lib/supabase";
+import { getDb } from "$lib/server/db";
+import { covers } from "$lib/server/db/schema";
 import type { Cover } from "../+page.server";
 
-export async function GET({ params, url }) {
+export async function GET({ params, url, platform }) {
   const { slug } = params;
 
-  const { data } = await supabase
-    .from("covers")
-    .select(
-      `
-      original:original_id(name, artists, album_img),
-      cover:cover_id(name, artists, album_img),
-      tags`,
-    )
-    .eq("slug", slug)
-    .returns<Cover>()
-    .single();
+  const songColumns = { name: true, artists: true, album_img: true } as const;
+
+  const data = await getDb(platform).query.covers.findFirst({
+    columns: { tags: true },
+    with: {
+      original: { columns: songColumns },
+      cover: { columns: songColumns },
+    },
+    where: eq(covers.slug, slug),
+  });
 
   if (!data) {
     return new Response(null, {

@@ -1,7 +1,16 @@
-import type { Database } from "./db-generated.types";
+import type { InferSelectModel } from "drizzle-orm";
+import type { covers, GENDERS, songs, TAG_VALUES } from "$lib/server/db/schema";
 
-export type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"];
+type DbTables = {
+  songs: typeof songs;
+  covers: typeof covers;
+};
 
-export type Enums<T extends keyof Database["public"]["Enums"]> =
-  Database["public"]["Enums"][T];
+type DbEnums = {
+  gender: (typeof GENDERS)[number];
+  tags: (typeof TAG_VALUES)[number];
+};
+
+export type Tables<T extends keyof DbTables> = InferSelectModel<DbTables[T]>;
+
+export type Enums<T extends keyof DbEnums> = DbEnums[T];

@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
         "src/lib/types/**",
         "src/routes/**",
         "src/lib/schemas.ts",
-        "src/lib/supabase.ts",
+        "src/lib/server/**",
       ],
       reporter: ["text", "json-summary", "json"],
     },

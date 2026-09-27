@@ -1,10 +1,13 @@
 import type { Track } from "@spotify/web-api-ts-sdk";
 import { fail, redirect } from "@sveltejs/kit";
+import { inArray } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { slugifyCover } from "$lib/helpers";
 import { newCoverSchema } from "$lib/schemas";
-import { supabase } from "$lib/supabase";
+import { getDb } from "$lib/server/db";
+import { covers, songs } from "$lib/server/db/schema";
+import { computeTags } from "$lib/tags";
 import type { Enums, Tables } from "$lib/types/types";
 
 export const load = async () => {
@@ -14,7 +17,7 @@ export const load = async () => {
 };
 
 export const actions = {
-  default: async ({ request, fetch }) => {
+  default: async ({ request, fetch, platform }) => {
     const form = await superValidate(request, zod4(newCoverSchema));
 
     if (!form.valid) {
@@ -84,10 +87,7 @@ export const actions = {
       description: string;
       contributor: string;
     }) => {
-      const row: Omit<
-        Tables<"covers">,
-        "id" | "created_at" | "tags" | "fts"
-      > = {
+      const row: Omit<Tables<"covers">, "id" | "created_at" | "tags"> = {
         original_id: original.id,
         cover_id: cover.id,
         slug: slugifyCover(cover.name, cover.artists[0].name),
@@ -98,44 +98,16 @@ export const actions = {
       return row;
     };
 
-    // Shape track data for submission to the 'songs' table
     const originalSongRow = await formatSongRow({
       song: original,
       gender: originalGenders,
     });
 
-    // Check if original already exists
-    const { data: existingOriginal } = await supabase
-      .from("songs")
-      .select("id")
-      .eq("id", originalSongRow.id)
-      .single();
+    const coverSongRow = await formatSongRow({
+      song: cover,
+      gender: coverGenders,
+    });
 
-    // If it doesn't exist, insert it
-    if (originalSongRow && !existingOriginal) {
-      const { error } = await supabase.from("songs").insert(originalSongRow);
-      if (error) setError(form, error.message);
-    }
-
-    // Shape cover data for submission to the 'songs' table
-    const coverSongRow =
-      cover && (await formatSongRow({ song: cover, gender: coverGenders }));
-
-    // Check if cover already exists
-    const { data: existingCover } = await supabase
-      .from("songs")
-      .select("id")
-      .eq("id", coverSongRow.id)
-      .single();
-
-    // If it doesn't exist, insert it
-    if (coverSongRow && !existingCover) {
-      const { error } = await supabase.from("songs").insert(coverSongRow);
-      if (error) setError(form, error.message);
-    }
-
-    // Shape data for submission to the 'covers' table
-    // Capturing the link between IDs and user contributions
     const coverRow = await formatCoverRow({
       original,
       cover,
@@ -143,20 +115,33 @@ export const actions = {
       contributor,
     });
 
-    if (coverRow) {
-      const { data, error } = await supabase
-        .from("covers")
-        .insert(coverRow)
-        .select("slug")
-        .single();
-      error && setError(form, error.message);
+    const db = getDb(platform);
 
-      // Success! Redirect :)
-      if (data) {
-        redirect(302, `/cover/${data.slug}?new=true`);
-      }
+    // Existing song rows take precedence, as they did in the Postgres trigger
+    const existingSongs = await db.query.songs.findMany({
+      where: inArray(songs.id, [originalSongRow.id, coverSongRow.id]),
+    });
+    const stored = (row: typeof originalSongRow) =>
+      existingSongs.find((song) => song.id === row.id) ?? row;
+
+    const tags = computeTags(stored(originalSongRow), stored(coverSongRow));
+
+    try {
+      await db.batch([
+        db.insert(songs).values(originalSongRow).onConflictDoNothing(),
+        db.insert(songs).values(coverSongRow).onConflictDoNothing(),
+        db.insert(covers).values({ ...coverRow, tags }),
+      ]);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      return setError(
+        form,
+        message.includes("covers.slug")
+          ? "This cover has already been added"
+          : message,
+      );
     }
 
-    return { form };
+    redirect(302, `/cover/${coverRow.slug}?new=true`);
   },
 };

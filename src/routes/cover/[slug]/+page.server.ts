@@ -1,9 +1,10 @@
 import { error } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
 import { getReadableTitle, smartquotes } from "$lib/helpers";
-import { supabase } from "$lib/supabase";
+import { getDb } from "$lib/server/db";
+import { covers } from "$lib/server/db/schema";
 import type { Enums, Tables } from "$lib/types/types";
 
-// We have to redefine this type because Supabase is inferring it incorrectly
 export type Cover = {
   original: Tables<"songs">;
   cover: Tables<"songs">;
@@ -13,21 +14,39 @@ export type Cover = {
   tags: Enums<"tags">[];
 };
 
-export async function load({ params: { slug } }) {
-  const { data } = await supabase
-    .from("covers")
-    .select(
-      `
-    original:original_id(id, name, url, artists, gender, album_name, album_img, album_year, energy, key, tempo, danceability, valence, time_signature),
-    cover:cover_id(id, name, url, artists, gender, album_name, album_img, album_year, energy, key, tempo, danceability, valence, time_signature),
-    created_at,
-    description,
-    contributor,
-    tags`,
-    )
-    .eq("slug", slug)
-    .returns<Cover>()
-    .single();
+export async function load({ params: { slug }, platform }) {
+  const db = getDb(platform);
+
+  const songColumns = {
+    id: true,
+    name: true,
+    url: true,
+    artists: true,
+    gender: true,
+    album_name: true,
+    album_img: true,
+    album_year: true,
+    energy: true,
+    key: true,
+    tempo: true,
+    danceability: true,
+    valence: true,
+    time_signature: true,
+  } as const;
+
+  const data = await db.query.covers.findFirst({
+    columns: {
+      created_at: true,
+      description: true,
+      contributor: true,
+      tags: true,
+    },
+    with: {
+      original: { columns: songColumns },
+      cover: { columns: songColumns },
+    },
+    where: eq(covers.slug, slug),
+  });
 
   if (!data) {
     return error(404, {

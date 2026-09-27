@@ -33,3 +33,6 @@ coverage
 /test-results
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Supabase export (contains user submissions)
+scripts/out/
