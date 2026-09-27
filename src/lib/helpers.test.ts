@@ -228,8 +228,6 @@ describe("getSortedTags", () => {
         "danceability_down",
         "duration_down",
         "energy_down",
-        "instrumentalness_up",
-        "key_change",
         "tempo_up",
         "time_signature_change",
         "transition_mtf",
@@ -245,13 +243,11 @@ describe("getSortedTags", () => {
       "valence_down", // Valence second
       "tempo_up", // Tempo third
       "duration_down", // Duration fourth
-      "key_change", // Key change fifth
-      "time_signature_change", // Time signature change sixth
-      "energy_down", // Energy seventh
-      "acousticness_up", // Acousticness eighth
-      "danceability_down", // Danceability ninth
-      "instrumentalness_up", // Instrumentalness tenth
-      "years_apart_10", // Years apart eleventh
+      "time_signature_change", // Time signature change fifth
+      "energy_down", // Energy sixth
+      "acousticness_up", // Acousticness seventh
+      "danceability_down", // Danceability eighth
+      "years_apart_10", // Years apart ninth
       "transition_mtm", // MTM and FTF last
     ]);
   });

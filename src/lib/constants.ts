@@ -16,12 +16,12 @@ const tags = {
   acousticness_up: {
     slug: "more-acoustic",
     label: "more acoustic",
-    description: "These covers are stripped down versions of the original.",
+    description: "Stripped down versions of the original.",
   },
   acousticness_down: {
     slug: "less-acoustic",
     label: "less acoustic",
-    description: "These covers take an acoustic song somewhere new.",
+    description: "Covers taking an acoustic song somewhere new.",
   },
   danceability_up: {
     slug: "more-danceable",
@@ -52,21 +52,6 @@ const tags = {
     slug: "less-energetic",
     label: "less energetic",
     description: "Covers less intense than the original.",
-  },
-  instrumentalness_up: {
-    slug: "more-instrumental",
-    label: "more instrumental",
-    description: "Instrument-forward covers with little-to-no vocals.",
-  },
-  instrumentalness_down: {
-    slug: "less-instrumental",
-    label: "less instrumental",
-    description: "More vocals, compared to an instrumental-heavy original.",
-  },
-  key_change: {
-    slug: "different-key",
-    label: "different key",
-    description: "In a different key than the original.",
   },
   tempo_up: {
     slug: "faster",
@@ -156,7 +141,6 @@ export const ORDERED_TAGS: Enums<"tags">[] = [
   "tempo_down",
   "duration_up",
   "duration_down",
-  "key_change",
   "time_signature_change",
   "energy_up",
   "energy_down",
@@ -164,8 +148,6 @@ export const ORDERED_TAGS: Enums<"tags">[] = [
   "acousticness_down",
   "danceability_up",
   "danceability_down",
-  "instrumentalness_up",
-  "instrumentalness_down",
   "years_apart_10",
   "years_apart_20",
   "years_apart_30",
