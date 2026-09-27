@@ -10,7 +10,11 @@ import NewCoverIcon from "$lib/components/NewCoverIcon.svelte";
 import SongSelect from "$lib/components/SongSelect.svelte";
 import Step from "$lib/components/Step.svelte";
 import Steps from "$lib/components/Steps.svelte";
-import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from "$lib/constants";
+import {
+  MAX_CONTRIBUTOR_CHARS,
+  MAX_DESCRIPTION_CHARS,
+  SITE_URL,
+} from "$lib/constants";
 import { getMaxCharacterHelpText } from "$lib/helpers";
 import AlertIcon from "~icons/ri/alert-line";
 import LoaderIcon from "~icons/ri/loader-4-line";
@@ -51,7 +55,7 @@ const handleSubmit = () => {
 <svelte:head>
   <title>Add a cover</title>
   <meta name="description" content="Upload a fresh gender-swapped cover to the catalogue." />
-  <link rel="canonical" href={`https://genderswap.fm${page.url.pathname}`} />
+  <link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
 </svelte:head>
 
 <form class="submitForm" method="POST" use:enhance>

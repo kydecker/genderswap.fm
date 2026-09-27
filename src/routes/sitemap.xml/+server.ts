@@ -1,8 +1,8 @@
 import { desc } from "drizzle-orm";
+import { SITE_URL } from "$lib/constants";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 
-const SITE_URL = "https://genderswap.fm";
 const STATIC_PATHS = ["/", "/about", "/new"];
 
 function urlEntry(path: string, lastmod?: string) {

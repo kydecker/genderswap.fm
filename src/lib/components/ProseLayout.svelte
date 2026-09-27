@@ -1,6 +1,7 @@
 <script lang="ts">
 import dayjs from "dayjs";
 import { page } from "$app/state";
+import { SITE_URL } from "$lib/constants";
 
 let { title, description, datePublished, dateModified, children } = $props();
 
@@ -15,7 +16,7 @@ const formattedModifiedDate = $derived(
 <svelte:head>
   <title>{title}</title>
   <meta name="description" content={description} />
-  <link rel="canonical" href={`https://genderswap.fm${page.url.pathname}`} />
+  <link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
 </svelte:head>
 
 <article itemscope itemtype="https://schema.org/BlogPosting">

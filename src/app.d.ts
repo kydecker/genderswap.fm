@@ -5,6 +5,7 @@ declare global {
     interface Platform {
       env: {
         DB: AnyD1Database;
+        ASSETS?: { fetch: typeof fetch };
       };
     }
   }
