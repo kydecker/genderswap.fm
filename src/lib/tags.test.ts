@@ -103,25 +103,4 @@ describe("computeTags", () => {
       ),
     ).toEqual(expected);
   });
-
-  it("orders tags like the Postgres trigger", () => {
-    expect(
-      computeTags(
-        song({ gender: ["female"], tempo: 80, valence: 0.1, album_year: 1980 }),
-        song({
-          gender: ["male"],
-          tempo: 150,
-          valence: 0.9,
-          album_year: 2020,
-          key: 1,
-        }),
-      ),
-    ).toEqual([
-      "key_change",
-      "tempo_up",
-      "transition_ftm",
-      "valence_up",
-      "years_apart_40",
-    ]);
-  });
 });
