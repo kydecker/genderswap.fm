@@ -111,3 +111,7 @@ export const encodeSearchQuery = (query: string) => {
 export const getArtistLink = (artist: string) => {
   return `/?q=${encodeURIComponent(artist)}`;
 };
+
+export const getYouTubeLink = (name: string, artists: string[]) => {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${artists[0]} ${name}`)}`;
+};

@@ -3,10 +3,12 @@ import { fail, redirect } from "@sveltejs/kit";
 import { inArray } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import { env } from "$env/dynamic/private";
 import { slugifyCover } from "$lib/helpers";
 import { newCoverSchema } from "$lib/schemas";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
+import { findSongLinks } from "$lib/server/links";
 import { computeTags } from "$lib/tags";
 import type { Enums, Tables } from "$lib/types/types";
 
@@ -47,18 +49,35 @@ export const actions = {
       const existing = existingSongs.find(({ id }) => id === song.id);
       if (existing) return existing;
 
-      const response = await fetch(`/api/getAudioFeatures?id=${song.id}`);
-      const audioFeatures = await response.json();
-
       const formattedName = song.name
         .split(" - ")[0] // "Smells Like Teen Spirit - Radio Edit" -> "Smells Like Teen Spirit"
         .replace(/\s\([^()]*\)/g, ""); // "Time After Time (2022 Remaster)" -> "Time After Time"
+      const artists = song.artists.map((artist) => artist.name);
+      const isrc = song.external_ids?.isrc ?? null;
+
+      const [audioFeatures, links] = await Promise.all([
+        fetch(`/api/getAudioFeatures?id=${song.id}`).then((response) =>
+          response.json(),
+        ),
+        findSongLinks(
+          {
+            isrc,
+            name: formattedName,
+            artists,
+            duration_ms: song.duration_ms,
+          },
+          {
+            clientId: env.TIDAL_CLIENT_ID,
+            clientSecret: env.TIDAL_CLIENT_SECRET,
+          },
+        ),
+      ]);
 
       return {
         id: song.id,
         created_at: new Date().toISOString(),
         name: formattedName,
-        artists: song.artists.map((artist) => artist.name),
+        artists,
         url: song.external_urls.spotify,
         album_name: song.album.name,
         album_year: Number.parseInt(song.album.release_date.slice(0, 4), 10),
@@ -77,6 +96,8 @@ export const actions = {
         tempo: audioFeatures.tempo,
         time_signature: audioFeatures.time_signature,
         valence: audioFeatures.valence,
+        isrc,
+        ...links,
       };
     };
 

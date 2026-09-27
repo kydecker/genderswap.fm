@@ -29,6 +29,8 @@ const songColumns = {
   danceability: true,
   valence: true,
   time_signature: true,
+  apple_music_url: true,
+  tidal_url: true,
 } as const;
 
 export async function load({ params: { slug }, platform, setHeaders }) {

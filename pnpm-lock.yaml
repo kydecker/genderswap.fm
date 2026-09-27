@@ -168,7 +168,7 @@ importers:
     dependencies:
       '@lhci/cli':
         specifier: ^0.15.1
-        version: 0.15.1
+        version: 0.15.1(supports-color@10.2.2)
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -206,6 +206,9 @@ importers:
       '@iconify-json/ri':
         specifier: ^1.2.10
         version: 1.2.10
+      '@iconify-json/simple-icons':
+        specifier: ^1.2.97
+        version: 1.2.97
       '@melt-ui/pp':
         specifier: ^0.3.2
         version: 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.56.8(@typescript-eslint/types@8.66.0)))(svelte@5.56.8(@typescript-eslint/types@8.66.0))
@@ -837,6 +840,9 @@ packages:
 
   '@iconify-json/ri@1.2.10':
     resolution: {integrity: sha512-WWMhoncVVM+Xmu9T5fgu2lhYRrKTEWhKk3Com0KiM111EeEsRLiASjpsFKnC/SrB6covhUp95r2mH8tGxhgd5Q==}
+
+  '@iconify-json/simple-icons@1.2.97':
+    resolution: {integrity: sha512-Z6PmM6jvWVU7rmLzqbxCLJA7SeqCnK6lMHXtjyzHPLZebwuoojBEcHHycppahDzEeN9xujRkrV5J8QpOhMyNrg==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4275,6 +4281,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/simple-icons@1.2.97':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/types@2.0.0': {}
 
   '@iconify/utils@3.1.4':
@@ -4521,19 +4531,19 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@lhci/cli@0.15.1':
+  '@lhci/cli@0.15.1(supports-color@10.2.2)':
     dependencies:
-      '@lhci/utils': 0.15.1
-      chrome-launcher: 0.13.4
-      compression: 1.8.1
-      debug: 4.4.3
-      express: 4.22.2
+      '@lhci/utils': 0.15.1(supports-color@10.2.2)
+      chrome-launcher: 0.13.4(supports-color@10.2.2)
+      compression: 1.8.1(supports-color@10.2.2)
+      debug: 4.4.3(supports-color@10.2.2)
+      express: 4.22.2(supports-color@10.2.2)
       inquirer: 6.5.2
       isomorphic-fetch: 3.0.0
-      lighthouse: 12.6.1
-      lighthouse-logger: 1.2.0
+      lighthouse: 12.6.1(supports-color@10.2.2)
+      lighthouse-logger: 1.2.0(supports-color@10.2.2)
       open: 7.4.2
-      proxy-agent: 6.5.0
+      proxy-agent: 6.5.0(supports-color@10.2.2)
       tmp: 0.1.0
       uuid: 8.3.2
       yargs: 15.4.1
@@ -4547,12 +4557,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@lhci/utils@0.15.1':
+  '@lhci/utils@0.15.1(supports-color@10.2.2)':
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       isomorphic-fetch: 3.0.0
       js-yaml: 3.15.1
-      lighthouse: 12.6.1
+      lighthouse: 12.6.1(supports-color@10.2.2)
       tree-kill: 1.2.2
     transitivePeerDependencies:
       - bare-abort-controller
@@ -4669,12 +4679,12 @@ snapshots:
   '@poppinss/macroable@1.1.2':
     optional: true
 
-  '@puppeteer/browsers@2.13.2':
+  '@puppeteer/browsers@2.13.2(supports-color@10.2.2)':
     dependencies:
-      debug: 4.4.3
-      extract-zip: 2.0.1
+      debug: 4.4.3(supports-color@10.2.2)
+      extract-zip: 2.0.1(supports-color@10.2.2)
       progress: 2.0.3
-      proxy-agent: 6.5.0
+      proxy-agent: 6.5.0(supports-color@10.2.2)
       semver: 7.8.5
       tar-fs: 3.1.3
       yargs: 17.7.3
@@ -5267,11 +5277,11 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  body-parser@1.20.6:
+  body-parser@1.20.6(supports-color@10.2.2):
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       depd: 2.0.0
       destroy: 1.2.0
       http-errors: 2.0.1
@@ -5329,23 +5339,23 @@ snapshots:
       readdirp: 5.1.1
     optional: true
 
-  chrome-launcher@0.13.4:
+  chrome-launcher@0.13.4(supports-color@10.2.2):
     dependencies:
       '@types/node': 26.2.0
       escape-string-regexp: 1.0.5
       is-wsl: 2.2.0
-      lighthouse-logger: 1.2.0
+      lighthouse-logger: 1.2.0(supports-color@10.2.2)
       mkdirp: 0.5.6
       rimraf: 3.0.2
     transitivePeerDependencies:
       - supports-color
 
-  chrome-launcher@1.2.1:
+  chrome-launcher@1.2.1(supports-color@10.2.2):
     dependencies:
       '@types/node': 26.2.0
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
-      lighthouse-logger: 2.0.2
+      lighthouse-logger: 2.0.2(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -5398,11 +5408,11 @@ snapshots:
     dependencies:
       mime-db: 1.54.0
 
-  compression@1.8.1:
+  compression@1.8.1(supports-color@10.2.2):
     dependencies:
       bytes: 3.1.2
       compressible: 2.0.18
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       negotiator: 0.6.4
       on-headers: 1.1.0
       safe-buffer: 5.2.1
@@ -5475,13 +5485,17 @@ snapshots:
 
   dayjs@1.11.21: {}
 
-  debug@2.6.9:
+  debug@2.6.9(supports-color@10.2.2):
     dependencies:
       ms: 2.0.0
+    optionalDependencies:
+      supports-color: 10.2.2
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@10.2.2):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 10.2.2
 
   decamelize@1.2.0: {}
 
@@ -5669,21 +5683,21 @@ snapshots:
 
   expect-type@1.4.0: {}
 
-  express@4.22.2:
+  express@4.22.2(supports-color@10.2.2):
     dependencies:
       accepts: 1.3.8
       array-flatten: 1.1.1
-      body-parser: 1.20.6
+      body-parser: 1.20.6(supports-color@10.2.2)
       content-disposition: 0.5.4
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.0.7
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 1.3.2
+      finalhandler: 1.3.2(supports-color@10.2.2)
       fresh: 0.5.2
       http-errors: 2.0.1
       merge-descriptors: 1.0.3
@@ -5695,8 +5709,8 @@ snapshots:
       qs: 6.15.3
       range-parser: 1.2.1
       safe-buffer: 5.2.1
-      send: 0.19.2
-      serve-static: 1.16.3
+      send: 0.19.2(supports-color@10.2.2)
+      serve-static: 1.16.3(supports-color@10.2.2)
       setprototypeof: 1.2.0
       statuses: 2.0.2
       type-is: 1.6.18
@@ -5713,9 +5727,9 @@ snapshots:
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
-  extract-zip@2.0.1:
+  extract-zip@2.0.1(supports-color@10.2.2):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -5744,9 +5758,9 @@ snapshots:
     dependencies:
       escape-string-regexp: 1.0.5
 
-  finalhandler@1.3.2:
+  finalhandler@1.3.2(supports-color@10.2.2):
     dependencies:
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -5803,11 +5817,11 @@ snapshots:
     dependencies:
       pump: 3.0.4
 
-  get-uri@6.0.5:
+  get-uri@6.0.5(supports-color@10.2.2):
     dependencies:
       basic-ftp: 5.3.1
       data-uri-to-buffer: 6.0.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -5854,17 +5868,17 @@ snapshots:
 
   http-link-header@1.1.4: {}
 
-  http-proxy-agent@7.0.2:
+  http-proxy-agent@7.0.2(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@7.0.6:
+  https-proxy-agent@7.0.6(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -6030,28 +6044,28 @@ snapshots:
     dependencies:
       immediate: 3.0.6
 
-  lighthouse-logger@1.2.0:
+  lighthouse-logger@1.2.0(supports-color@10.2.2):
     dependencies:
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       marky: 1.3.0
     transitivePeerDependencies:
       - supports-color
 
-  lighthouse-logger@2.0.2:
+  lighthouse-logger@2.0.2(supports-color@10.2.2):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       marky: 1.3.0
     transitivePeerDependencies:
       - supports-color
 
   lighthouse-stack-packs@1.12.2: {}
 
-  lighthouse@12.6.1:
+  lighthouse@12.6.1(supports-color@10.2.2):
     dependencies:
       '@paulirish/trace_engine': 0.0.53
       '@sentry/node': 7.120.4
       axe-core: 4.13.0
-      chrome-launcher: 1.2.1
+      chrome-launcher: 1.2.1(supports-color@10.2.2)
       configstore: 5.0.1
       csp_evaluator: 1.1.5
       devtools-protocol: 0.0.1467305
@@ -6060,14 +6074,14 @@ snapshots:
       intl-messageformat: 10.7.18
       jpeg-js: 0.4.4
       js-library-detector: 6.7.0
-      lighthouse-logger: 2.0.2
+      lighthouse-logger: 2.0.2(supports-color@10.2.2)
       lighthouse-stack-packs: 1.12.2
       lodash-es: 4.18.1
       lookup-closest-locale: 6.2.0
       metaviewport-parser: 0.3.0
       open: 8.4.2
       parse-cache-control: 1.0.1
-      puppeteer-core: 24.43.1
+      puppeteer-core: 24.43.1(supports-color@10.2.2)
       robots-parser: 3.0.1
       semver: 5.7.2
       speedline-core: 1.4.3
@@ -6282,16 +6296,16 @@ snapshots:
 
   p-try@2.2.0: {}
 
-  pac-proxy-agent@7.2.0:
+  pac-proxy-agent@7.2.0(supports-color@10.2.2):
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.4
-      debug: 4.4.3
-      get-uri: 6.0.5
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      debug: 4.4.3(supports-color@10.2.2)
+      get-uri: 6.0.5(supports-color@10.2.2)
+      http-proxy-agent: 7.0.2(supports-color@10.2.2)
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
       pac-resolver: 7.0.1
-      socks-proxy-agent: 8.0.5
+      socks-proxy-agent: 8.0.5(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -6391,16 +6405,16 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
-  proxy-agent@6.5.0:
+  proxy-agent@6.5.0(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      debug: 4.4.3(supports-color@10.2.2)
+      http-proxy-agent: 7.0.2(supports-color@10.2.2)
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
       lru-cache: 7.18.3
-      pac-proxy-agent: 7.2.0
+      pac-proxy-agent: 7.2.0(supports-color@10.2.2)
       proxy-from-env: 1.1.0
-      socks-proxy-agent: 8.0.5
+      socks-proxy-agent: 8.0.5(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -6413,11 +6427,11 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-core@24.43.1:
+  puppeteer-core@24.43.1(supports-color@10.2.2):
     dependencies:
-      '@puppeteer/browsers': 2.13.2
+      '@puppeteer/browsers': 2.13.2(supports-color@10.2.2)
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1608973)
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       devtools-protocol: 0.0.1608973
       typed-query-selector: 2.12.2
       webdriver-bidi-protocol: 0.4.1
@@ -6558,9 +6572,9 @@ snapshots:
 
   semver@7.8.5: {}
 
-  send@0.19.2:
+  send@0.19.2(supports-color@10.2.2):
     dependencies:
-      debug: 2.6.9
+      debug: 2.6.9(supports-color@10.2.2)
       depd: 2.0.0
       destroy: 1.2.0
       encodeurl: 2.0.0
@@ -6576,12 +6590,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serve-static@1.16.3:
+  serve-static@1.16.3(supports-color@10.2.2):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 0.19.2
+      send: 0.19.2(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -6698,10 +6712,10 @@ snapshots:
 
   smart-buffer@4.2.0: {}
 
-  socks-proxy-agent@8.0.5:
+  socks-proxy-agent@8.0.5(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       socks: 2.8.9
     transitivePeerDependencies:
       - supports-color
