@@ -29,19 +29,19 @@ function formatArtists(artists: string[]) {
 <div class="coverCard" class:placeholder={isSkeleton} aria-hidden={isSkeleton || undefined}>
   <div class="albums">
     <div class="album">
-      {#if original?.album_img}
+      {#if cover?.album_img}
         <img
-          src={original.album_img[1]}
-          alt={`${original.name} album art`}
+          src={cover.album_img[1]}
+          alt={`${cover.name} album art`}
           loading={lazy ? 'lazy' : 'eager'}
         />
       {/if}
     </div>
     <div class="album">
-      {#if cover?.album_img}
+      {#if original?.album_img}
         <img
-          src={cover.album_img[1]}
-          alt={`${cover.name} album art`}
+          src={original.album_img[1]}
+          alt={`${original.name} album art`}
           loading={lazy ? 'lazy' : 'eager'}
         />
       {/if}
@@ -86,19 +86,33 @@ function formatArtists(artists: string[]) {
         background: var(--mauve-3);
       }
     }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(.placeholder):hover .album {
+        transform: rotate(0) translateX(0);
+      }
+    }
+
+    &:has(.link:focus-visible) {
+      background: var(--mauve-3);
+
+      .album {
+        transform: rotate(0) translateX(0);
+      }
+    }
   }
 
   .albums {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
     gap: var(--space-xs);
+    padding-block-end: var(--space-s);
   }
 
   .album {
     background: var(--mauve-3);
     border-radius: var(--radius-album);
-    width: 50%;
     aspect-ratio: 1;
     transition: transform 0.2s ease-in-out;
     position: relative;
@@ -122,6 +136,19 @@ function formatArtists(artists: string[]) {
       border-radius: var(--radius-album);
       object-fit: cover;
     }
+
+    &:first-child {
+      width: 60%;
+      transform: rotate(-6deg) translateX(6%);
+      transform-origin: 100% 0;
+      z-index: 1;
+    }
+
+    &:last-child {
+      width: 40%;
+      transform: rotate(10deg) translateX(-6%);
+      transform-origin: 0 0;
+    }
   }
 
   @keyframes pulse {
@@ -142,7 +169,7 @@ function formatArtists(artists: string[]) {
     animation: pulse 1s ease-in-out infinite;
   }
 
-  .placeholder .album:first-child {
+  .placeholder .album:last-child {
     opacity: 0.6;
   }
 
@@ -194,5 +221,7 @@ function formatArtists(artists: string[]) {
   .link {
     position: absolute;
     inset: 0;
+    z-index: 2;
+    border-radius: var(--radius-m);
   }
 </style>

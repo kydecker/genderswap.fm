@@ -99,10 +99,10 @@ describe("CoverComparison", async () => {
       props: { cover: mockCover },
     });
     const artists = container.querySelectorAll(".artist");
-    const originalLink = artists[0].querySelector("a");
-    expect(originalLink?.getAttribute("href")).toBe("/?q=ABBA");
-    const coverLink = artists[1].querySelector("a");
+    const coverLink = artists[0].querySelector("a");
     expect(coverLink?.getAttribute("href")).toBe("/?q=The%20Czars");
+    const originalLink = artists[1].querySelector("a");
+    expect(originalLink?.getAttribute("href")).toBe("/?q=ABBA");
   });
 
   it('should render "covered as" when the titles differ', async ({
