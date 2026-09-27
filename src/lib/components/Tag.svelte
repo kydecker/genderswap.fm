@@ -30,8 +30,8 @@ let {
     display: inline-flex;
     gap: var(--space-xs);
     align-items: baseline;
-    background: var(--mauve-3);
-    color: var(--mauve-11);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
     padding-block: var(--space-xs) var(--space-xs);
     padding-inline: var(--space-s);
     border-radius: var(--radius-s);
@@ -41,18 +41,18 @@ let {
     line-height: 1;
 
     &.active {
-      background: var(--mauve-12);
-      color: var(--mauve-1);
+      background: var(--color-text);
+      color: var(--color-bg);
     }
   }
 
   a.tag:hover:not(.active) {
-    background: var(--mauve-4);
+    background: var(--color-surface-hover);
     cursor: pointer;
   }
 
   .count {
-    color: var(--mauve-10);
+    color: var(--color-text-muted);
     font-size: var(--step--1);
   }
 </style>

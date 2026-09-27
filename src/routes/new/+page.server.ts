@@ -6,6 +6,7 @@ import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
 import { slugifyCover } from "$lib/helpers";
 import { newCoverSchema } from "$lib/schemas";
+import { getAlbumColor } from "$lib/server/albumColor";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
 import { findSongLinks } from "$lib/server/links";
@@ -61,7 +62,7 @@ export const actions = {
         .then((album) => album.external_ids?.upc ?? null)
         .catch(() => null);
 
-      const [audioFeatures, album_upc, links] = await Promise.all([
+      const [audioFeatures, album_upc, links, album_color] = await Promise.all([
         fetch(`/api/getAudioFeatures?id=${song.id}`).then((response) =>
           response.json(),
         ),
@@ -83,6 +84,7 @@ export const actions = {
             },
           ),
         ),
+        getAlbumColor(song.album.images.at(-1)?.url ?? "").catch(() => null),
       ]);
 
       return {
@@ -94,6 +96,7 @@ export const actions = {
         album_name: song.album.name,
         album_year: Number.parseInt(song.album.release_date.slice(0, 4), 10),
         album_img: song.album.images.map((image) => image.url),
+        album_color,
         gender,
         acousticness: audioFeatures.acousticness,
         danceability: audioFeatures.danceability,

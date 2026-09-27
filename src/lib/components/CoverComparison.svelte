@@ -1,10 +1,5 @@
 <script lang="ts">
-import {
-  getArtistLink,
-  getYouTubeLink,
-  slugify,
-  smartquotes,
-} from "$lib/helpers";
+import { getArtistLink, getYouTubeLink, smartquotes } from "$lib/helpers";
 import type { Tables } from "$lib/types/types";
 import AppleMusicIcon from "~icons/simple-icons/applemusic";
 import SpotifyIcon from "~icons/simple-icons/spotify";
@@ -16,9 +11,6 @@ let { cover }: { cover: Cover } = $props();
 
 const originalSong = $derived(cover.original);
 const coverSong = $derived(cover.cover);
-const coveredAs = $derived(
-  slugify(originalSong.name) !== slugify(coverSong.name) ? coverSong.name : "",
-);
 </script>
 
 {#snippet listenLinks(song: Tables<"songs">, label: string)}
@@ -42,37 +34,9 @@ const coveredAs = $derived(
   </div>
 {/snippet}
 
-<div class="compare">
-  <div class="track cover" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
-    <div class="album">
-      <img
-        class="album-art"
-        src={coverSong.album_img[0]}
-        alt={`${coverSong.album_name} album art`}
-        itemprop="image"
-      />
-    </div>
-    <div class="details">
-      {@render listenLinks(coverSong, "cover")}
-      <h2 class="artist" itemprop="byArtist">
-        {#each coverSong.artists as artist, i}
-          <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
-          >{#if i < coverSong.artists.length - 1}{`, `}{/if}
-        {/each}
-      </h2>
-      <time class="album-year" itemprop="datePublished">
-        {coverSong.album_year}
-      </time>
-      <em class="album-name">{smartquotes(coverSong.album_name)}</em>
-      {#if coveredAs}
-        <div class="covered-as" itemprop="name">
-          Covered as {smartquotes(coveredAs)}
-        </div>
-      {/if}
-    </div>
-  </div>
+{#snippet track(song: Tables<"songs">, label: "cover" | "original")}
   <div
-    class="track original"
+    class="track"
     itemprop="track"
     itemscope
     itemtype="https://schema.org/MusicRecording"
@@ -80,101 +44,61 @@ const coveredAs = $derived(
     <div class="album">
       <img
         class="album-art"
-        src={originalSong.album_img[0]}
-        alt={`${originalSong.album_name} album art`}
+        src={song.album_img[0]}
+        alt={`${song.album_name} album art`}
         itemprop="image"
       />
     </div>
-    <div class="details">
-      {@render listenLinks(originalSong, "original")}
-      <h2 class="artist" itemprop="byArtist">
-        {#each originalSong.artists as artist, i}
-          <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
-          >{#if i < originalSong.artists.length - 1}{`, `}{/if}
-        {/each}
-      </h2>
-      <time class="album-year" itemprop="datePublished">
-        {originalSong.album_year}
-      </time>
-      <em class="album-name">{smartquotes(originalSong.album_name)}</em>
+    {@render listenLinks(song, label)}
+    <div class="info">
+      <div class="heading">
+        <span class="version">{label === "cover" ? "Cover" : "Original"}</span>
+        <h2 class="name" itemprop="name">{smartquotes(song.name)}</h2>
+        <div class="artist" itemprop="byArtist">
+          {#each song.artists as artist, i}
+            <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
+            >{#if i < song.artists.length - 1}{`, `}{/if}
+          {/each}
+        </div>
+      </div>
+      <div class="album-info">
+        <span class="album-name">{smartquotes(song.album_name)}</span>
+        <span aria-hidden="true">&middot;</span>
+        <time class="album-year" itemprop="datePublished">{song.album_year}</time>
+      </div>
     </div>
   </div>
+{/snippet}
+
+<div class="compare">
+  {@render track(coverSong, "cover")}
+  {@render track(originalSong, "original")}
 </div>
 
 <style>
-  @keyframes dim {
-    0% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0.4;
-    }
-  }
-
   .compare {
     display: grid;
-    max-width: 100%;
-    margin-inline: auto;
-    padding-inline: var(--space-xl);
-    scroll-padding-inline: var(--space-xl);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-l);
-    grid-template:
-      'coverAlbum originalAlbum'
-      'coverContent originalContent';
-    grid-template-columns: 1fr 1fr;
-
-    @supports (padding: max(0px)) {
-      padding-inline-start: max(var(--space-xl), env(safe-area-inset-left));
-      padding-inline-end: max(var(--space-xl), env(safe-area-inset-right));
-    }
-
-    @media (max-width: 480px) {
-      overflow-x: scroll;
-      overflow-y: hidden;
-      grid-template-columns: 85vw 85vw;
-      scroll-snap-type: x mandatory;
-      &::-webkit-scrollbar {
-        display: none;
-      }
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    align-items: start;
   }
 
   .track {
-    max-width: 600px;
-  }
-
-  .track:first-child {
-    scroll-snap-align: start;
-
-    @supports (animation-timeline: scroll()) {
-      animation: dim linear both;
-      animation-direction: normal;
-      animation-timeline: scroll(x);
-    }
-  }
-
-  .track:last-child {
-    scroll-snap-align: end;
-
-    @supports (animation-timeline: scroll()) {
-      animation: dim linear both;
-      animation-direction: reverse;
-      animation-timeline: scroll(x);
-    }
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
   }
 
   .album {
-    user-select: none;
     width: 100%;
+    user-select: none;
     aspect-ratio: 1 / 1;
-    background: var(--mauve-3);
+    background: var(--color-surface);
     overflow: hidden;
     border-radius: var(--radius-album);
     position: relative;
-    z-index: 1;
     box-shadow: var(--shadow-album-l);
 
     img {
@@ -193,78 +117,76 @@ const coveredAs = $derived(
     }
   }
 
-  .cover {
-    .album {
-      grid-area: coverAlbum;
-      margin-inline-start: auto;
-    }
-    .details {
-      grid-area: coverContent;
-      align-items: flex-end;
-      text-align: right;
-    }
-  }
-
-  .original {
-    .album {
-      grid-area: originalAlbum;
-    }
-    .details {
-      grid-area: originalContent;
-    }
-  }
-
-  .details {
-    min-width: 0;
+  .info {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: var(--space-s);
-    align-items: flex-start;
-    padding-block-start: var(--space-l);
+    gap: calc(var(--space-2xs) / 2);
+    line-height: 1.3;
+  }
+
+  .album-info {
+    color: var(--color-text-muted);
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-2xs) / 2);
+  }
+
+  .version {
+    font-size: var(--step--1);
+    letter-spacing: var(--letter-spacing-loose);
+    color: var(--color-text-muted);
+    margin-block-end: calc(var(--space-2xs) / 2);
+  }
+
+  .name {
+    text-wrap: balance;
+    font-size: var(--step-1);
+    font-feature-settings: var(--font-stable);
+    line-height: var(--line-height-h3);
   }
 
   .artist {
-    font-size: var(--step-3);
-
     a:hover {
       text-decoration: underline;
-      text-decoration-color: var(--mauve-9);
+      text-decoration-color: var(--color-text-muted);
     }
-  }
-
-  .album-year,
-  .album-name {
-    font-size: var(--step-1);
   }
 
   .song-links {
     display: flex;
-    gap: var(--space-xs);
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-inline: -0.35rem;
 
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: calc(var(--space-xl) + var(--space-xs) * 2);
+      width: 2.4rem;
       aspect-ratio: 1;
+      opacity: 0.8;
       border-radius: var(--radius-full);
-      background-color: var(--mauve-3);
+      background-color: transparent;
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {
-          background-color: var(--pink-3);
-          color: var(--pink-12);
+          opacity: 1;
         }
+      }
+
+      &:focus-visible {
+        opacity: 1;
       }
     }
 
     :global(svg) {
-      width: 45%;
-      height: 45%;
+      width: 1.8rem;
+      aspect-ratio: 1;
     }
   }
 
-  .covered-as {
-    color: var(--mauve-11);
-  }
 </style>

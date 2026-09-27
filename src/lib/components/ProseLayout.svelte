@@ -57,7 +57,7 @@ const formattedModifiedDate = $derived(
 
   .prose-dates {
     font-size: var(--step-1);
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     margin-block-start: var(--space-m);
     display: flex;
     flex-wrap: wrap;
@@ -74,7 +74,7 @@ const formattedModifiedDate = $derived(
   .prose li a {
     position: relative;
     text-decoration: underline;
-    text-decoration-color: var(--mauve-7);
+    text-decoration-color: var(--color-border);
     text-underline-offset: 0.1em;
     transition: all 0.2s ease-in-out;
   }
@@ -86,14 +86,14 @@ const formattedModifiedDate = $derived(
 
   .prose a:hover,
   .prose a:focus {
-    color: var(--pink-12);
+    color: var(--color-text);
   }
 
   .prose p a:hover,
   .prose p a:focus,
   .prose li a:hover,
   .prose li a:focus {
-    text-decoration-color: var(--pink-9);
+    text-decoration-color: var(--color-text);
   }
 
   .prose h2 {
@@ -125,7 +125,7 @@ const formattedModifiedDate = $derived(
   }
 
   .prose blockquote {
-    border-left: 2px solid var(--mauve-7);
+    border-left: 2px solid var(--color-border);
     padding-left: 1.3em;
     font-style: italic;
     hanging-punctuation: first;
@@ -138,7 +138,7 @@ const formattedModifiedDate = $derived(
 
   .prose blockquote cite::before {
     content: '—';
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     margin-inline-end: 0.3em;
   }
 

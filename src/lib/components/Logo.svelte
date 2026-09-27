@@ -134,20 +134,20 @@
   }
 
   .fm-letter {
-    fill: var(--mauve-12);
+    fill: var(--color-text);
   }
 
   .gender-bg {
-    fill: var(--mauve-12);
+    fill: var(--color-text);
   }
 
   .swap-bg {
-    fill: var(--mauve-12);
+    fill: var(--color-text);
     mix-blend-mode: exclusion;
   }
 
   .gender-letter,
   .swap-letter {
-    fill: var(--mauve-1);
+    fill: var(--color-bg);
   }
 </style>

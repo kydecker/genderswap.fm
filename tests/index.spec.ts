@@ -21,67 +21,6 @@ test.describe("should display the correct page information", () => {
   });
 });
 
-test.describe("should display the correct theme", () => {
-  test.use({ colorScheme: "no-preference" });
-
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/about");
-    await page.evaluate(() => window.localStorage.removeItem("theme"));
-  });
-
-  test("should default to light mode when no OS color scheme is set", async ({
-    page,
-  }) => {
-    const html = page.locator("html");
-    await expect(html).not.toHaveClass("dark");
-    await expect(page.locator("[data-theme-toggle-light]")).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-  });
-
-  test("should switch to dark mode when dark toggle is clicked", async ({
-    page,
-  }) => {
-    await page.locator("[data-theme-toggle-dark]").click();
-
-    const html = page.locator("html");
-    await expect(html).toHaveClass("dark");
-  });
-
-  test("should set localStorage theme to dark when dark toggle is clicked", async ({
-    page,
-  }) => {
-    await page.locator("[data-theme-toggle-dark]").click();
-
-    const html = page.locator("html");
-    await expect(html).toHaveClass("dark");
-
-    const localStorageTheme = await page.evaluate(() =>
-      window.localStorage.getItem("theme"),
-    );
-    expect(localStorageTheme).toBe("dark");
-  });
-});
-
-test.describe("should respect a dark OS color scheme", () => {
-  test.use({ colorScheme: "dark" });
-
-  test("should switch to light mode when light toggle is clicked, even if OS color scheme is dark", async ({
-    page,
-  }) => {
-    await page.goto("/about");
-    await page.evaluate(() => window.localStorage.removeItem("theme"));
-    await page.reload();
-
-    const html = page.locator("html");
-    await expect(html).toHaveClass("dark");
-
-    await page.locator("[data-theme-toggle-light]").click();
-    await expect(html).not.toHaveClass("dark");
-  });
-});
-
 test.describe("should display and toggle tags", () => {
   test("should show category rows by default", async ({ page }) => {
     const titles = page.locator(".row .heading .title");

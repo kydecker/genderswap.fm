@@ -85,8 +85,8 @@ innerValue.set(value);
 
   button {
     all: unset;
-    background-color: var(--mauve-3);
-    color: var(--mauve-11);
+    background-color: var(--color-surface);
+    color: var(--color-text-muted);
     border-radius: var(--radius-full);
     display: flex;
     line-height: 1;
@@ -100,14 +100,14 @@ innerValue.set(value);
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: var(--mauve-4);
+        background-color: var(--color-surface-hover);
       }
     }
 
     &[data-state='on'] {
-      background-color: var(--pink-9);
-      border-color: var(--pink-9);
-      color: white;
+      background-color: var(--color-text);
+      border-color: var(--color-text);
+      color: var(--color-bg);
     }
 
     &:focus-visible {

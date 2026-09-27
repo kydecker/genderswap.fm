@@ -1,10 +1,12 @@
 <script lang="ts">
 import { smartquotes } from "$lib/helpers";
+import { pageColorOnHover } from "$lib/pageColor";
 
 type Album = {
   name: string;
   artists: string[];
   album_img: string[];
+  album_color?: string | null;
 };
 
 let {
@@ -28,7 +30,7 @@ function formatArtists(artists: string[]) {
 }
 </script>
 
-<div class="coverCard">
+<div class="coverCard" {@attach pageColorOnHover(cover.album_color)}>
   <div class="album">
     <img
       src={cover.album_img[1]}
@@ -65,7 +67,7 @@ function formatArtists(artists: string[]) {
   }
 
   .album {
-    background: var(--mauve-3);
+    background: var(--color-surface);
     border-radius: var(--radius-album);
     aspect-ratio: 1;
     width: 100%;
@@ -104,11 +106,11 @@ function formatArtists(artists: string[]) {
 
   .artist {
     font-size: var(--step--1);
-    color: var(--mauve-10);
+    color: var(--color-text-muted);
     line-height: 1.3;
 
     > .name {
-      color: var(--mauve-12);
+      color: var(--color-text);
     }
   }
 

@@ -1,36 +1,3 @@
-@import "@radix-ui/colors/mauve.css";
-@import "@radix-ui/colors/mauve-alpha.css";
-@import "@radix-ui/colors/mauve-dark.css";
-@import "@radix-ui/colors/mauve-dark-alpha.css";
-
-@import "@radix-ui/colors/pink.css";
-@import "@radix-ui/colors/pink-alpha.css";
-@import "@radix-ui/colors/pink-dark.css";
-@import "@radix-ui/colors/pink-dark-alpha.css";
-
-@import "@radix-ui/colors/purple.css";
-@import "@radix-ui/colors/purple-alpha.css";
-@import "@radix-ui/colors/purple-dark.css";
-@import "@radix-ui/colors/purple-dark-alpha.css";
-
-@import "@radix-ui/colors/orange.css";
-@import "@radix-ui/colors/orange-alpha.css";
-@import "@radix-ui/colors/orange-dark.css";
-@import "@radix-ui/colors/orange-dark-alpha.css";
-
-@import "@radix-ui/colors/green.css";
-@import "@radix-ui/colors/green-alpha.css";
-@import "@radix-ui/colors/green-dark.css";
-@import "@radix-ui/colors/green-dark-alpha.css";
-
-@import "@radix-ui/colors/red.css";
-@import "@radix-ui/colors/red-alpha.css";
-@import "@radix-ui/colors/red-dark.css";
-@import "@radix-ui/colors/red-dark-alpha.css";
-
-@import "@radix-ui/colors/white-alpha.css";
-@import "@radix-ui/colors/black-alpha.css";
-
 @font-face {
   font-family: "Labil Grotesk";
   font-style: normal;
@@ -84,7 +51,28 @@
   line-gap-override: normal;
 }
 
+@property --color-page {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #999999;
+}
+
 :root {
+  /* Colors */
+  --color-bg: var(--color-page);
+  --color-surface: oklch(
+    from var(--color-page) calc(l + 0.042) calc(c * 0.8) h
+  );
+  --color-surface-hover: oklch(
+    from var(--color-page) calc(l + 0.084) calc(c * 0.6) h
+  );
+  --color-surface-raised: oklch(from var(--color-page) 0.97 calc(c * 0.25) h);
+  --color-border: oklch(from var(--color-page) calc(l - 0.083) c h);
+  --color-text: oklch(from var(--color-page) 0.18 calc(c * 0.4) h);
+  --color-text-muted: color-mix(var(--color-text), transparent 30%);
+  --color-text-subtle: color-mix(var(--color-text), transparent 40%);
+  --color-focus-ring: var(--color-text);
+
   /* Font families */
   --font-sans: "Labil Grotesk", "Labil Grotesk fallback", system-ui, sans-serif;
 
@@ -137,8 +125,12 @@
 
   /* Shadows */
   --focus-ring-width: 3px;
-  --focus-ring: var(--focus-ring-width) solid var(--pink-a9);
+  --focus-ring: var(--focus-ring-width) solid var(--color-focus-ring);
   --focus-ring-offset: 3px;
+
+  --shadow-popover:
+    0px 10px 38px -10px rgba(0, 0, 0, 0.35),
+    0px 10px 20px -15px rgba(0, 0, 0, 0.2);
 
   /* https://shadows.brumm.af/ */
   --shadow-album-s:
@@ -153,5 +145,5 @@
   --shadow-album-inset-l:
     inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
 
-  color-scheme: light dark;
+  color-scheme: light;
 }

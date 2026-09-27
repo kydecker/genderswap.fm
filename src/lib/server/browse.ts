@@ -10,7 +10,11 @@ const PAGE_SIZE = 48;
 const ROW_SIZE = 10;
 
 const originalColumns = { name: true, artists: true } as const;
-const coverColumns = { ...originalColumns, album_img: true } as const;
+const coverColumns = {
+  ...originalColumns,
+  album_img: true,
+  album_color: true,
+} as const;
 
 const hasTag = (tag: string) =>
   sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`;

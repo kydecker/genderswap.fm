@@ -225,14 +225,14 @@ $effect(() => {
   .searchInput {
     border: none;
     width: 100%;
-    background: var(--mauve-3);
+    background: var(--color-surface-hover);
     border-radius: var(--radius-full);
     padding-block: var(--space-s);
     padding-inline: var(--space-m);
     padding-left: calc(24px + var(--space-m) + var(--space-s));
 
     &::placeholder {
-      color: var(--mauve-8);
+      color: var(--color-text-subtle);
     }
   }
 
@@ -242,13 +242,10 @@ $effect(() => {
     left: 0;
     right: 0;
     overflow-y: scroll;
-    background-color: var(--mauve-3);
-    border: 1px solid var(--mauve-6);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-m);
-    box-shadow:
-      0px 10px 38px -10px rgba(22, 23, 24, 0.35),
-      0px 10px 20px -15px rgba(22, 23, 24, 0.2);
-    width: var(--radix-select-trigger-width);
+    box-shadow: var(--shadow-popover);
     padding: var(--space-2xs);
     margin-block: var(--space-xs);
     z-index: 10;
@@ -256,7 +253,7 @@ $effect(() => {
   }
 
   .result {
-    color: var(--mauve-12);
+    color: var(--color-text);
     border-radius: var(--radius-xs);
     padding: var(--space-2xs);
     position: relative;
@@ -268,12 +265,12 @@ $effect(() => {
 
     &.highlighted {
       outline: none;
-      background-color: var(--mauve-5);
+      background-color: var(--color-surface-hover);
     }
   }
 
   .empty {
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     padding-block: var(--space-l);
     text-align: center;
   }
@@ -287,7 +284,7 @@ $effect(() => {
   .resultAlbum {
     width: var(--space-2xl);
     height: var(--space-2xl);
-    background: var(--mauve-3);
+    background: var(--color-surface);
     border-radius: var(--radius-album);
   }
 
@@ -305,6 +302,6 @@ $effect(() => {
 
   .resultLabelDetails {
     font-size: var(--step--1);
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
   }
 </style>

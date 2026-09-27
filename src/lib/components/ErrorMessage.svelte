@@ -14,11 +14,11 @@ let { error, banner = false }: { error: string; banner?: boolean } = $props();
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    color: var(--red-9);
+    color: var(--color-text);
     margin-block-start: var(--space-s);
 
     &.banner {
-      background-color: var(--red-3);
+      background-color: var(--color-surface);
       padding-block: var(--space-s);
       padding-inline: var(--space-m);
       border-radius: var(--radius-s);

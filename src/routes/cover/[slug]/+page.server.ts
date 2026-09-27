@@ -22,6 +22,7 @@ const songColumns = {
   gender: true,
   album_name: true,
   album_img: true,
+  album_color: true,
   album_year: true,
   energy: true,
   key: true,

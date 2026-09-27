@@ -80,11 +80,11 @@ let {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     border-radius: var(--radius-xs);
 
     &:hover {
-      color: var(--mauve-12);
+      color: var(--color-text);
     }
   }
 
@@ -94,7 +94,7 @@ let {
   }
 
   .categoryDescription {
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
   }
 
   .coversGrid {

@@ -33,6 +33,7 @@ const mockCover: Cover = {
     valence: 0.964,
     isrc: "SEAYD7901040",
     album_upc: null,
+    album_color: null,
     apple_music_url:
       "https://music.apple.com/us/album/angel-eyes/1440816296?i=1440816458",
     tidal_url: null,
@@ -66,6 +67,7 @@ const mockCover: Cover = {
     valence: 0.421,
     isrc: null,
     album_upc: null,
+    album_color: null,
     apple_music_url: null,
     tidal_url: null,
   },
@@ -123,14 +125,13 @@ describe("CoverComparison", async () => {
     expect(originalLink?.getAttribute("href")).toBe("/?q=ABBA");
   });
 
-  it('should render "covered as" when the titles differ', async ({
-    expect,
-  }) => {
+  it("should title each track with its own name", async ({ expect }) => {
     const { container } = render(CoverComparison, {
       props: { cover: mockCover },
     });
-    const coveredAs = container.querySelector(".covered-as");
-    expect(coveredAs).toBeDefined();
-    expect(coveredAs?.textContent).toBe(`Covered as ${mockCover.cover.name}`);
+    const names = [...container.querySelectorAll(".name")].map(
+      (name) => name.textContent,
+    );
+    expect(names).toEqual([mockCover.cover.name, mockCover.original.name]);
   });
 });

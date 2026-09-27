@@ -116,17 +116,8 @@ const closeSearch = () => {
     padding: var(--space-2xs);
     border: 1px solid transparent;
     border-radius: var(--radius-full);
-    background: var(--mauve-1);
-    box-shadow:
-      0 0.4px 0.7px rgb(0 0 0 / 0.12),
-      0 1.2px 1.9px rgb(0 0 0 / 0.11),
-      0 3.1px 4.4px rgb(0 0 0 / 0.1),
-      0 0 8px rgb(0 0 0 / 0.08);
-
-    :global(html.dark) & {
-      border-color: var(--white-a3);
-      background: var(--mauve-2);
-    }
+    background: var(--color-surface);
+    box-shadow: var(--shadow-popover);
 
     @media (max-width: 599.98px) {
       position: fixed;
@@ -156,7 +147,7 @@ const closeSearch = () => {
     justify-content: center;
     gap: calc(var(--space-2xs) / 2);
     border-radius: var(--radius-full);
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     font-size: calc(var(--step--1) * 0.85);
     line-height: 1;
     cursor: pointer;
@@ -167,13 +158,13 @@ const closeSearch = () => {
     }
 
     &[aria-current] {
-      color: var(--mauve-12);
+      color: var(--color-text);
       font-weight: var(--font-weight-bold);
     }
 
     &:hover,
     &:focus-visible {
-      color: var(--mauve-12);
+      color: var(--color-text);
     }
 
     &:focus-visible {
@@ -186,13 +177,13 @@ const closeSearch = () => {
     display: grid;
     place-items: center;
     border-radius: var(--radius-full);
-    background: var(--mauve-12);
-    color: var(--mauve-1);
+    background: var(--color-text);
+    color: var(--color-bg);
     font-size: var(--icon-size);
 
     &:hover,
     &:focus-visible {
-      background: var(--mauve-11);
+      background: var(--color-text-muted);
     }
   }
 
@@ -204,8 +195,8 @@ const closeSearch = () => {
     gap: var(--space-xs);
     padding-inline: var(--space-2xs) var(--space-s);
     border-radius: var(--radius-full);
-    background: var(--mauve-3);
-    color: var(--mauve-11);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
 
     &:focus-within {
       outline: var(--focus-ring);
@@ -218,10 +209,10 @@ const closeSearch = () => {
       height: 100%;
       border: none;
       background: transparent;
-      color: var(--mauve-12);
+      color: var(--color-text);
 
       &::placeholder {
-        color: var(--mauve-8);
+        color: var(--color-text-subtle);
       }
 
       &::-webkit-search-cancel-button {
@@ -246,7 +237,7 @@ const closeSearch = () => {
 
     &:hover,
     &:focus-visible {
-      color: var(--mauve-12);
+      color: var(--color-text);
     }
 
     &:focus-visible {

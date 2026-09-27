@@ -125,7 +125,7 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
 
 <style>
   .selectedSong {
-    background: var(--mauve-3);
+    background: var(--color-surface);
     border-radius: var(--radius-l);
     position: relative;
   }
@@ -191,25 +191,25 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
     border-radius: var(--radius-full);
     cursor: pointer;
     line-height: 0;
-    color: var(--mauve-10);
+    color: var(--color-text-muted);
     position: absolute;
     top: 0;
     right: 0;
-    background: var(--mauve-1);
-    box-shadow: 0 0 0 3px var(--mauve-1);
+    background: var(--color-bg);
+    box-shadow: 0 0 0 3px var(--color-bg);
     transform: translate(50%, -50%);
     font-size: 20px;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        color: var(--red-9);
-        background: var(--red-4);
+        color: var(--color-text);
+        background: var(--color-surface-hover);
       }
     }
   }
 
   .banner {
-    border-top: 1px solid var(--mauve-6);
+    border-top: 1px solid var(--color-border);
     padding: var(--space-m);
     display: flex;
     flex-direction: column;
@@ -250,20 +250,19 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
       text-wrap: nowrap;
 
       &.primary {
-        background: var(--mauve-12);
-        color: var(--mauve-1);
+        background: var(--color-text);
+        color: var(--color-bg);
 
         &:hover {
-          background: var(--pink-9);
-          color: white;
+          background: var(--color-text-muted);
         }
       }
 
       &.secondary {
-        background: var(--mauve-5);
+        background: var(--color-surface-hover);
 
         &:hover {
-          background: var(--mauve-6);
+          background: var(--color-border);
         }
       }
     }

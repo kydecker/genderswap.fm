@@ -42,7 +42,7 @@ $effect(() => {
   aria-valuemin="0"
   aria-valuemax="100"
   style={playState === 'playing'
-    ? `background: conic-gradient(var(--pink-9) ${percent.toFixed(2)}%, transparent 0)`
+    ? `background: conic-gradient(var(--color-text) ${percent.toFixed(2)}%, transparent 0)`
     : undefined}
 >
   <audio bind:this={audio} bind:currentTime={time} bind:duration {title}>
@@ -110,15 +110,15 @@ $effect(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2.5px solid var(--mauve-12);
-    color: var(--mauve-12);
+    border: 2.5px solid var(--color-text);
+    color: var(--color-text);
     transition: all 0.2s ease-in-out;
     font-size: var(--step--1);
 
     &.playing {
-      background: var(--mauve-12);
-      color: var(--mauve-1);
-      border-color: var(--mauve-3);
+      background: var(--color-text);
+      color: var(--color-bg);
+      border-color: var(--color-surface);
     }
   }
 </style>

@@ -3,10 +3,14 @@ import "$lib/styles/reset.css";
 import "$lib/styles/theme.css";
 import "$lib/styles/base.css";
 
+import { afterNavigate } from "$app/navigation";
 import Logo from "$lib/components/Logo.svelte";
 import Nav from "$lib/components/Nav.svelte";
+import { resetPageColor } from "$lib/pageColor";
 
 let { children } = $props();
+
+afterNavigate(resetPageColor);
 </script>
 
 <header class="siteHeader">
@@ -20,7 +24,6 @@ let { children } = $props();
 <style>
   .siteHeader {
     display: flex;
-    justify-content: center;
     width: 100%;
     padding-block: var(--space-l) var(--space-s);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));

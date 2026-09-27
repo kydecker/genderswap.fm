@@ -2,12 +2,8 @@
 title: About Genderswap.fm
 description: Covers from boys and girls and everyone in-between and beyond.
 datePublished: 2023-10-23 02:32:40-04:00
-dateModified: 2023-11-20 00:57:02-05:00
+dateModified: 2026-09-27 12:00:00-04:00
 ---
-
-<script>
-import ThemeToggle from "$lib/components/ThemeToggle.svelte";
-</script>
 
 ![Andrea Lawlor replies in an email “Whoa this is THE COOLEST thing I have EVER SEEN IN MY LIFE. Thank you! Wow!”](/images/andrea-lawlor-email.jpg)
 
@@ -44,7 +40,3 @@ Unfortunately, no. Because I rely on the Spotify API to search tracks and store 
 ## Who made this?
 
 This project is designed, built, and maintained by [Ky Decker](https://ky.fyi). You can find the code on [GitHub](https://github.com/kydecker/genderswap.fm).
-
-## Theme
-
-<ThemeToggle />
