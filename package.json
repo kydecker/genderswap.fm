@@ -28,6 +28,8 @@
     "db:migrate:local": "wrangler d1 migrations apply genderswap-fm --local",
     "db:migrate:remote": "wrangler d1 migrations apply genderswap-fm --remote",
     "db:seed:local": "wrangler d1 execute genderswap-fm --local --file tests/fixtures/seed.sql",
+    "db:backfill-links:local": "node scripts/backfill-links.ts",
+    "db:backfill-links:remote": "node scripts/backfill-links.ts --remote",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },
@@ -55,6 +57,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
     "@iconify-json/ri": "^1.2.10",
+    "@iconify-json/simple-icons": "^1.2.97",
     "@melt-ui/pp": "^0.3.2",
     "@melt-ui/svelte": "^0.86.6",
     "@playwright/test": "^1.62.1",

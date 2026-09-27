@@ -31,6 +31,11 @@ const mockCover: Cover = {
     tempo: 133.113,
     time_signature: 4,
     valence: 0.964,
+    isrc: "SEAYD7901040",
+    apple_music_url:
+      "https://music.apple.com/us/album/angel-eyes/1440816296?i=1440816458",
+    tidal_url: null,
+    links_checked_at: "2026-09-27T00:00:00.000Z",
   },
   cover: {
     created_at: "2023-10-22 00:40:29.530622+00",
@@ -59,6 +64,10 @@ const mockCover: Cover = {
     tempo: 98.083,
     time_signature: 4,
     valence: 0.421,
+    isrc: null,
+    apple_music_url: null,
+    tidal_url: null,
+    links_checked_at: null,
   },
   created_at: "2023-10-22 00:40:29.659396+00",
   description: "Classic ABBA pop melts into acoustic-led gay heartbreak.",
@@ -83,15 +92,24 @@ describe("CoverComparison", async () => {
     expect(albumArt.length).toBe(2);
   });
 
-  it("should render links to listen to original and cover", async ({
-    expect,
-  }) => {
+  it("should link to each service when available", async ({ expect }) => {
     const { container } = render(CoverComparison, {
       props: { cover: mockCover },
     });
-    const links = container.querySelectorAll(".song-link");
-    expect(links).toBeDefined();
-    expect(links.length).toBe(2);
+    const [coverLinks, originalLinks] = [
+      ...container.querySelectorAll(".song-links"),
+    ].map((row) =>
+      [...row.querySelectorAll("a")].map((a) => a.getAttribute("aria-label")),
+    );
+    expect(coverLinks).toEqual([
+      "Listen to cover on Spotify",
+      "Find cover on YouTube",
+    ]);
+    expect(originalLinks).toEqual([
+      "Listen to original on Spotify",
+      "Listen to original on Apple Music",
+      "Find original on YouTube",
+    ]);
   });
 
   it("should link artists to a filtered search", async ({ expect }) => {

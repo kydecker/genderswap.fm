@@ -1,6 +1,15 @@
 <script lang="ts">
-import { getArtistLink, slugify, smartquotes } from "$lib/helpers";
-import SpotifyIcon from "~icons/ri/spotify-fill";
+import {
+  getArtistLink,
+  getYouTubeLink,
+  slugify,
+  smartquotes,
+} from "$lib/helpers";
+import type { Tables } from "$lib/types/types";
+import AppleMusicIcon from "~icons/simple-icons/applemusic";
+import SpotifyIcon from "~icons/simple-icons/spotify";
+import TidalIcon from "~icons/simple-icons/tidal";
+import YouTubeIcon from "~icons/simple-icons/youtube";
 import type { Cover } from "../../routes/cover/[slug]/+page.server";
 
 let { cover }: { cover: Cover } = $props();
@@ -11,6 +20,27 @@ const coveredAs = $derived(
   slugify(originalSong.name) !== slugify(coverSong.name) ? coverSong.name : "",
 );
 </script>
+
+{#snippet listenLinks(song: Tables<"songs">, label: string)}
+  <div class="song-links">
+    <a href={`https://open.spotify.com/track/${song.id}`} aria-label={`Listen to ${label} on Spotify`}>
+      <SpotifyIcon />
+    </a>
+    {#if song.apple_music_url}
+      <a href={song.apple_music_url} aria-label={`Listen to ${label} on Apple Music`}>
+        <AppleMusicIcon />
+      </a>
+    {/if}
+    <a href={getYouTubeLink(song.name, song.artists)} aria-label={`Find ${label} on YouTube`}>
+      <YouTubeIcon />
+    </a>
+    {#if song.tidal_url}
+      <a href={song.tidal_url} aria-label={`Listen to ${label} on Tidal`}>
+        <TidalIcon />
+      </a>
+    {/if}
+  </div>
+{/snippet}
 
 <div class="compare">
   <div class="track cover" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
@@ -23,10 +53,7 @@ const coveredAs = $derived(
       />
     </div>
     <div class="details">
-      <a href={`https://open.spotify.com/track/${coverSong.id}`} class="song-link">
-        <SpotifyIcon />
-        Listen to cover
-      </a>
+      {@render listenLinks(coverSong, "cover")}
       <h2 class="artist" itemprop="byArtist">
         {#each coverSong.artists as artist, i}
           <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
@@ -59,10 +86,7 @@ const coveredAs = $derived(
       />
     </div>
     <div class="details">
-      <a href={`https://open.spotify.com/track/${originalSong.id}`} class="song-link">
-        <SpotifyIcon />
-        Listen to original
-      </a>
+      {@render listenLinks(originalSong, "original")}
       <h2 class="artist" itemprop="byArtist">
         {#each originalSong.artists as artist, i}
           <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
@@ -213,28 +237,30 @@ const coveredAs = $derived(
     font-size: var(--step-1);
   }
 
-  .song-link {
-    all: unset;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .song-links {
+    display: flex;
     gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-s);
-    padding-inline-end: var(--space-m);
-    background-color: var(--mauve-3);
-    border-radius: var(--radius-full);
-    font-weight: var(--font-weight-bold);
-    cursor: pointer;
 
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: var(--pink-3);
-        color: var(--pink-12);
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(var(--space-xl) + var(--space-xs) * 2);
+      aspect-ratio: 1;
+      border-radius: var(--radius-full);
+      background-color: var(--mauve-3);
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: var(--pink-3);
+          color: var(--pink-12);
+        }
       }
     }
 
     :global(svg) {
-      width: var(--space-xl);
+      width: 45%;
+      height: 45%;
     }
   }
 

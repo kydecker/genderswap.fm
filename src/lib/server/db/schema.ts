@@ -40,6 +40,10 @@ export const songs = sqliteTable("songs", {
   tempo: real("tempo"),
   time_signature: integer("time_signature"),
   valence: real("valence"),
+  isrc: text("isrc"),
+  apple_music_url: text("apple_music_url"),
+  tidal_url: text("tidal_url"),
+  links_checked_at: text("links_checked_at"),
 });
 
 export const covers = sqliteTable(
