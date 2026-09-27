@@ -93,8 +93,10 @@ onMount(async () => {
     content={data.description ?? 'Some covers deliver the age-old simple pleasures of drag.'}
   />
   <link rel="canonical" href={`https://genderswap.fm${page.url.pathname}`} />
-  <meta property="og:image" content={`${page.url.pathname}/og.png`} />
+  <meta property="og:image" content={`${page.url.origin}${page.url.pathname}/og.png`} />
   <meta property="og:image:alt" content={data.pageTitle} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 </svelte:head>
 
 <header class="header">
