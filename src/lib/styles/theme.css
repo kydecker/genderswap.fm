@@ -69,8 +69,8 @@
   --color-surface-raised: oklch(from var(--color-page) 0.97 calc(c * 0.25) h);
   --color-border: oklch(from var(--color-page) calc(l - 0.083) c h);
   --color-text: oklch(from var(--color-page) 0.18 calc(c * 0.4) h);
-  --color-text-muted: oklch(from var(--color-page) 0.36 calc(c * 0.5) h);
-  --color-text-subtle: oklch(from var(--color-page) 0.51 calc(c * 0.6) h);
+  --color-text-muted: color-mix(var(--color-text), transparent 30%);
+  --color-text-subtle: color-mix(var(--color-text), transparent 40%);
   --color-focus-ring: var(--color-text);
 
   /* Font families */

@@ -159,28 +159,33 @@ const coverSong = $derived(cover.cover);
   .song-links {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
+    margin-inline-start: -0.35rem;
 
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: calc(var(--space-xl) + var(--space-xs) * 2);
+      width: 2.5rem;
       aspect-ratio: 1;
+      opacity: 0.8;
       border-radius: var(--radius-full);
-      background-color: var(--color-surface);
+      background-color: transparent;
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {
-          background-color: var(--color-surface-hover);
-          color: var(--color-text);
+          opacity: 1;
         }
+      }
+
+      &:focus-visible {
+        opacity: 1;
       }
     }
 
     :global(svg) {
-      width: 55%;
-      height: 55%;
+      width: 1.8rem;
+      aspect-ratio: 1;
     }
   }
 

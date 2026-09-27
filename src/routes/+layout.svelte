@@ -24,7 +24,6 @@ afterNavigate(resetPageColor);
 <style>
   .siteHeader {
     display: flex;
-    justify-content: center;
     width: 100%;
     padding-block: var(--space-l) var(--space-s);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
