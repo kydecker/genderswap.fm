@@ -1,10 +1,10 @@
-import type { D1Database } from "@cloudflare/workers-types";
+import type { AnyD1Database } from "drizzle-orm/d1";
 
 declare global {
   namespace App {
     interface Platform {
       env: {
-        DB: D1Database;
+        DB: AnyD1Database;
       };
     }
   }

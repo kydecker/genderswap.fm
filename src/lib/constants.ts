@@ -9,7 +9,7 @@ type Tag = {
   description: string;
 };
 
-export const TAGS: Record<Enums<"tags">, Tag> = {
+const tags = {
   acousticness_up: {
     label: "more acoustic",
     description: "These covers are stripped down versions of the original.",
@@ -127,7 +127,9 @@ export const TAGS: Record<Enums<"tags">, Tag> = {
     shortLabel: "50+",
     description: "These covers were released over 50 years after the original.",
   },
-};
+} satisfies Record<string, Tag>;
+
+export const TAGS: Record<keyof typeof tags, Tag> = tags;
 
 export const ORDERED_TAG_GROUPS: Enums<"tags">[][] = [
   ["transition_mtf", "transition_ftm"],

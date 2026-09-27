@@ -14,12 +14,12 @@ pnpm dev
 
 ## Changing the database schema
 
-The schema lives in [src/lib/server/db/schema.ts](src/lib/server/db/schema.ts). After editing it:
+The schema lives in [src/lib/server/db/schema.ts](src/lib/server/db/schema.ts), and migrations are plain SQL in [drizzle/migrations](drizzle/migrations). To change it, update `schema.ts`, then:
 
 ```
-pnpm db:generate        # write a new migration to drizzle/migrations
-pnpm db:migrate:local   # apply it locally
-pnpm db:migrate:remote  # apply it to production
+pnpm exec wrangler d1 migrations create genderswap-fm <name>  # write the SQL
+pnpm db:migrate:local
+pnpm db:migrate:remote
 ```
 
 ## Colophon

@@ -7,39 +7,10 @@ import {
   sqliteTable,
   text,
 } from "drizzle-orm/sqlite-core";
+import type { TAGS } from "$lib/constants";
 
-export const GENDERS = ["male", "female", "other"] as const;
-
-export const TAG_VALUES = [
-  "acousticness_up",
-  "acousticness_down",
-  "danceability_up",
-  "danceability_down",
-  "duration_up",
-  "duration_down",
-  "energy_up",
-  "energy_down",
-  "instrumentalness_up",
-  "instrumentalness_down",
-  "key_change",
-  "tempo_up",
-  "tempo_down",
-  "time_signature_change",
-  "transition_ftm",
-  "transition_mtf",
-  "valence_up",
-  "valence_down",
-  "years_apart_10",
-  "years_apart_20",
-  "years_apart_30",
-  "years_apart_40",
-  "years_apart_50",
-  "transition_ftf",
-  "transition_mtm",
-] as const;
-
-export type Gender = (typeof GENDERS)[number];
-export type Tag = (typeof TAG_VALUES)[number];
+export type Gender = "male" | "female" | "other";
+export type Tag = keyof typeof TAGS;
 
 const createdAt = () =>
   text("created_at")
