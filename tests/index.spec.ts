@@ -243,10 +243,4 @@ test.describe("should navigate to other pages successfully", () => {
     await page.getByRole("link", { name: "Back", exact: true }).click();
     await expect(page).toHaveURL("/latest");
   });
-
-  test("should keep the search query when paging", async ({ page }) => {
-    await page.goto("/?q=the&page=2");
-    const back = page.getByRole("link", { name: "Back", exact: true });
-    await expect(back).toHaveAttribute("href", "/?q=the");
-  });
 });

@@ -4,6 +4,7 @@ import {
   encodeSearchQuery,
   getArtistLink,
   getMaxCharacterHelpText,
+  getPageHref,
   getReadableTitle,
   getSortedTags,
   getYearsEarlierText,
@@ -311,5 +312,22 @@ describe("createDebouncer", () => {
     vi.advanceTimersByTime(200);
     expect(calls).toEqual([]);
     vi.useRealTimers();
+  });
+});
+
+describe("getPageHref", () => {
+  it("should keep other params when paging", () => {
+    const url = new URL("https://genderswap.fm/mtf?q=crazy+in+love");
+    expect(getPageHref(url, 2)).toBe("/mtf?q=crazy+in+love&page=2");
+  });
+
+  it("should drop the page param for the first page", () => {
+    const url = new URL("https://genderswap.fm/?q=the&page=3");
+    expect(getPageHref(url, 1)).toBe("/?q=the");
+  });
+
+  it("should return the bare path when no params remain", () => {
+    const url = new URL("https://genderswap.fm/latest?page=2");
+    expect(getPageHref(url, 1)).toBe("/latest");
   });
 });

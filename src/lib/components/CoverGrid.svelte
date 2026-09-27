@@ -1,6 +1,7 @@
 <script lang="ts">
 import { page } from "$app/state";
 import CoverCard from "$lib/components/CoverCard.svelte";
+import { getPageHref } from "$lib/helpers";
 import type { GridData } from "$lib/server/browse";
 import ArrowLeftIcon from "~icons/ri/arrow-left-line";
 import ArrowRightIcon from "~icons/ri/arrow-right-line";
@@ -10,13 +11,6 @@ let {
   title,
   description,
 }: { data: GridData; title?: string; description?: string } = $props();
-
-const pageHref = (n: number) => {
-  const params = new URLSearchParams(page.url.searchParams);
-  if (n === 1) params.delete("page");
-  else params.set("page", String(n));
-  return params.size ? `${page.url.pathname}?${params}` : page.url.pathname;
-};
 </script>
 
 {#if title}
@@ -56,14 +50,14 @@ const pageHref = (n: number) => {
         {#if data.isFirst}
           <span class="pageLink" aria-disabled="true"><ArrowLeftIcon aria-hidden="true" />Back</span>
         {:else}
-          <a class="pageLink" href={pageHref(data.page - 1)} rel="prev"
+          <a class="pageLink" href={getPageHref(page.url, data.page - 1)} rel="prev"
             ><ArrowLeftIcon aria-hidden="true" />Back</a
           >
         {/if}
         {#if data.isLast}
           <span class="pageLink" aria-disabled="true">Next<ArrowRightIcon aria-hidden="true" /></span>
         {:else}
-          <a class="pageLink" href={pageHref(data.page + 1)} rel="next"
+          <a class="pageLink" href={getPageHref(page.url, data.page + 1)} rel="next"
             >Next<ArrowRightIcon aria-hidden="true" /></a
           >
         {/if}
