@@ -234,11 +234,6 @@ $effect(() => {
     &::placeholder {
       color: var(--mauve-8);
     }
-
-    &:focus {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-    }
   }
 
   .searchResults {

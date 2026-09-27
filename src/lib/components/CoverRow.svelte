@@ -114,7 +114,6 @@ $effect(() => {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
 
-
     a {
       display: inline-flex;
       align-items: baseline;
@@ -134,11 +133,6 @@ $effect(() => {
           color: currentColor;
           transform: translateX(2px);
         }
-      }
-
-      &:focus-visible {
-        outline: var(--focus-ring);
-        outline-offset: var(--focus-ring-offset);
       }
     }
   }
@@ -193,11 +187,6 @@ $effect(() => {
       background: var(--mauve-4);
       color: var(--mauve-12);
     }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-    }
   }
 
   .nav {
@@ -239,8 +228,6 @@ $effect(() => {
     &:focus-visible {
       opacity: 1;
       pointer-events: auto;
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
     }
   }
 

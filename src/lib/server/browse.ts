@@ -9,11 +9,8 @@ type Db = ReturnType<typeof getDb>;
 const PAGE_SIZE = 48;
 const ROW_SIZE = 10;
 
-const songColumns = {
-  name: true,
-  artists: true,
-  album_img: true,
-} as const;
+const originalColumns = { name: true, artists: true } as const;
+const coverColumns = { ...originalColumns, album_img: true } as const;
 
 const hasTag = (tag: string) =>
   sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`;
@@ -35,8 +32,8 @@ const findCovers = (
   db.query.covers.findMany({
     columns: { slug: true },
     with: {
-      original: { columns: songColumns },
-      cover: { columns: songColumns },
+      original: { columns: originalColumns },
+      cover: { columns: coverColumns },
     },
     where,
     orderBy: desc(covers.created_at),
@@ -57,8 +54,8 @@ export async function loadRows(db: Db) {
     db.query.covers.findMany({
       columns: { slug: true, tags: true },
       with: {
-        original: { columns: songColumns },
-        cover: { columns: songColumns },
+        original: { columns: originalColumns },
+        cover: { columns: coverColumns },
       },
       where: sql`${covers.id} in (select id from (${rankedByTag}) where rank <= ${ROW_SIZE})`,
       orderBy: [desc(covers.created_at), desc(covers.id)],

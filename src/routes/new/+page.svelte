@@ -140,7 +140,7 @@ const handleSubmit = () => {
     </Step>
   </Steps>
 
-  <button disabled={$submitting} class="submitButton" type="submit" onclick={handleSubmit}>
+  <button disabled={$submitting} class="button submitButton" type="submit" onclick={handleSubmit}>
     {#if $delayed}
       <div class="spinner">
         <LoaderIcon />
@@ -171,35 +171,12 @@ const handleSubmit = () => {
 
   .submitButton {
     display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    background: var(--mauve-12);
-    color: var(--mauve-1);
-    border: none;
-    cursor: pointer;
-    border-radius: var(--radius-full);
-    padding-block: var(--space-s);
     padding-inline: var(--space-l) var(--space-xl);
     margin-inline: auto;
-    font-size: var(--step-1);
-    font-weight: var(--font-weight-bold);
-    font-feature-settings: var(--font-unstable);
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: var(--pink-9);
-        color: white;
-      }
-    }
 
     &[disabled] {
       opacity: 0.7;
       cursor: default;
-    }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
     }
 
     :global(svg) {
@@ -239,11 +216,6 @@ const handleSubmit = () => {
 
     &::placeholder {
       color: var(--mauve-8);
-    }
-
-    &:focus {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
     }
   }
 

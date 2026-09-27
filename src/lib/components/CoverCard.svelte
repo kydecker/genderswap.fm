@@ -12,7 +12,12 @@ let {
   cover,
   slug,
   lazy,
-}: { original: Album; cover: Album; slug: string; lazy?: boolean } = $props();
+}: {
+  original: Omit<Album, "album_img">;
+  cover: Album;
+  slug: string;
+  lazy?: boolean;
+} = $props();
 
 function formatArtists(artists: string[]) {
   const maxArtists = 2;

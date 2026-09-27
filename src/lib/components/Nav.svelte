@@ -190,11 +190,6 @@ const closeSearch = () => {
     &:focus-visible {
       background: var(--mauve-11);
     }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-    }
   }
 
   .search {

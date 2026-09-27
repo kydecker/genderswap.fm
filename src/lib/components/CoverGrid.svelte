@@ -48,16 +48,16 @@ let {
     {#if !(data.isFirst && data.isLast)}
       <nav class="buttons" aria-label="Pagination">
         {#if data.isFirst}
-          <span class="pageLink" aria-disabled="true"><ArrowLeftIcon aria-hidden="true" />Back</span>
+          <span class="button pageLink" aria-disabled="true"><ArrowLeftIcon aria-hidden="true" />Back</span>
         {:else}
-          <a class="pageLink" href={getPageHref(page.url, data.page - 1)} rel="prev"
+          <a class="button pageLink" href={getPageHref(page.url, data.page - 1)} rel="prev"
             ><ArrowLeftIcon aria-hidden="true" />Back</a
           >
         {/if}
         {#if data.isLast}
-          <span class="pageLink" aria-disabled="true">Next<ArrowRightIcon aria-hidden="true" /></span>
+          <span class="button pageLink" aria-disabled="true">Next<ArrowRightIcon aria-hidden="true" /></span>
         {:else}
-          <a class="pageLink" href={getPageHref(page.url, data.page + 1)} rel="next"
+          <a class="button pageLink" href={getPageHref(page.url, data.page + 1)} rel="next"
             >Next<ArrowRightIcon aria-hidden="true" /></a
           >
         {/if}
@@ -86,17 +86,11 @@ let {
     &:hover {
       color: var(--mauve-12);
     }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-    }
   }
 
   .categoryTitle {
     font-size: var(--step-3);
     font-feature-settings: var(--font-stable);
-
   }
 
   .categoryDescription {
@@ -129,30 +123,6 @@ let {
     }
   }
 
-  .button {
-    background: var(--mauve-12);
-    color: var(--mauve-1);
-    border: none;
-    cursor: pointer;
-    border-radius: var(--radius-full);
-    padding-block: var(--space-s);
-    padding-inline: var(--space-xl);
-    margin-inline: auto;
-    font-size: var(--step-1);
-    font-weight: var(--font-weight-bold);
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: var(--pink-9);
-        color: white;
-      }
-    }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
-    }
-  }
 
   .pagination {
     display: flex;
@@ -168,19 +138,7 @@ let {
     }
 
     .pageLink {
-      background: var(--mauve-12);
-      color: var(--mauve-1);
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      gap: var(--space-s);
-      align-items: center;
-      border-radius: var(--radius-full);
-      padding-block: var(--space-s);
       padding-inline: var(--space-l);
-      font-size: var(--step-1);
-      font-weight: var(--font-weight-bold);
-      font-feature-settings: var(--font-unstable);
 
       &:first-child {
         padding-inline-start: var(--space-m);
@@ -188,24 +146,6 @@ let {
 
       &:last-child {
         padding-inline-end: var(--space-m);
-      }
-
-      @media (hover: hover) and (pointer: fine) {
-        &:not([aria-disabled]):hover {
-          background: var(--pink-9);
-          color: white;
-        }
-      }
-
-      &[aria-disabled] {
-        background-color: var(--mauve-4);
-        color: var(--mauve-8);
-        cursor: default;
-      }
-
-      &:focus-visible {
-        outline: var(--focus-ring);
-        outline-offset: var(--focus-ring-offset);
       }
     }
   }
