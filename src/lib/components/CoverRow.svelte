@@ -40,7 +40,11 @@ const scrollByPage = (direction: 1 | -1) => {
   });
 };
 
-$effect(updateEnds);
+$effect(() => {
+  const observer = new ResizeObserver(updateEnds);
+  observer.observe(track);
+  return () => observer.disconnect();
+});
 </script>
 
 <section class="row">
