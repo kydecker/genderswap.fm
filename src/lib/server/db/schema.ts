@@ -77,3 +77,8 @@ export const coversRelations = relations(covers, ({ one }) => ({
     references: [songs.id],
   }),
 }));
+
+export const tagCounts = sqliteTable("tag_counts", {
+  tag: text("tag").primaryKey(),
+  n: integer("n").notNull(),
+});

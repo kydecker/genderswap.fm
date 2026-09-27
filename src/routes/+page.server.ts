@@ -1,6 +1,8 @@
-import { and, count, desc, sql } from "drizzle-orm";
+import { error } from "@sveltejs/kit";
+import { and, count, desc, eq, sql } from "drizzle-orm";
+import { TAGS } from "$lib/constants";
 import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
+import { covers, tagCounts } from "$lib/server/db/schema";
 
 const PAGE_SIZE = 48;
 
@@ -12,12 +14,15 @@ const songColumns = {
   album_img: true,
 } as const;
 
-export async function load({ url, platform }) {
+export async function load({ url, platform, setHeaders }) {
   const db = getDb(platform);
 
   const page = Number(url.searchParams.get("page") ?? 1);
   const tag = url.searchParams.get("tag");
   const searchQuery = url.searchParams.get("q");
+
+  if (tag && !Object.hasOwn(TAGS, tag))
+    error(404, { message: "Tag not found" });
 
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
@@ -42,7 +47,7 @@ export async function load({ url, platform }) {
       : undefined,
   );
 
-  const [data, [{ totalCount }]] = await db.batch([
+  const [data, [counted]] = await db.batch([
     db.query.covers.findMany({
       columns: { slug: true },
       with: {
@@ -54,12 +59,19 @@ export async function load({ url, platform }) {
       limit: PAGE_SIZE,
       offset: from,
     }),
-    db.select({ totalCount: count() }).from(covers).where(where),
+    searchQuery
+      ? db.select({ n: count() }).from(covers).where(where)
+      : db
+          .select({ n: tagCounts.n })
+          .from(tagCounts)
+          .where(eq(tagCounts.tag, tag ?? "*visible")),
   ]);
+
+  setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
 
   return {
     covers: data,
-    totalCount,
+    totalCount: counted?.n ?? 0,
     from,
     to,
     isFirst: page === 1,
