@@ -74,16 +74,16 @@ const closeSearch = () => {
       <SearchIcon aria-hidden="true" />
       <span>Search</span>
     </button>
-    <a class="add" href="/new" aria-label="Add a cover" aria-current={current("/new")}>
-      <AddIcon aria-hidden="true" />
+    <a class="tab" href="/random" data-sveltekit-preload-data="off">
+      <ShuffleIcon aria-hidden="true" />
+      <span>Random</span>
     </a>
     <a class="tab" href="/about" aria-current={current("/about")}>
       {#if current("/about")}<InfoFillIcon aria-hidden="true" />{:else}<InfoIcon aria-hidden="true" />{/if}
       <span>About</span>
     </a>
-    <a class="tab" href="/random" data-sveltekit-preload-data="off">
-      <ShuffleIcon aria-hidden="true" />
-      <span>Random</span>
+    <a class="add" href="/new" aria-label="Add a cover" aria-current={current("/new")}>
+      <AddIcon aria-hidden="true" />
     </a>
   </div>
   {#if searching}
@@ -109,16 +109,13 @@ const closeSearch = () => {
 <style>
   .nav {
     --icon-size: min(var(--step-2), 1.375rem);
+    --icon-shift: calc(var(--icon-size) * 0.1);
 
-    position: fixed;
-    inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
-    inset-inline-start: 50%;
-    translate: -50% 0;
-    z-index: 100;
-    width: min(24rem, calc(100% - 2 * var(--space-s)));
+    position: relative;
+    width: 24rem;
     padding: var(--space-2xs);
     border: 1px solid transparent;
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-full);
     background: var(--mauve-1);
     box-shadow:
       0 0.4px 0.7px rgb(0 0 0 / 0.12),
@@ -130,12 +127,21 @@ const closeSearch = () => {
       border-color: var(--white-a3);
       background: var(--mauve-2);
     }
+
+    @media (max-width: 599.98px) {
+      position: fixed;
+      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      z-index: 100;
+      width: min(24rem, calc(100% - 2 * var(--space-s)));
+    }
   }
 
   .tabs {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    align-items: center;
+    grid-auto-rows: 2.75rem;
 
     .searching & {
       visibility: hidden;
@@ -147,9 +153,9 @@ const closeSearch = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: calc(var(--space-2xs) / 2);
-    padding-block: var(--space-2xs);
-    border-radius: var(--radius-s);
+    border-radius: var(--radius-full);
     color: var(--mauve-11);
     font-size: calc(var(--step--1) * 0.85);
     line-height: 1;
@@ -157,6 +163,7 @@ const closeSearch = () => {
 
     :global(svg) {
       font-size: var(--icon-size);
+      margin-block-start: calc(var(--icon-shift) * -1);
     }
 
     &[aria-current] {
@@ -171,16 +178,13 @@ const closeSearch = () => {
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: calc(var(--focus-ring-width) * -1);
+      outline-offset: 0;
     }
   }
 
   .add {
-    justify-self: center;
     display: grid;
     place-items: center;
-    width: min(var(--space-3xl), 2.75rem);
-    height: min(var(--space-3xl), 2.75rem);
     border-radius: var(--radius-full);
     background: var(--mauve-12);
     color: var(--mauve-1);
@@ -199,7 +203,7 @@ const closeSearch = () => {
     align-items: center;
     gap: var(--space-xs);
     padding-inline: var(--space-2xs) var(--space-s);
-    border-radius: var(--radius-s);
+    border-radius: var(--radius-full);
     background: var(--mauve-3);
     color: var(--mauve-11);
 
