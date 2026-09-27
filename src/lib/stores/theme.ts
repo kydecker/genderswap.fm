@@ -26,23 +26,10 @@ const updateThemeToggle = (theme: Theme) => {
   }
 };
 
-const getUserPreference = (): Theme => {
-  if (!browser) return "light";
-
-  if (window.localStorage.getItem("theme")) {
-    return window.localStorage.getItem("theme") as Theme;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
+const initialTheme: Theme =
+  browser && document.documentElement.classList.contains("dark")
     ? "dark"
     : "light";
-};
-
-let initialTheme: Theme = "light";
-
-if (browser) {
-  initialTheme = getUserPreference();
-}
 
 export const theme = writable<Theme>(initialTheme);
 

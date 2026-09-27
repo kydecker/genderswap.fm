@@ -79,7 +79,7 @@ test.describe("should display and toggle tags", () => {
     await expect(activeTag).not.toBeVisible();
 
     const titles = page.locator(".row .heading .title");
-    await expect(titles.first()).toHaveText("Latest uploads");
+    await expect(titles.first()).toHaveText("Latest Uploads");
     await expect(titles.nth(1)).toHaveText("MTF");
     await expect(
       page.locator(".row").first().locator(".coverCard"),
@@ -114,11 +114,11 @@ test.describe("should display and toggle tags", () => {
   }) => {
     await page
       .locator(".row .heading .title a")
-      .filter({ hasText: "Latest uploads" })
+      .filter({ hasText: "Latest Uploads" })
       .click();
 
     await expect(page).toHaveURL("/latest");
-    await expect(page.locator("h1.categoryTitle")).toHaveText("Latest uploads");
+    await expect(page.locator("h1.categoryTitle")).toHaveText("Latest Uploads");
   });
 
   test("should display the category for its URL", async ({ page }) => {

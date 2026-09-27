@@ -152,7 +152,11 @@ $effect(() => {
     gap: var(--space-xs);
     padding-block: var(--space-s);
     padding-inline: var(--space-l);
-    background: var(--mauve-1);
+    pointer-events: none;
+
+    > :global(*) {
+      pointer-events: auto;
+    }
 
     @supports (padding: max(0px)) {
       padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
@@ -168,6 +172,7 @@ $effect(() => {
     width: var(--space-2xl);
     height: var(--space-2xl);
     border-radius: var(--radius-full);
+    background: var(--mauve-1);
     color: var(--mauve-11);
     font-size: var(--step-1);
     cursor: pointer;
@@ -210,10 +215,6 @@ $effect(() => {
       .menuButton {
         display: none;
       }
-    }
-
-    .backdrop {
-      display: none !important;
     }
 
     .topbar {

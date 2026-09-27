@@ -10,6 +10,7 @@ import {
   slugify,
   slugifyCover,
   smartquotes,
+  toTitleCase,
 } from "./helpers";
 
 describe("maxCharacterHelpText", () => {
@@ -271,5 +272,13 @@ describe("encodeSearchQuery", () => {
 describe("getArtistLink", () => {
   it("should return a filtered query to the homepage", () => {
     expect(getArtistLink("Phoebe Bridgers")).toBe("/?q=Phoebe%20Bridgers");
+  });
+});
+
+describe("toTitleCase", () => {
+  it("should capitalize each word", ({ expect }) => {
+    expect(toTitleCase("more energetic")).toBe("More Energetic");
+    expect(toTitleCase("10+ years apart")).toBe("10+ Years Apart");
+    expect(toTitleCase("MTF")).toBe("MTF");
   });
 });

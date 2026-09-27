@@ -3,21 +3,10 @@ import { describe, it } from "vitest";
 import CoverCard from "./CoverCard.svelte";
 
 describe("CoverCard", () => {
-  it("should apply placeholder styles when data is undefined", async ({
-    expect,
-  }) => {
-    const { container } = render(CoverCard, {
-      props: { original: undefined, cover: undefined, slug: undefined },
-    });
-
-    const coverCardDiv = container.querySelector(".coverCard");
-    expect(coverCardDiv).toBeDefined();
-    expect(coverCardDiv?.classList.contains("placeholder")).toBe(true);
-  });
-
   it("should link to the slug", async ({ expect }) => {
+    const album = { name: "Name", artists: ["Artist"], album_img: ["a.jpg"] };
     const { container } = render(CoverCard, {
-      props: { original: undefined, cover: undefined, slug: "test-slug" },
+      props: { original: album, cover: album, slug: "test-slug" },
     });
 
     const linkElement = container.querySelector("a");

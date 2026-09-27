@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ORDERED_TAG_GROUPS } from "./constants";
+import { ORDERED_TAGS } from "./constants";
 import type { Enums } from "./types/types";
 
 export const getMaxCharacterHelpText = (input: string, maxLength: number) => {
@@ -93,12 +93,11 @@ export const getYearsEarlierText = (
 };
 
 export const getSortedTags = (tags: Enums<"tags">[]) => {
-  return tags.sort(
-    (a, b) =>
-      ORDERED_TAG_GROUPS.flat().indexOf(a) -
-      ORDERED_TAG_GROUPS.flat().indexOf(b),
-  );
+  return tags.sort((a, b) => ORDERED_TAGS.indexOf(a) - ORDERED_TAGS.indexOf(b));
 };
+
+export const toTitleCase = (text: string) =>
+  text.replace(/(^|\s)\p{Ll}/gu, (c) => c.toUpperCase());
 
 export const encodeSearchQuery = (query: string) => {
   return encodeURIComponent(

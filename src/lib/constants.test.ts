@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { TAG_BY_SLUG, TAGS, toTitleCase } from "./constants";
+import { TAG_BY_SLUG, TAGS } from "./constants";
 
 const RESERVED_PATHS = ["about", "api", "cover", "latest", "new", "random"];
 
@@ -18,13 +18,5 @@ describe("tag slugs", () => {
     for (const path of RESERVED_PATHS) {
       expect(TAG_BY_SLUG.has(path)).toBe(false);
     }
-  });
-});
-
-describe("toTitleCase", () => {
-  it("should capitalize each word", ({ expect }) => {
-    expect(toTitleCase("more energetic")).toBe("More Energetic");
-    expect(toTitleCase("10+ years apart")).toBe("10+ Years Apart");
-    expect(toTitleCase("MTF")).toBe("MTF");
   });
 });

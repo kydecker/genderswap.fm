@@ -176,34 +176,24 @@ const handleBlur: FocusEventHandler<HTMLInputElement> = () => {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
-    background: var(--mauve-3);
-    color: var(--mauve-11);
+    flex-shrink: 0;
+    background: var(--mauve-12);
+    color: var(--mauve-1);
     padding-block: var(--space-xs);
     padding-inline: var(--space-s);
     border-radius: var(--radius-s);
-    position: relative;
-    flex-shrink: 0;
-    min-width: 0;
     line-height: 1;
-
-    &:hover {
-      background: var(--mauve-4);
-      cursor: pointer;
-
-      .clear {
-        color: var(--mauve-1);
-      }
-    }
-
-    &.active {
-      background: var(--mauve-12);
-      color: var(--mauve-1);
-    }
+    cursor: pointer;
 
     .clear {
       color: var(--mauve-9);
       font-size: 0.8em;
     }
+
+    &:hover .clear {
+      color: var(--mauve-1);
+    }
   }
+
 
 </style>

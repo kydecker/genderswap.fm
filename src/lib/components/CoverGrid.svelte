@@ -84,7 +84,7 @@ const handleNext = () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-2xs);
+    gap: var(--space-xs);
     padding-block-start: var(--space-xl);
     padding-inline: max(var(--space-l), env(safe-area-inset-left));
   }
@@ -92,7 +92,7 @@ const handleNext = () => {
   .backLink {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-3xs);
+    gap: var(--space-2xs);
     color: var(--mauve-11);
     border-radius: var(--radius-xs);
 
@@ -110,7 +110,6 @@ const handleNext = () => {
     font-size: var(--step-3);
     font-feature-settings: var(--font-stable);
 
-    text-transform: capitalize;
   }
 
   .categoryDescription {
@@ -122,7 +121,7 @@ const handleNext = () => {
     grid-template-columns: repeat(auto-fill, minmax(clamp(8.5rem, 7rem + 3vw, 11rem), 1fr));
     grid-template-rows: max-content;
     align-items: start;
-    gap: var(--space-xl) var(--space-l);
+    gap: var(--space-l) var(--space-m);
     padding-block: var(--space-xl);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
     padding-inline-end: max(var(--space-l), env(safe-area-inset-right));

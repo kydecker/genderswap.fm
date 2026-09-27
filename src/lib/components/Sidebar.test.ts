@@ -1,11 +1,6 @@
 import { render } from "@testing-library/svelte";
-import { describe, it, vi } from "vitest";
+import { describe, it } from "vitest";
 import Sidebar from "./Sidebar.svelte";
-
-vi.hoisted(() => {
-  window.matchMedia = (query: string) =>
-    ({ matches: false, media: query }) as MediaQueryList;
-});
 
 describe("Sidebar", async () => {
   it("should render the logo", async ({ expect }) => {

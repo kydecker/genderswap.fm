@@ -34,5 +34,5 @@ export async function load({ url, platform, setHeaders }) {
     return { view: "grid" as const, ...(await loadGrid(db, url, null)) };
   }
 
-  return { view: "rows" as const, rows: await loadRows(db) };
+  return { view: "rows" as const, ...(await loadRows(db)) };
 }

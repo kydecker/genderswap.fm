@@ -103,6 +103,9 @@ $effect(() => {
   }
 
   .heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
     padding-inline: var(--gutter);
   }
 
@@ -110,12 +113,11 @@ $effect(() => {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
 
-    text-transform: capitalize;
 
     a {
       display: inline-flex;
       align-items: baseline;
-      gap: var(--space-3xs);
+      gap: var(--space-2xs);
       border-radius: var(--radius-xs);
 
       :global(svg) {
@@ -153,7 +155,7 @@ $effect(() => {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x proximity;
-    gap: var(--space-l);
+    gap: var(--space-m);
     scroll-padding-inline: var(--gutter);
     padding-inline: var(--gutter);
     padding-block: var(--space-s);
@@ -171,13 +173,16 @@ $effect(() => {
   }
 
   .seeAll {
-    flex: 0 0 calc(var(--item-width) * 0.6);
-    height: var(--item-width);
+    flex: 0 0 var(--item-width);
+    align-self: flex-start;
+    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: var(--space-2xs);
+    padding: var(--space-s);
+    text-align: center;
     border-radius: var(--radius-album);
     background: var(--mauve-3);
     color: var(--mauve-11);

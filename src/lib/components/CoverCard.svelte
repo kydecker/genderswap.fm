@@ -12,10 +12,7 @@ let {
   cover,
   slug,
   lazy,
-}: { original?: Album; cover?: Album; slug?: string; lazy?: boolean } =
-  $props();
-
-const isSkeleton = $derived(!original && !cover && !slug);
+}: { original: Album; cover: Album; slug: string; lazy?: boolean } = $props();
 
 function formatArtists(artists: string[]) {
   const maxArtists = 2;
@@ -24,47 +21,36 @@ function formatArtists(artists: string[]) {
         ` +${artists.length - maxArtists}`
     : artists.join(", ");
 }
+
+let [firstWord, ...rest] = $derived(formatArtists(original.artists).split(" "));
 </script>
 
-<div class="coverCard" class:placeholder={isSkeleton} aria-hidden={isSkeleton || undefined}>
+<div class="coverCard">
   <div class="album">
-    {#if cover?.album_img}
-      <img
-        src={cover.album_img[1]}
-        alt={`${cover.name} album art`}
-        loading={lazy ? 'lazy' : 'eager'}
-      />
-    {/if}
+    <img
+      src={cover.album_img[1]}
+      alt={`${cover.name} album art`}
+      loading={lazy ? 'lazy' : 'eager'}
+    />
   </div>
   <div class="content">
-    <h2 class="title">
-      {#if original}
-        {smartquotes(original.name)}
-      {/if}
-    </h2>
+    <h2 class="title">{smartquotes(original.name)}</h2>
     <div class="artist">
-      {#if cover}
-        <span class="name">{formatArtists(cover.artists)}</span>
-      {/if}
-      {#if original}
-        {@const [firstWord, ...rest] = formatArtists(original.artists).split(" ")}
-        <span class="covering"
-          >covering <span class="name"
-            ><span class="nowrap"
-              >{#if original.album_img}<img
-                  class="originalAlbum"
-                  src={original.album_img.at(-1)}
-                  alt={`${original.name} album art`}
-                  loading={lazy ? 'lazy' : 'eager'}
-                />{/if}{firstWord}</span
-            >{rest.length ? ` ${rest.join(" ")}` : ""}</span
-          ></span
-        >
-      {/if}
+      <span class="name">{formatArtists(cover.artists)}</span>
+      <span class="covering"
+        >covering <span class="name"
+          ><span class="nowrap"
+            ><img
+              class="originalAlbum"
+              src={original.album_img.at(-1)}
+              alt={`${original.name} album art`}
+              loading={lazy ? 'lazy' : 'eager'}
+            />{firstWord}</span
+          >{rest.length ? ` ${rest.join(" ")}` : ""}</span
+        ></span
+      >
     </div>
-    {#if !isSkeleton}
-      <a class="link" href={`/cover/${slug}`} aria-label={`More about ${original?.name}`}></a>
-    {/if}
+    <a class="link" href={`/cover/${slug}`} aria-label={`More about ${original.name}`}></a>
   </div>
 </div>
 
@@ -91,16 +77,14 @@ function formatArtists(artists: string[]) {
     width: 100%;
     position: relative;
 
-    &:not(:empty) {
-      box-shadow: var(--shadow-album-s);
+    box-shadow: var(--shadow-album-s);
 
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: var(--radius-album);
-        box-shadow: var(--shadow-album-inset-s);
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-album);
+      box-shadow: var(--shadow-album-inset-s);
     }
 
     img {
@@ -111,53 +95,17 @@ function formatArtists(artists: string[]) {
     }
   }
 
-  @keyframes pulse {
-    0% {
-      background-color: var(--mauve-4);
-    }
-    50% {
-      background-color: var(--mauve-3);
-    }
-    100% {
-      background-color: var(--mauve-4);
-    }
-  }
-
-  .album:empty,
-  .title:empty,
-  .artist:empty {
-    animation: pulse 1s ease-in-out infinite;
-  }
-
   .content {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
     flex: 1;
     width: 100%;
-  }
-
-  .title,
-  .artist {
-    transition: color 0.2s ease;
-    width: 100%;
-  }
-
-  .title:empty,
-  .artist:empty {
-    background: var(--mauve-3);
-    display: block;
-    border-radius: var(--radius-xs);
   }
 
   .title {
     font-size: var(--step-0);
     font-feature-settings: var(--font-stable);
-
-    &:empty {
-      width: 70%;
-      height: var(--space-l);
-    }
   }
 
   .artist {
@@ -182,11 +130,6 @@ function formatArtists(artists: string[]) {
       vertical-align: top;
       border-radius: 2px;
       object-fit: cover;
-    }
-
-    &:empty {
-      width: 90%;
-      height: var(--space-m);
     }
   }
 
