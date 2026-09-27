@@ -217,6 +217,7 @@ $effect(() => {
     box-shadow: var(--shadow-album-s);
     cursor: pointer;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 
     &[hidden] {
@@ -237,6 +238,7 @@ $effect(() => {
 
     &:focus-visible {
       opacity: 1;
+      pointer-events: auto;
       outline: var(--focus-ring);
       outline-offset: var(--focus-ring-offset);
     }
@@ -245,6 +247,7 @@ $effect(() => {
   @media (hover: hover) and (pointer: fine) {
     .scroller:hover .nav {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 </style>
