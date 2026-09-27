@@ -6,14 +6,20 @@ export type SongLinks = {
 
 type LinkQuery = {
   isrc: string | null;
+  upc: string | null;
   name: string;
   artists: string[];
   duration_ms: number | null;
+  disc_number: number | null;
+  track_number: number | null;
 };
 
 type TidalCredentials = { clientId: string; clientSecret: string };
 
 type ITunesTrack = {
+  wrapperType?: string;
+  discNumber?: number;
+  trackNumber?: number;
   trackName: string;
   artistName: string;
   trackTimeMillis?: number;
@@ -28,6 +34,17 @@ const normalize = (text: string) =>
     .replace(/\s[([][^)\]]*[)\]]/g, "")
     .replace(/&/g, "and")
     .replace(/[^\p{L}\p{N}]/gu, "");
+
+const isSameLength = (
+  a: number | null | undefined,
+  b: number | null | undefined,
+) => !!a && !!b && Math.abs(a - b) < 5000;
+
+const appleTrackUrl = (track: ITunesTrack) => {
+  const url = new URL(track.trackViewUrl);
+  url.searchParams.delete("uo");
+  return url.toString();
+};
 
 const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
   const response = await fetch(url, init);
@@ -73,11 +90,37 @@ export const findAppleMusicUrl = async ({
       lengthDifference(a) - lengthDifference(b),
   );
 
-  if (!matches.length) return null;
+  return matches.length ? appleTrackUrl(matches[0]) : null;
+};
 
-  const url = new URL(matches[0].trackViewUrl);
-  url.searchParams.delete("uo");
-  return url.toString();
+export const findAppleMusicUrlByUpc = async ({
+  upc,
+  name,
+  duration_ms,
+  disc_number,
+  track_number,
+}: LinkQuery) => {
+  if (!upc || !track_number) return null;
+
+  const { results } = await fetchJson<{ results: ITunesTrack[] }>(
+    `https://itunes.apple.com/lookup?upc=${upc}&country=us&entity=song`,
+  );
+
+  const track = results.find(
+    (result) =>
+      result.wrapperType === "track" &&
+      result.discNumber === (disc_number ?? 1) &&
+      result.trackNumber === track_number,
+  );
+
+  if (!track) return null;
+  if (
+    !isSameLength(track.trackTimeMillis, duration_ms) &&
+    normalize(track.trackName) !== normalize(name)
+  ) {
+    return null;
+  }
+  return appleTrackUrl(track);
 };
 
 let tidalToken: { value: string; expires: number } | undefined;
@@ -119,15 +162,62 @@ export const findTidalUrl = async (
   return data.length ? `https://tidal.com/track/${data[0].id}` : null;
 };
 
+type TidalAlbums = {
+  data: {
+    relationships?: {
+      items?: {
+        data?: {
+          id: string;
+          meta?: { volumeNumber?: number; trackNumber?: number };
+        }[];
+      };
+    };
+  }[];
+  included?: { id: string; type: string; attributes?: { isrc?: string } }[];
+};
+
+export const findTidalUrlByUpc = async (
+  { upc, isrc, disc_number, track_number }: LinkQuery,
+  credentials: TidalCredentials,
+) => {
+  if (!upc) return null;
+
+  const token = await getTidalToken(credentials);
+  const { data, included = [] } = await fetchJson<TidalAlbums>(
+    `https://openapi.tidal.com/v2/albums?countryCode=US&filter%5BbarcodeId%5D=${upc}&include=items`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+
+  const byIsrc = included.find(
+    (item) =>
+      item.type === "tracks" && !!isrc && item.attributes?.isrc === isrc,
+  );
+  const byPosition = data
+    .flatMap((album) => album.relationships?.items?.data ?? [])
+    .find(
+      (item) =>
+        !!track_number &&
+        item.meta?.volumeNumber === (disc_number ?? 1) &&
+        item.meta?.trackNumber === track_number,
+    );
+
+  const id = byIsrc?.id ?? byPosition?.id;
+  return id ? `https://tidal.com/track/${id}` : null;
+};
+
 export const findSongLinks = async (
   query: LinkQuery,
   credentials: Partial<TidalCredentials>,
 ): Promise<SongLinks> => {
   const { clientId, clientSecret } = credentials;
   const [apple, tidal] = await Promise.allSettled([
-    findAppleMusicUrl(query),
+    findAppleMusicUrlByUpc(query).then(
+      (url) => url ?? findAppleMusicUrl(query),
+    ),
     clientId && clientSecret
-      ? findTidalUrl(query, { clientId, clientSecret })
+      ? findTidalUrl(query, { clientId, clientSecret }).then(
+          (url) => url ?? findTidalUrlByUpc(query, { clientId, clientSecret }),
+        )
       : Promise.reject(new Error("Missing Tidal credentials")),
   ]);
 

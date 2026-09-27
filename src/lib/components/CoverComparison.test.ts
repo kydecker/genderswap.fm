@@ -32,6 +32,7 @@ const mockCover: Cover = {
     time_signature: 4,
     valence: 0.964,
     isrc: "SEAYD7901040",
+    album_upc: null,
     apple_music_url:
       "https://music.apple.com/us/album/angel-eyes/1440816296?i=1440816458",
     tidal_url: null,
@@ -65,6 +66,7 @@ const mockCover: Cover = {
     time_signature: 4,
     valence: 0.421,
     isrc: null,
+    album_upc: null,
     apple_music_url: null,
     tidal_url: null,
     links_checked_at: null,

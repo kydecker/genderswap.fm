@@ -1,10 +1,4 @@
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from "$env/static/private";
-
-const spotify = SpotifyApi.withClientCredentials(
-  SPOTIFY_CLIENT_ID,
-  SPOTIFY_CLIENT_SECRET,
-);
+import { spotify } from "$lib/server/spotify";
 
 export async function GET({ url }) {
   const query = url.searchParams.get("q");
