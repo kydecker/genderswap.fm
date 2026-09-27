@@ -33,28 +33,4 @@
     height: 100%;
   }
 
-  .button {
-    background: var(--mauve-12);
-    color: var(--mauve-1);
-    border: none;
-    cursor: pointer;
-    border-radius: var(--radius-full);
-    padding-block: var(--space-s);
-    padding-inline: var(--space-xl);
-    margin-inline: auto;
-    font-size: var(--step-1);
-    font-weight: var(--font-weight-bold);
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: var(--pink-9);
-        color: white;
-      }
-    }
-
-    &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
-    }
-  }
 </style>

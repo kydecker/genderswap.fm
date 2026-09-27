@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ORDERED_TAG_GROUPS } from "./constants";
+import { ORDERED_TAGS, TAGS } from "./constants";
 import type { Enums } from "./types/types";
 
 export const getMaxCharacterHelpText = (input: string, maxLength: number) => {
@@ -93,12 +93,25 @@ export const getYearsEarlierText = (
 };
 
 export const getSortedTags = (tags: Enums<"tags">[]) => {
-  return tags.sort(
-    (a, b) =>
-      ORDERED_TAG_GROUPS.flat().indexOf(a) -
-      ORDERED_TAG_GROUPS.flat().indexOf(b),
-  );
+  return tags
+    .filter((tag) => ORDERED_TAGS.includes(tag))
+    .sort((a, b) => ORDERED_TAGS.indexOf(a) - ORDERED_TAGS.indexOf(b));
 };
+
+export const createDebouncer = (delay = 250) => {
+  let timer: ReturnType<typeof setTimeout>;
+  const cancel = () => clearTimeout(timer);
+  const debounce = (callback: () => void) => {
+    cancel();
+    timer = setTimeout(callback, delay);
+  };
+  return Object.assign(debounce, { cancel });
+};
+
+export const toTitleCase = (text: string) =>
+  text.replace(/(^|\s)\p{Ll}/gu, (c) => c.toUpperCase());
+
+export const tagTitle = (tag: Enums<"tags">) => toTitleCase(TAGS[tag].label);
 
 export const encodeSearchQuery = (query: string) => {
   return encodeURIComponent(
@@ -114,4 +127,11 @@ export const getArtistLink = (artist: string) => {
 
 export const getYouTubeLink = (name: string, artists: string[]) => {
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${artists[0]} ${name}`)}`;
+};
+
+export const getPageHref = (url: URL, page: number) => {
+  const params = new URLSearchParams(url.searchParams);
+  if (page === 1) params.delete("page");
+  else params.set("page", String(page));
+  return params.size ? `${url.pathname}?${params}` : url.pathname;
 };

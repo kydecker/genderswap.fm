@@ -12,10 +12,12 @@ let {
   cover,
   slug,
   lazy,
-}: { original?: Album; cover?: Album; slug?: string; lazy?: boolean } =
-  $props();
-
-const isSkeleton = $derived(!original && !cover && !slug);
+}: {
+  original: Omit<Album, "album_img">;
+  cover: Album;
+  slug: string;
+  lazy?: boolean;
+} = $props();
 
 function formatArtists(artists: string[]) {
   const maxArtists = 2;
@@ -26,195 +28,87 @@ function formatArtists(artists: string[]) {
 }
 </script>
 
-<div class="coverCard" class:placeholder={isSkeleton} aria-hidden={isSkeleton || undefined}>
-  <div class="albums">
-    <div class="album">
-      {#if cover?.album_img}
-        <img
-          src={cover.album_img[1]}
-          alt={`${cover.name} album art`}
-          loading={lazy ? 'lazy' : 'eager'}
-        />
-      {/if}
-    </div>
-    <div class="album">
-      {#if original?.album_img}
-        <img
-          src={original.album_img[1]}
-          alt={`${original.name} album art`}
-          loading={lazy ? 'lazy' : 'eager'}
-        />
-      {/if}
-    </div>
+<div class="coverCard">
+  <div class="album">
+    <img
+      src={cover.album_img[1]}
+      alt={`${cover.name} album art`}
+      loading={lazy ? 'lazy' : 'eager'}
+    />
   </div>
   <div class="content">
-    <h2 class="title">
-      {#if original}
-        {smartquotes(original.name)}
-      {/if}
-    </h2>
+    <h2 class="title">{smartquotes(original.name)}</h2>
     <div class="artist">
-      {#if cover}
-        <span class="name">{formatArtists(cover.artists)}</span>
-      {/if}
-      {#if original}
-        <span class="covering"
-          >covering <span class="name">{formatArtists(original.artists)}</span></span
-        >
-      {/if}
+      <span class="name">{formatArtists(cover.artists)}</span>
+      <span class="covering"
+        >covering <span class="name">{formatArtists(original.artists)}</span></span
+      >
     </div>
-    {#if !isSkeleton}
-      <a class="link" href={`/cover/${slug}`} aria-label={`More about ${original?.name}`}></a>
-    {/if}
+    <a class="link" href={`/cover/${slug}`} aria-label={`More about ${original.name}`}></a>
   </div>
 </div>
 
 <style>
   .coverCard {
     position: relative;
-    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     align-self: flex-start;
-    gap: var(--space-m);
-    padding: var(--space-m);
-    border-radius: var(--radius-m);
-
-    @media (hover: hover) {
-      &:hover {
-        background: var(--mauve-3);
-      }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:not(.placeholder):hover .album {
-        transform: rotate(0) translateX(0);
-      }
-    }
+    gap: var(--space-s);
+    border-radius: 4px;
 
     &:has(.link:focus-visible) {
-      background: var(--mauve-3);
-
-      .album {
-        transform: rotate(0) translateX(0);
-      }
+      outline: var(--focus-ring);
+      outline-offset: var(--space-2xs);
     }
-  }
-
-  .albums {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-xs);
-    padding-block-end: var(--space-s);
   }
 
   .album {
     background: var(--mauve-3);
     border-radius: var(--radius-album);
     aspect-ratio: 1;
-    transition: transform 0.2s ease-in-out;
+    width: 100%;
     position: relative;
 
-    &:not(:empty) {
-      box-shadow: var(--shadow-album-s);
+    box-shadow: var(--shadow-album-s);
 
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: var(--radius-album);
-        box-shadow: var(--shadow-album-inset-s);
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-album);
+      box-shadow: var(--shadow-album-inset-s);
     }
 
     img {
       width: 100%;
       height: 100%;
-      aspect-ratio: 1;
       border-radius: var(--radius-album);
       object-fit: cover;
     }
-
-    &:first-child {
-      width: 60%;
-      transform: rotate(-6deg) translateX(6%);
-      transform-origin: 100% 0;
-      z-index: 1;
-    }
-
-    &:last-child {
-      width: 40%;
-      transform: rotate(10deg) translateX(-6%);
-      transform-origin: 0 0;
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      background-color: var(--mauve-4);
-    }
-    50% {
-      background-color: var(--mauve-3);
-    }
-    100% {
-      background-color: var(--mauve-4);
-    }
-  }
-
-  .album:empty,
-  .title:empty,
-  .artist:empty {
-    animation: pulse 1s ease-in-out infinite;
-  }
-
-  .placeholder .album:last-child {
-    opacity: 0.6;
   }
 
   .content {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
     flex: 1;
     width: 100%;
   }
 
-  .title,
-  .artist {
-    transition: color 0.2s ease;
-    width: 100%;
-  }
-
-  .title:empty,
-  .artist:empty {
-    background: var(--mauve-3);
-    display: block;
-    border-radius: var(--radius-xs);
-  }
-
   .title {
-    font-size: var(--step-1);
+    font-size: var(--step-0);
     font-feature-settings: var(--font-stable);
-
-    &:empty {
-      width: 70%;
-      height: var(--space-xl);
-    }
   }
 
   .artist {
+    font-size: var(--step--1);
     color: var(--mauve-10);
     line-height: 1.3;
 
     > .name {
       color: var(--mauve-12);
-    }
-
-    &:empty {
-      width: 90%;
-      height: var(--space-l);
     }
   }
 
@@ -222,6 +116,10 @@ function formatArtists(artists: string[]) {
     position: absolute;
     inset: 0;
     z-index: 2;
-    border-radius: var(--radius-m);
+    border-radius: 4px;
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 </style>

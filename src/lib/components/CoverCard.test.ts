@@ -3,21 +3,10 @@ import { describe, it } from "vitest";
 import CoverCard from "./CoverCard.svelte";
 
 describe("CoverCard", () => {
-  it("should apply placeholder styles when data is undefined", async ({
-    expect,
-  }) => {
-    const { container } = render(CoverCard, {
-      props: { original: undefined, cover: undefined, slug: undefined },
-    });
-
-    const coverCardDiv = container.querySelector(".coverCard");
-    expect(coverCardDiv).toBeDefined();
-    expect(coverCardDiv?.classList.contains("placeholder")).toBe(true);
-  });
-
   it("should link to the slug", async ({ expect }) => {
+    const album = { name: "Name", artists: ["Artist"], album_img: ["a.jpg"] };
     const { container } = render(CoverCard, {
-      props: { original: undefined, cover: undefined, slug: "test-slug" },
+      props: { original: album, cover: album, slug: "test-slug" },
     });
 
     const linkElement = container.querySelector("a");
@@ -83,15 +72,15 @@ describe("CoverCard", () => {
       album_img: ["test-cover.jpg"],
     };
 
-    const { getByText } = render(CoverCard, {
+    const { container, getByText } = render(CoverCard, {
       props: { original, cover, slug: "test-slug" },
     });
 
     const originalNameElement = getByText("Original Name");
     expect(originalNameElement).toBeDefined();
 
-    const originalArtistElement = getByText("Original Artist");
-    expect(originalArtistElement).toBeDefined();
+    const originalArtistElement = container.querySelector(".covering .name");
+    expect(originalArtistElement?.textContent).toBe("Original Artist");
 
     const coverArtistElement = getByText("Cover Artist");
     expect(coverArtistElement).toBeDefined();
@@ -109,14 +98,14 @@ describe("CoverCard", () => {
       album_img: ["test-cover.jpg"],
     };
 
-    const { getByText } = render(CoverCard, {
+    const { container, getByText } = render(CoverCard, {
       props: { original, cover, slug: "test-slug" },
     });
 
-    const originalArtistElement = getByText(
+    const originalArtistElement = container.querySelector(".covering .name");
+    expect(originalArtistElement?.textContent).toBe(
       "Original Artist, Original Artist 2",
     );
-    expect(originalArtistElement).toBeDefined();
 
     const coverArtistElement = getByText("Cover Artist, Cover Artist 2");
     expect(coverArtistElement).toBeDefined();

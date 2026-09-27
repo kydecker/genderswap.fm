@@ -3,7 +3,7 @@ import { createCombobox, melt } from "@melt-ui/svelte";
 import type { Track } from "@spotify/web-api-ts-sdk";
 import { scale } from "svelte/transition";
 import SongPreview from "$lib/components/SongPreview.svelte";
-import { encodeSearchQuery } from "$lib/helpers";
+import { createDebouncer, encodeSearchQuery } from "$lib/helpers";
 import SearchIcon from "~icons/ri/search-line";
 import type { ExistingCover } from "../../routes/api/getCover/+server";
 import ErrorMessage from "./ErrorMessage.svelte";
@@ -22,11 +22,7 @@ let discoveredEarlierRelease: Track | null = $state(null);
 let discoveredExistingCover: ExistingCover | null = $state(null);
 let searchResults: Track[] | undefined = $state(undefined);
 
-let debounceTimer: ReturnType<typeof setTimeout>;
-const debounce = (callback: () => void) => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(callback, 250);
-};
+const debounce = createDebouncer();
 
 const {
   elements: { menu, input, option, label },
@@ -237,11 +233,6 @@ $effect(() => {
 
     &::placeholder {
       color: var(--mauve-8);
-    }
-
-    &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
     }
   }
 

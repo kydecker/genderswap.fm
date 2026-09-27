@@ -5,6 +5,10 @@ datePublished: 2023-10-23 02:32:40-04:00
 dateModified: 2023-11-20 00:57:02-05:00
 ---
 
+<script>
+import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+</script>
+
 ![Andrea Lawlor replies in an email “Whoa this is THE COOLEST thing I have EVER SEEN IN MY LIFE. Thank you! Wow!”](/images/andrea-lawlor-email.jpg)
 
 ## What’s this site for?
@@ -31,12 +35,16 @@ I encourage you to _make it up_. Because gender is kinda made up, too, and this 
 
 ## How do you tag covers?
 
-Tags like “faster”, “key change”, and “sadder” come from the Spotify Audio Features API. Spotify runs an automated analysis on every track, and then different fields like “valence” get returned with a number. I ask the computer to compare numbers from two tracks, and voilà! A tag is born. [Explore all tags on the homepage.](/)
+Tags like “faster”, “more energetic”, and “sadder” come from the Spotify Audio Features API. Spotify runs an automated analysis on every track, and then different fields like “valence” get returned with a number. I ask the computer to compare numbers from two tracks, and voilà! A tag is born. [Explore all tags on the homepage.](/)
 
 ## Can I submit tracks that aren’t on Spotify?
 
 Unfortunately, no. Because I rely on the Spotify API to search tracks and store audio feature data, anything outside of Spotify’s library can’t be added to the site. There won’t be any Joanna Newsom covers here soon, alas.
 
-## Can I give you money?
+## Who made this?
 
-If you'd like! I do pay out of my own pocket for hosting, database storage, fonts, and more. If you enjoy this resource and want to chip in toward my costs, you can [send me some dollars via Kofi](https://ko-fi.com/kydecker).
+This project is designed, built, and maintained by [Ky Decker](https://ky.fyi). You can find the code on [GitHub](https://github.com/kydecker/genderswap.fm).
+
+## Theme
+
+<ThemeToggle />

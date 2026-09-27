@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  createDebouncer,
   encodeSearchQuery,
   getArtistLink,
   getMaxCharacterHelpText,
+  getPageHref,
   getReadableTitle,
   getSortedTags,
   getYearsEarlierText,
@@ -10,6 +12,7 @@ import {
   slugify,
   slugifyCover,
   smartquotes,
+  toTitleCase,
 } from "./helpers";
 
 describe("maxCharacterHelpText", () => {
@@ -227,10 +230,7 @@ describe("getSortedTags", () => {
         "danceability_down",
         "duration_down",
         "energy_down",
-        "instrumentalness_up",
-        "key_change",
         "tempo_up",
-        "time_signature_change",
         "transition_mtf",
         // Two transition_ tags would never appear together,
         // But MTM and FTF should always appear at the end
@@ -244,13 +244,10 @@ describe("getSortedTags", () => {
       "valence_down", // Valence second
       "tempo_up", // Tempo third
       "duration_down", // Duration fourth
-      "key_change", // Key change fifth
-      "time_signature_change", // Time signature change sixth
-      "energy_down", // Energy seventh
-      "acousticness_up", // Acousticness eighth
-      "danceability_down", // Danceability ninth
-      "instrumentalness_up", // Instrumentalness tenth
-      "years_apart_10", // Years apart eleventh
+      "energy_down", // Energy fifth
+      "acousticness_up", // Acousticness sixth
+      "danceability_down", // Danceability seventh
+      "years_apart_10", // Years apart eighth
       "transition_mtm", // MTM and FTF last
     ]);
   });
@@ -271,5 +268,64 @@ describe("encodeSearchQuery", () => {
 describe("getArtistLink", () => {
   it("should return a filtered query to the homepage", () => {
     expect(getArtistLink("Phoebe Bridgers")).toBe("/?q=Phoebe%20Bridgers");
+  });
+});
+
+describe("toTitleCase", () => {
+  it("should capitalize each word", ({ expect }) => {
+    expect(toTitleCase("more energetic")).toBe("More Energetic");
+    expect(toTitleCase("10+ years apart")).toBe("10+ Years Apart");
+    expect(toTitleCase("MTF")).toBe("MTF");
+  });
+});
+
+describe("getSortedTags with unknown tags", () => {
+  it("should drop tags that no longer exist", () => {
+    expect(
+      getSortedTags(["valence_up", "key_change" as never, "transition_mtf"]),
+    ).toEqual(["transition_mtf", "valence_up"]);
+  });
+});
+
+describe("createDebouncer", () => {
+  it("should run only the last callback after the delay", () => {
+    vi.useFakeTimers();
+    const debounce = createDebouncer(100);
+    const calls: number[] = [];
+    debounce(() => calls.push(1));
+    debounce(() => calls.push(2));
+    vi.advanceTimersByTime(99);
+    expect(calls).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(calls).toEqual([2]);
+    vi.useRealTimers();
+  });
+
+  it("should not run a cancelled callback", () => {
+    vi.useFakeTimers();
+    const debounce = createDebouncer(100);
+    const calls: number[] = [];
+    debounce(() => calls.push(1));
+    debounce.cancel();
+    vi.advanceTimersByTime(200);
+    expect(calls).toEqual([]);
+    vi.useRealTimers();
+  });
+});
+
+describe("getPageHref", () => {
+  it("should keep other params when paging", () => {
+    const url = new URL("https://genderswap.fm/mtf?q=crazy+in+love");
+    expect(getPageHref(url, 2)).toBe("/mtf?q=crazy+in+love&page=2");
+  });
+
+  it("should drop the page param for the first page", () => {
+    const url = new URL("https://genderswap.fm/?q=the&page=3");
+    expect(getPageHref(url, 1)).toBe("/?q=the");
+  });
+
+  it("should return the bare path when no params remain", () => {
+    const url = new URL("https://genderswap.fm/latest?page=2");
+    expect(getPageHref(url, 1)).toBe("/latest");
   });
 });

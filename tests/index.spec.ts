@@ -22,46 +22,37 @@ test.describe("should display the correct page information", () => {
 });
 
 test.describe("should display the correct theme", () => {
+  test.use({ colorScheme: "no-preference" });
+
   test.beforeEach(async ({ page }) => {
+    await page.goto("/about");
     await page.evaluate(() => window.localStorage.removeItem("theme"));
   });
 
-  test.use({ colorScheme: "no-preference" });
   test("should default to light mode when no OS color scheme is set", async ({
     page,
   }) => {
     const html = page.locator("html");
     await expect(html).not.toHaveClass("dark");
+    await expect(page.locator("[data-theme-toggle-light]")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 
-  test.use({ colorScheme: "no-preference" });
-  test("should switch to dark mode when toggle is clicked", async ({
+  test("should switch to dark mode when dark toggle is clicked", async ({
     page,
   }) => {
-    const darkToggle = page.locator("[data-theme-toggle-dark]");
-    await darkToggle.click();
+    await page.locator("[data-theme-toggle-dark]").click();
 
     const html = page.locator("html");
     await expect(html).toHaveClass("dark");
   });
 
-  test.use({ colorScheme: "dark" });
-  test("should switch to light mode when light toggle is clicked, even if OS color scheme is dark", async ({
-    page,
-  }) => {
-    const lightToggle = page.locator("[data-theme-toggle-light]");
-    await lightToggle.click();
-
-    const html = page.locator("html");
-    await expect(html).not.toHaveClass("dark");
-  });
-
-  test.use({ colorScheme: "no-preference" });
   test("should set localStorage theme to dark when dark toggle is clicked", async ({
     page,
   }) => {
-    const darkToggle = page.locator("[data-theme-toggle-dark]");
-    await darkToggle.click();
+    await page.locator("[data-theme-toggle-dark]").click();
 
     const html = page.locator("html");
     await expect(html).toHaveClass("dark");
@@ -73,59 +64,106 @@ test.describe("should display the correct theme", () => {
   });
 });
 
-test.describe("should display and toggle tags", () => {
-  test("should not have any tags selected by default", async ({ page }) => {
-    const activeTag = page.locator("button.tag.active");
-    await expect(activeTag).not.toBeVisible();
+test.describe("should respect a dark OS color scheme", () => {
+  test.use({ colorScheme: "dark" });
 
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).not.toBeVisible();
-  });
-
-  test("should add and remove tag filters when clicked", async ({ page }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
-
-    await expect(page).toHaveURL("/?tag=transition_mtf");
-
-    const activeTag = page.locator("button.tag.active");
-    await expect(activeTag).toBeVisible();
-    await expect(activeTag).toHaveText("MTF");
-
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).toBeVisible();
-    await expect(selectedTag).toHaveText("MTF");
-
-    await selectedTag.click();
-    await expect(page).toHaveURL("/");
-
-    await expect(activeTag).not.toBeVisible();
-    await expect(selectedTag).not.toBeVisible();
-  });
-
-  test("should display the selected tag if one is in the URL", async ({
+  test("should switch to light mode when light toggle is clicked, even if OS color scheme is dark", async ({
     page,
   }) => {
-    await page.goto("/?tag=transition_mtf");
+    await page.goto("/about");
+    await page.evaluate(() => window.localStorage.removeItem("theme"));
+    await page.reload();
 
-    const activeTag = page.locator("button.tag.active");
-    await expect(activeTag).toBeVisible();
-    await expect(activeTag).toHaveText("MTF");
+    const html = page.locator("html");
+    await expect(html).toHaveClass("dark");
 
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).toBeVisible();
-    await expect(selectedTag).toHaveText("MTF");
+    await page.locator("[data-theme-toggle-light]").click();
+    await expect(html).not.toHaveClass("dark");
+  });
+});
+
+test.describe("should display and toggle tags", () => {
+  test("should show category rows by default", async ({ page }) => {
+    const titles = page.locator(".row .heading .title");
+    await expect(titles.first()).toHaveText("Latest");
+    await expect(titles.nth(1)).toHaveText("MTF");
+    await expect(
+      page.locator(".row").first().locator(".coverCard"),
+    ).toHaveCount(10);
+  });
+
+  test("should open and clear a category when its title is clicked", async ({
+    page,
+  }) => {
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "MTF" })
+      .click();
+
+    await expect(page).toHaveURL("/mtf");
+
+    await expect(page.locator("h1.categoryTitle")).toHaveText("MTF");
+    await expect(page.locator(".categoryDescription")).toHaveText(
+      "Girls cover boys.",
+    );
+
+    await page.locator(".backLink").click();
+    await expect(page).toHaveURL("/");
+  });
+
+  test("should open latest uploads when its title is clicked", async ({
+    page,
+  }) => {
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "Latest" })
+      .click();
+
+    await expect(page).toHaveURL("/latest");
+    await expect(page.locator("h1.categoryTitle")).toHaveText("Latest");
+  });
+
+  test("should display the category for its URL", async ({ page }) => {
+    await page.goto("/mtf");
+
+    await expect(page.locator("h1.categoryTitle")).toHaveText("MTF");
+    expect(await page.title()).toBe("MTF · Genderswap.fm");
+  });
+
+  test("should redirect legacy query URLs to category routes", async ({
+    page,
+  }) => {
+    await page.goto("/?tag=valence_up&page=2");
+    await expect(page).toHaveURL("/happier?page=2");
+
+    await page.goto("/?view=latest");
+    await expect(page).toHaveURL("/latest");
+
+    await page.goto("/?page=2");
+    await expect(page).toHaveURL("/latest?page=2");
+  });
+
+  test("should 404 for unknown categories", async ({ page }) => {
+    const response = await page.goto("/not-a-category");
+    expect(response?.status()).toBe(404);
   });
 });
 
 test.describe("should display and submit search queries", () => {
-  test("should not have any query in search by default", async ({ page }) => {
+  test("should open search from the nav with no query by default", async ({
+    page,
+  }) => {
+    await page.locator("[data-search-toggle]").click();
+
     const searchInput = page.locator("input#search");
+    await expect(searchInput).toBeFocused();
     await expect(searchInput).toHaveValue("");
     await expect(searchInput).toHaveAttribute("placeholder", "Search covers…");
   });
 
   test("should display the search query in the input", async ({ page }) => {
+    await page.locator("[data-search-toggle]").click();
+
     const searchInput = page.locator("input#search");
     await searchInput.fill("crazy in love");
 
@@ -133,43 +171,32 @@ test.describe("should display and submit search queries", () => {
     await expect(page).toHaveURL("/?q=crazy+in+love");
   });
 
-  test("should clear the input of the selected tag and query on x button click", async ({
+  test("should search within a category and clear on close", async ({
     page,
   }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
-
-    await expect(page).toHaveURL("/?tag=transition_mtf");
+    await page.goto("/mtf");
+    await page.locator("[data-search-toggle]").click();
 
     const searchInput = page.locator("input#search");
+    await expect(searchInput).toHaveAttribute("placeholder", "Search MTF…");
     await searchInput.fill("crazy in love");
 
-    await expect(page).toHaveURL("/?tag=transition_mtf&q=crazy+in+love");
+    await expect(page).toHaveURL("/mtf?q=crazy+in+love");
 
-    const clearButton = page.locator("button.searchClear");
-    await clearButton.click();
+    await page.getByRole("button", { name: "Close search" }).click();
 
-    await expect(searchInput).toHaveValue("");
-    await expect(page).toHaveURL("/");
+    await expect(searchInput).not.toBeVisible();
+    await expect(page).toHaveURL("/mtf");
   });
 
-  test("should remove a selected tag when typing backspace in an empty input", async ({
+  test("should search all covers from pages without a grid", async ({
     page,
   }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
+    await page.goto("/about");
+    await page.locator("[data-search-toggle]").click();
+    await page.locator("input#search").fill("abba");
 
-    await expect(page).toHaveURL("/?tag=transition_mtf");
-
-    const searchInput = page.locator("input#search");
-    await searchInput.press("Backspace");
-
-    const activeTag = page.locator("button.tag.active");
-    const selectedTag = page.locator("button.tag.selected");
-
-    await expect(page).toHaveURL("/");
-    await expect(activeTag).not.toBeVisible();
-    await expect(selectedTag).not.toBeVisible();
+    await expect(page).toHaveURL("/?q=abba");
   });
 
   test("should display the query in the input if one is in the URL", async ({
@@ -202,13 +229,18 @@ test.describe("should navigate to other pages successfully", () => {
   });
 
   test("should disable navigating back from first page", async ({ page }) => {
-    const backButton = page.locator("button").filter({ hasText: "Back" });
-    await expect(backButton).toBeDisabled();
+    await page.goto("/latest");
+    const back = page.locator(".pageLink").filter({ hasText: "Back" });
+    await expect(back).toHaveAttribute("aria-disabled", "true");
+    await expect(back).not.toHaveAttribute("href");
   });
 
-  test("should navigate to the next page on click", async ({ page }) => {
-    const nextButton = page.locator("button").filter({ hasText: "Next" });
-    await nextButton.click();
-    await expect(page).toHaveURL("/?page=2");
+  test("should navigate between pages with links", async ({ page }) => {
+    await page.goto("/latest");
+    await page.getByRole("link", { name: "Next", exact: true }).click();
+    await expect(page).toHaveURL("/latest?page=2");
+
+    await page.getByRole("link", { name: "Back", exact: true }).click();
+    await expect(page).toHaveURL("/latest");
   });
 });

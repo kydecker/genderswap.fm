@@ -8,10 +8,7 @@ type TagSong = Pick<
   | "duration_ms"
   | "energy"
   | "gender"
-  | "instrumentalness"
-  | "key"
   | "tempo"
-  | "time_signature"
   | "valence"
 >;
 
@@ -42,19 +39,11 @@ export const computeTags = (
     else if (delta <= -threshold) tags.push(`${name}_down` as Enums<"tags">);
   };
 
-  const changed = (field: "key" | "time_signature") =>
-    cover[field] != null &&
-    original[field] != null &&
-    cover[field] !== original[field];
-
   upDown("acousticness", 0.7);
   upDown("danceability", 0.4);
   upDown("duration_ms", 120000, "duration");
   upDown("energy", 0.5);
-  upDown("instrumentalness", 0.7);
-  if (changed("key")) tags.push("key_change");
   upDown("tempo", 40);
-  if (changed("time_signature")) tags.push("time_signature_change");
 
   const transition =
     original.gender.length === 1 &&
