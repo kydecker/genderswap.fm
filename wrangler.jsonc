@@ -6,5 +6,13 @@
   "assets": {
     "directory": ".svelte-kit/cloudflare",
     "binding": "ASSETS"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "genderswap-fm",
+      "database_id": "ea74d55c-386c-4493-a09f-7058ac754438",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ]
 }

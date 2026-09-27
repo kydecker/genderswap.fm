@@ -13,8 +13,6 @@ permissions:
   pull-requests: write
 
 env:
-  PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-  PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
   SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
   SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
@@ -117,6 +115,9 @@ jobs:
       - name: Setup Playwright
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
+
+      - name: Set up local D1
+        run: pnpm db:migrate:local && pnpm db:seed:local
 
       - name: Run Playwright tests
         run: pnpm test:integration

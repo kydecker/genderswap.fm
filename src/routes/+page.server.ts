@@ -1,15 +1,20 @@
-import { supabase } from "$lib/supabase";
-import type { Tables } from "$lib/types/types";
-
-type GridItem = {
-  original: Tables<"songs">;
-  cover: Tables<"songs">;
-  slug: string;
-};
+import { and, count, desc, sql } from "drizzle-orm";
+import { getDb } from "$lib/server/db";
+import { covers } from "$lib/server/db/schema";
 
 const PAGE_SIZE = 48;
 
-export async function load({ url }) {
+const songColumns = {
+  id: true,
+  name: true,
+  artists: true,
+  album_name: true,
+  album_img: true,
+} as const;
+
+export async function load({ url, platform }) {
+  const db = getDb(platform);
+
   const page = Number(url.searchParams.get("page") ?? 1);
   const tag = url.searchParams.get("tag");
   const searchQuery = url.searchParams.get("q");
@@ -17,45 +22,47 @@ export async function load({ url }) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const covers = supabase
-    .from("covers")
-    .select(
-      `
-        slug,
-        original:original_id(id, name, artists, album_name, album_img),
-        cover:cover_id(id, name, artists, album_name, album_img)
-      `,
-      { count: "estimated" },
-    )
-    .order("created_at", { ascending: false });
+  // Quote each word so input can't break FTS5 query syntax
+  const match = searchQuery
+    ?.match(/[\p{L}\p{N}]+/gu)
+    ?.map((word) => `"${word}"`)
+    .join(" ");
 
-  if (tag) {
-    covers.overlaps("tags", [tag]);
-  }
+  const where = and(
+    tag
+      ? sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`
+      : undefined,
+    !tag && !searchQuery
+      ? sql`not exists (select 1 from json_each(${covers.tags}) where value in ('transition_mtm', 'transition_ftf'))`
+      : undefined,
+    searchQuery
+      ? match
+        ? sql`${covers.id} in (select rowid from covers_fts where covers_fts match ${match})`
+        : sql`0`
+      : undefined,
+  );
 
-  if (!tag && !searchQuery) {
-    covers
-      .not("tags", "cs", '{"transition_mtm"}')
-      .not("tags", "cs", '{"transition_ftf"}');
-  }
-
-  if (searchQuery) {
-    covers.textSearch("fts", searchQuery, {
-      config: "english",
-      type: "websearch",
-    });
-  }
-
-  const paginatedCovers = covers.range(from, to);
-
-  const { data, count } = await paginatedCovers.returns<GridItem[]>();
+  const [data, [{ totalCount }]] = await db.batch([
+    db.query.covers.findMany({
+      columns: { slug: true },
+      with: {
+        original: { columns: songColumns },
+        cover: { columns: songColumns },
+      },
+      where,
+      orderBy: desc(covers.created_at),
+      limit: PAGE_SIZE,
+      offset: from,
+    }),
+    db.select({ totalCount: count() }).from(covers).where(where),
+  ]);
 
   return {
     covers: data,
-    totalCount: count,
+    totalCount,
     from,
     to,
     isFirst: page === 1,
-    isLast: !data || data.length < PAGE_SIZE,
+    isLast: data.length < PAGE_SIZE,
   };
 }

@@ -7,19 +7,21 @@ Genderswap.fm is a repository of song covers with performing artists of differen
 ## Getting Started
 
 ```
+pnpm db:migrate:local
+pnpm db:seed:local # optional synthetic data
 pnpm dev
 ```
 
-## Regenerating types following database changes
+## Changing the database schema
 
-If you add a new table, new columns, new enums, or make other structural changes in Supabase, run:
+The schema lives in [src/lib/server/db/schema.ts](src/lib/server/db/schema.ts), and migrations are plain SQL in [drizzle/migrations](drizzle/migrations). To change it, update `schema.ts`, then:
 
 ```
-pnpm dbtypegen
+pnpm exec wrangler d1 migrations create genderswap-fm <name>  # write the SQL
+pnpm db:migrate:local
+pnpm db:migrate:remote
 ```
-
-This will regenerate [src/types/db-generated.types.ts](src/types/db-generated.types.ts) for use in frontend components!
 
 ## Colophon
 
-This site was built by [Ky Decker](https://ky.fyi) using [Sveltekit](https://kit.svelte.dev). It uses [Supabase](https://supabase.com) for data storage and it's hosted and deployed on [Cloudflare](https://cloudflare.com/). Tracks and audio features are fetched from Spotify's API via the [Typescript SDK](https://github.com/spotify/spotify-web-api-ts-sdk). Text is set in [Labil Grotesk](https://www.kometa.xyz/typefaces/labil-grotesk/) by Kometa Typefaces.
+This site was built by [Ky Decker](https://ky.fyi) using [Sveltekit](https://kit.svelte.dev). It's hosted on [Cloudflare](https://cloudflare.com/) Workers with data stored in [D1](https://developers.cloudflare.com/d1/). Tracks and audio features are fetched from Spotify's API via the [Typescript SDK](https://github.com/spotify/spotify-web-api-ts-sdk). Text is set in [Labil Grotesk](https://www.kometa.xyz/typefaces/labil-grotesk/) by Kometa Typefaces.
