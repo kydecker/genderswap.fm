@@ -1,5 +1,8 @@
 import type { Enums } from "./types/types";
 
+export const SITE_URL = "https://genderswap.fm";
+export const OG_WIDTH = 1200;
+export const OG_HEIGHT = 630;
 export const MAX_DESCRIPTION_CHARS = 160;
 export const MAX_CONTRIBUTOR_CHARS = 24;
 

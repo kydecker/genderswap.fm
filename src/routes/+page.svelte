@@ -8,7 +8,7 @@ import { scale } from "svelte/transition";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import CoverCard from "$lib/components/CoverCard.svelte";
-import { ORDERED_TAG_GROUPS, TAGS } from "$lib/constants.js";
+import { ORDERED_TAG_GROUPS, SITE_URL, TAGS } from "$lib/constants.js";
 import type { Enums } from "$lib/types/types.js";
 import ArrowLeftIcon from "~icons/ri/arrow-left-line";
 import ArrowRightIcon from "~icons/ri/arrow-right-line";
@@ -110,8 +110,8 @@ const handleNext = () => {
     name="description"
     content="A catalogue of the best gender-swapped song covers. Search, listen, and add your own."
   />
-  <link rel="canonical" href="https://genderswap.fm" />
-  <meta property="og:image" content={`${page.url.origin}/og-image.png`} />
+  <link rel="canonical" href={SITE_URL} />
+  <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
   <meta property="og:image:alt" content="Genderswap.fm" />
 </svelte:head>
 

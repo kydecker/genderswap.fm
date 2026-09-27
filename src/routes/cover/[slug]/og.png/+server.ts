@@ -1,24 +1,43 @@
 import { Resvg } from "@cf-wasm/resvg";
 import { satori } from "@cf-wasm/satori";
 import { eq } from "drizzle-orm";
-import { TAGS } from "$lib/constants";
+import { OG_HEIGHT, OG_WIDTH, TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 
 const songColumns = { name: true, artists: true, album_img: true } as const;
 
+let fonts: Promise<ArrayBuffer[]> | undefined;
+
+const loadFonts = (url: URL) => {
+  fonts ??= Promise.all(
+    ["Regular", "Bold"].map((weight) =>
+      fetch(new URL(`/fonts/LabilGrotesk-${weight}.woff`, url)).then((res) =>
+        res.arrayBuffer(),
+      ),
+    ),
+  ).catch((error) => {
+    fonts = undefined;
+    throw error;
+  });
+  return fonts;
+};
+
 export async function GET({ params, url, platform }) {
   const { slug } = params;
 
-  const data = await getDb(platform).query.covers.findFirst({
-    columns: { tags: true },
-    with: {
-      original: { columns: songColumns },
-      cover: { columns: songColumns },
-    },
-    where: eq(covers.slug, slug),
-  });
+  const [data, [labil, labilBold]] = await Promise.all([
+    getDb(platform).query.covers.findFirst({
+      columns: { tags: true },
+      with: {
+        original: { columns: songColumns },
+        cover: { columns: songColumns },
+      },
+      where: eq(covers.slug, slug),
+    }),
+    loadFonts(url),
+  ]);
 
   if (!data) {
     return new Response(null, {
@@ -201,17 +220,9 @@ export async function GET({ params, url, platform }) {
     },
   };
 
-  const labil = await fetch(
-    new URL("/fonts/LabilGrotesk-Regular.woff", url),
-  ).then((res) => res.arrayBuffer());
-
-  const labilBold = await fetch(
-    new URL("/fonts/LabilGrotesk-Bold.woff", url),
-  ).then((res) => res.arrayBuffer());
-
   const svg = await satori(html, {
-    width: 1200,
-    height: 630,
+    width: OG_WIDTH,
+    height: OG_HEIGHT,
     fonts: [
       {
         name: "Labil Grotesk",
@@ -229,9 +240,12 @@ export async function GET({ params, url, platform }) {
   });
 
   const resvg = await Resvg.async(svg);
-  const png = resvg.render().asPng();
+  const image = resvg.render();
+  const png = image.asPng() as Uint8Array<ArrayBuffer>;
+  image.free();
+  resvg.free();
 
-  return new Response(new Uint8Array(png), {
+  return new Response(png, {
     status: 200,
     headers: {
       "Content-Type": "image/png",

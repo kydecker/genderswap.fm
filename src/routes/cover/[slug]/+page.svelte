@@ -8,7 +8,7 @@ import CoverComparison from "$lib/components/CoverComparison.svelte";
 import Sparkle from "$lib/components/Sparkle.svelte";
 import Tag from "$lib/components/Tag.svelte";
 import TagCloud from "$lib/components/TagCloud.svelte";
-import { TAGS } from "$lib/constants";
+import { OG_HEIGHT, OG_WIDTH, SITE_URL, TAGS } from "$lib/constants";
 import { getArtistLink, getSortedTags } from "$lib/helpers.js";
 
 let { data } = $props();
@@ -92,11 +92,11 @@ onMount(async () => {
     name="description"
     content={data.description ?? 'Some covers deliver the age-old simple pleasures of drag.'}
   />
-  <link rel="canonical" href={`https://genderswap.fm${page.url.pathname}`} />
-  <meta property="og:image" content={`${page.url.origin}${page.url.pathname}/og.png`} />
+  <link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
+  <meta property="og:image" content={`${SITE_URL}${page.url.pathname}/og.png`} />
   <meta property="og:image:alt" content={data.pageTitle} />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  <meta property="og:image:width" content={`${OG_WIDTH}`} />
+  <meta property="og:image:height" content={`${OG_HEIGHT}`} />
 </svelte:head>
 
 <header class="header">
