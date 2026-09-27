@@ -1,35 +1,9 @@
-import { error } from "@sveltejs/kit";
-import { supabase } from "$lib/supabase";
+import { desc } from "drizzle-orm";
+import { getDb } from "$lib/server/db";
+import { covers } from "$lib/server/db/schema";
 
 const SITE_URL = "https://genderswap.fm";
 const STATIC_PATHS = ["/", "/about", "/new"];
-
-// Supabase caps responses at 1000 rows by default
-const BATCH_SIZE = 1000;
-
-type SitemapCover = { slug: string; created_at: string };
-
-async function getAllCovers() {
-  const covers: SitemapCover[] = [];
-
-  for (let from = 0; ; from += BATCH_SIZE) {
-    const { data, error: dbError } = await supabase
-      .from("covers")
-      .select("slug, created_at")
-      .order("created_at", { ascending: false })
-      .range(from, from + BATCH_SIZE - 1);
-
-    if (dbError) {
-      throw error(500, { message: "Could not load covers for sitemap" });
-    }
-
-    covers.push(...data);
-
-    if (data.length < BATCH_SIZE) {
-      return covers;
-    }
-  }
-}
 
 function urlEntry(path: string, lastmod?: string) {
   return `  <url>
@@ -37,12 +11,15 @@ function urlEntry(path: string, lastmod?: string) {
   </url>`;
 }
 
-export async function GET() {
-  const covers = await getAllCovers();
+export async function GET({ platform }) {
+  const rows = await getDb(platform)
+    .select({ slug: covers.slug, created_at: covers.created_at })
+    .from(covers)
+    .orderBy(desc(covers.created_at));
 
   const entries = [
     ...STATIC_PATHS.map((path) => urlEntry(path)),
-    ...covers.map(({ slug, created_at }) =>
+    ...rows.map(({ slug, created_at }) =>
       urlEntry(
         `/cover/${encodeURIComponent(slug)}`,
         new Date(created_at).toISOString(),
