@@ -24,13 +24,7 @@ pnpm db:migrate:remote
 
 ## Streaming links
 
-Songs link to Spotify, Apple Music, YouTube, and Tidal. Apple Music links come from the iTunes Search API, matched by title, artist, and length. Tidal links are matched by ISRC and need `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
-
-New submissions look up links automatically. To fill in songs that haven't been checked yet (or whose lookup failed), run:
-
-```
-pnpm db:backfill-links:remote
-```
+Songs link to Spotify, Apple Music, YouTube, and Tidal, looked up automatically when a cover is submitted. Apple Music links come from the iTunes API, matched by the album's UPC and track position, falling back to a search by title, artist, and length. Tidal links are matched by ISRC, falling back to the album's UPC, and need `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
 
 ## Colophon
 

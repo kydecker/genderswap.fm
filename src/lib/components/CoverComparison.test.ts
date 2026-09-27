@@ -36,7 +36,6 @@ const mockCover: Cover = {
     apple_music_url:
       "https://music.apple.com/us/album/angel-eyes/1440816296?i=1440816458",
     tidal_url: null,
-    links_checked_at: "2026-09-27T00:00:00.000Z",
   },
   cover: {
     created_at: "2023-10-22 00:40:29.530622+00",
@@ -69,7 +68,6 @@ const mockCover: Cover = {
     album_upc: null,
     apple_music_url: null,
     tidal_url: null,
-    links_checked_at: null,
   },
   created_at: "2023-10-22 00:40:29.659396+00",
   description: "Classic ABBA pop melts into acoustic-led gay heartbreak.",

@@ -1,7 +1,6 @@
 export type SongLinks = {
   apple_music_url: string | null;
   tidal_url: string | null;
-  links_checked_at: string | null;
 };
 
 type LinkQuery = {
@@ -224,9 +223,5 @@ export const findSongLinks = async (
   return {
     apple_music_url: apple.status === "fulfilled" ? apple.value : null,
     tidal_url: tidal.status === "fulfilled" ? tidal.value : null,
-    links_checked_at:
-      apple.status === "fulfilled" && tidal.status === "fulfilled"
-        ? new Date().toISOString()
-        : null,
   };
 };
