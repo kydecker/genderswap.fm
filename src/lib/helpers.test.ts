@@ -231,7 +231,6 @@ describe("getSortedTags", () => {
         "duration_down",
         "energy_down",
         "tempo_up",
-        "time_signature_change",
         "transition_mtf",
         // Two transition_ tags would never appear together,
         // But MTM and FTF should always appear at the end
@@ -245,11 +244,10 @@ describe("getSortedTags", () => {
       "valence_down", // Valence second
       "tempo_up", // Tempo third
       "duration_down", // Duration fourth
-      "time_signature_change", // Time signature change fifth
-      "energy_down", // Energy sixth
-      "acousticness_up", // Acousticness seventh
-      "danceability_down", // Danceability eighth
-      "years_apart_10", // Years apart ninth
+      "energy_down", // Energy fifth
+      "acousticness_up", // Acousticness sixth
+      "danceability_down", // Danceability seventh
+      "years_apart_10", // Years apart eighth
       "transition_mtm", // MTM and FTF last
     ]);
   });

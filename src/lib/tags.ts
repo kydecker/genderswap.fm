@@ -9,7 +9,6 @@ type TagSong = Pick<
   | "energy"
   | "gender"
   | "tempo"
-  | "time_signature"
   | "valence"
 >;
 
@@ -45,13 +44,6 @@ export const computeTags = (
   upDown("duration_ms", 120000, "duration");
   upDown("energy", 0.5);
   upDown("tempo", 40);
-  if (
-    cover.time_signature != null &&
-    original.time_signature != null &&
-    cover.time_signature !== original.time_signature
-  ) {
-    tags.push("time_signature_change");
-  }
 
   const transition =
     original.gender.length === 1 &&

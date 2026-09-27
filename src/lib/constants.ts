@@ -63,11 +63,6 @@ const tags = {
     label: "slower",
     description: "At least 40 BPM slower than the original.",
   },
-  time_signature_change: {
-    slug: "different-meter",
-    label: "different meter",
-    description: "In a different time signature than the original.",
-  },
   transition_ftm: {
     slug: "ftm",
     label: "FTM",
@@ -141,7 +136,6 @@ export const ORDERED_TAGS: Enums<"tags">[] = [
   "tempo_down",
   "duration_up",
   "duration_down",
-  "time_signature_change",
   "energy_up",
   "energy_down",
   "acousticness_up",

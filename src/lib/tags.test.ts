@@ -9,7 +9,6 @@ const song = (overrides = {}) => ({
   energy: 0.5,
   gender: ["other" as const],
   tempo: 120,
-  time_signature: 4,
   valence: 0.5,
   ...overrides,
 });
@@ -44,19 +43,10 @@ describe("computeTags", () => {
     );
   });
 
-  it("tags time signature changes", () => {
-    expect(computeTags(song(), song({ time_signature: 3 }))).toEqual([
-      "time_signature_change",
-    ]);
-  });
-
   it("adds no tag when either value is null", () => {
-    expect(
-      computeTags(
-        song({ energy: null, time_signature: null }),
-        song({ energy: 1, time_signature: 3 }),
-      ),
-    ).toEqual([]);
+    expect(computeTags(song({ energy: null }), song({ energy: 1 }))).toEqual(
+      [],
+    );
   });
 
   it.each([
