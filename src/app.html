@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="dark light" />
-  <meta name="theme-color" content="" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#999999" />
   <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="%sveltekit.assets%/favicon-light.png" type="image/png" media="(prefers-color-scheme: light)" />
   <link rel="icon" href="%sveltekit.assets%/favicon-dark.png" type="image/png" media="(prefers-color-scheme: dark)" />
@@ -23,25 +23,6 @@
 </head>
 
 <body data-sveltekit-preload-data="hover">
-  <script>
-    // Minimal render-blocking script to prevent FOUC
-    const getUserPreference = () => {
-      if (window.localStorage.getItem('theme')) {
-        return window.localStorage.getItem('theme');
-      }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    };
-
-    const initialTheme = getUserPreference();
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
-
-    // Set initial theme-color
-    const themeColor = initialTheme === 'dark' ? 'color(display-p3 0.07 0.067 0.074)' : 'color(display-p3 0.991 0.988 0.992)';
-    const metaThemeColor = document.querySelector("meta[name=theme-color]");
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute("content", themeColor);
-    }
-  </script>
   <div style="display: contents">%sveltekit.body%</div>
 </body>
 

@@ -1,17 +1,13 @@
 html {
   font-size: 100%;
   height: 100%;
-}
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  transition: --color-page 0.8s ease;
 
-html,
-body {
-  color: var(--mauve-12);
-  background-color: var(--mauve-1);
-}
-
-html.dark {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  &[data-page-color-instant] {
+    transition: none;
+  }
 }
 
 body {
@@ -29,7 +25,8 @@ body {
 }
 
 ::selection {
-  background: var(--pink-5);
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 h1,
@@ -79,8 +76,8 @@ pre {
   display: inline-flex;
   align-items: center;
   gap: var(--space-s);
-  background: var(--mauve-12);
-  color: var(--mauve-1);
+  background: var(--color-text);
+  color: var(--color-bg);
   border: none;
   cursor: pointer;
   border-radius: var(--radius-full);
@@ -92,14 +89,13 @@ pre {
 
   @media (hover: hover) and (pointer: fine) {
     &:not([aria-disabled], :disabled):hover {
-      background: var(--pink-9);
-      color: white;
+      background: var(--color-text-muted);
     }
   }
 
   &[aria-disabled] {
-    background: var(--mauve-4);
-    color: var(--mauve-8);
+    background: var(--color-surface-hover);
+    color: var(--color-text-subtle);
     cursor: default;
   }
 }

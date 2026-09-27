@@ -175,9 +175,6 @@ importers:
       '@lhci/cli':
         specifier: ^0.15.1
         version: 0.15.1(supports-color@10.2.2)
-      '@radix-ui/colors':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@spotify/web-api-ts-sdk':
         specifier: ^1.2.0
         version: 1.2.0
@@ -193,6 +190,9 @@ importers:
       drizzle-orm:
         specifier: ^0.45.3
         version: 0.45.3(@cloudflare/workers-types@5.20260925.2)
+      jpeg-js:
+        specifier: ^0.4.4
+        version: 0.4.4
       svelte-autosize:
         specifier: ^1.1.5
         version: 1.1.5(svelte@5.56.8(@typescript-eslint/types@8.66.0))
@@ -1178,9 +1178,6 @@ packages:
     resolution: {integrity: sha512-5EUZSUIc37H6aIXyWO0Z4y8NlF8NnjgmqeQgOGiswAU7pY0HOo16ho4+alIWmSfdZnjqBRawMsP3I5YqLSn6kw==}
     engines: {node: '>=18'}
     hasBin: true
-
-  '@radix-ui/colors@3.0.0':
-    resolution: {integrity: sha512-FUOsGBkHrYJwCSEtWRCIfQbZG7q1e6DgxCIOe1SUQzDe/7rXXeA47s8yCn6fuTNQAj1Zq4oTFi9Yjp3wzElcxg==}
 
   '@resvg/resvg-wasm@2.4.1':
     resolution: {integrity: sha512-yi6R0HyHtsoWTRA06Col4WoDs7SvlXU3DLMNP2bdAgs7HK18dTEVl1weXgxRzi8gwLteGUbIg29zulxIB3GSdg==}
@@ -4445,8 +4442,6 @@ snapshots:
       - bare-buffer
       - react-native-b4a
       - supports-color
-
-  '@radix-ui/colors@3.0.0': {}
 
   '@resvg/resvg-wasm@2.4.1': {}
 

@@ -71,8 +71,7 @@ $effect(() => {
       {/each}
       {#if totalCount && totalCount > covers.length}
         <a class="seeAll" {href}>
-          <span>All {totalCount}</span>
-          <ArrowRightIcon aria-hidden="true" />
+          More<ArrowRightIcon aria-hidden="true" />
         </a>
       {/if}
     </div>
@@ -122,13 +121,11 @@ $effect(() => {
       :global(svg) {
         font-size: 0.7em;
         translate: 0 0.25em;
-        color: var(--mauve-9);
+        color: var(--color-text-muted);
         transition: transform 0.2s ease;
       }
 
       &:hover {
-        color: var(--pink-11);
-
         :global(svg) {
           color: currentColor;
           transform: translateX(2px);
@@ -138,7 +135,7 @@ $effect(() => {
   }
 
   .description {
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
   }
 
   .scroller {
@@ -171,21 +168,17 @@ $effect(() => {
     align-self: flex-start;
     aspect-ratio: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: var(--space-2xs);
-    padding: var(--space-s);
-    text-align: center;
     border-radius: var(--radius-album);
-    background: var(--mauve-3);
-    color: var(--mauve-11);
+    background: var(--color-surface);
     font-weight: var(--font-weight-bold);
+    font-feature-settings: var(--font-stable);
     scroll-snap-align: start;
 
     &:hover {
-      background: var(--mauve-4);
-      color: var(--mauve-12);
+      background: var(--color-surface-hover);
     }
   }
 
@@ -200,8 +193,8 @@ $effect(() => {
     height: var(--space-2xl);
     border: none;
     border-radius: var(--radius-full);
-    background: white;
-    color: black;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
     font-size: var(--step-1);
     box-shadow: var(--shadow-album-s);
     cursor: pointer;

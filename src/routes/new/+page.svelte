@@ -207,7 +207,7 @@ const handleSubmit = () => {
   .input {
     border: none;
     display: block;
-    background: var(--mauve-3);
+    background: var(--color-surface-hover);
     border-radius: var(--radius-m);
     padding-block: var(--space-s);
     padding-inline: var(--space-m);
@@ -215,7 +215,7 @@ const handleSubmit = () => {
     resize: none;
 
     &::placeholder {
-      color: var(--mauve-8);
+      color: var(--color-text-subtle);
     }
   }
 
@@ -225,7 +225,7 @@ const handleSubmit = () => {
     font-variant-numeric: tabular-nums;
 
     &.warning {
-      color: var(--red-9);
+      color: var(--color-text);
       font-weight: var(--font-weight-bold);
     }
   }
@@ -234,8 +234,8 @@ const handleSubmit = () => {
     display: flex;
     gap: var(--space-s);
     align-items: flex-start;
-    background: var(--orange-3);
-    color: var(--orange-12);
+    background: var(--color-surface);
+    color: var(--color-text);
     padding: var(--space-s) var(--space-m);
     border-radius: var(--radius-s);
 
@@ -247,8 +247,8 @@ const handleSubmit = () => {
     }
 
     &.success {
-      background: var(--green-3);
-      color: var(--green-12);
+      background: var(--color-surface);
+      color: var(--color-text);
     }
 
     a {

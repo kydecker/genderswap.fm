@@ -4,16 +4,30 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { onMount } from "svelte";
 import { page } from "$app/state";
+import ColorSwirl from "$lib/components/ColorSwirl.svelte";
 import CoverComparison from "$lib/components/CoverComparison.svelte";
 import Sparkle from "$lib/components/Sparkle.svelte";
 import Tag from "$lib/components/Tag.svelte";
 import TagCloud from "$lib/components/TagCloud.svelte";
 import { OG_HEIGHT, OG_WIDTH, SITE_URL, TAGS } from "$lib/constants";
 import { getArtistLink, getSortedTags } from "$lib/helpers.js";
+import { resolveColorToken } from "$lib/pageColor";
 
 let { data } = $props();
 
 const isNew = $derived(page.url.searchParams.get("new") === "true");
+
+const isHexColor = (color: string | null | undefined): color is string =>
+  !!color && /^#[0-9a-f]{6}$/i.test(color);
+
+const pageColor = $derived(data.cover.album_color);
+const swirlColors = $derived.by((): [string, string] | null => {
+  const coverColor = data.cover.album_color;
+  const originalColor = data.original.album_color;
+  if (!isHexColor(coverColor) || !isHexColor(originalColor)) return null;
+  if (coverColor === originalColor) return null;
+  return [coverColor, originalColor];
+});
 
 dayjs.extend(relativeTime);
 const formattedDate = $derived(dayjs(data.created_at).fromNow());
@@ -38,7 +52,7 @@ onMount(async () => {
 
     const sharedProps: Partial<ConfettiOptions> = {
       scalar: scalar,
-      colors: ["#ff69b4"],
+      colors: ["--color-text", "--color-surface-raised"].map(resolveColorToken),
       shapes: ["square"],
       gravity: 2,
       ticks: 30,
@@ -97,49 +111,93 @@ onMount(async () => {
   <meta property="og:image:alt" content={data.pageTitle} />
   <meta property="og:image:width" content={`${OG_WIDTH}`} />
   <meta property="og:image:height" content={`${OG_HEIGHT}`} />
+  {#if isHexColor(pageColor)}
+    {@html `<style>:root { --color-page: ${pageColor}; }</style>`}
+  {/if}
 </svelte:head>
 
-<header class="header">
-  <h1 class="title">
-    {data.pageTitle}{#if isNew}<Sparkle />{/if}
-  </h1>
-  <div class="subtitle">
-    <a class="artist" href={getArtistLink(data.cover.artists[0])}>{data.cover.artists[0]}</a>
-    covering{' '}
-    <a class="artist" href={getArtistLink(data.original.artists[0])}>{data.original.artists[0]}</a>
+{#if swirlColors}
+  <ColorSwirl colors={swirlColors} />
+{/if}
+
+<div class="layout">
+  <header class="header">
+    <h1 class="title">
+      {data.pageTitle}{#if isNew}<Sparkle />{/if}
+    </h1>
+    <div class="subtitle">
+      <a class="artist" href={getArtistLink(data.cover.artists[0])}>{data.cover.artists[0]}</a>
+      covering{' '}
+      <a class="artist" href={getArtistLink(data.original.artists[0])}>{data.original.artists[0]}</a>
+    </div>
+    {#if data.tags}
+      <TagCloud>
+        {#each getSortedTags(data.tags) as tag}
+          <Tag text={TAGS[tag].label} url={`/${TAGS[tag].slug}`} />
+        {/each}
+      </TagCloud>
+    {/if}
+  </header>
+  <div class="comparison">
+    <CoverComparison cover={data} />
   </div>
-  {#if data.tags}
-    <TagCloud>
-      {#each getSortedTags(data.tags) as tag}
-        <Tag text={TAGS[tag].label} url={`/${TAGS[tag].slug}`} />
-      {/each}
-    </TagCloud>
-  {/if}
-</header>
-<CoverComparison cover={data} />
-<footer class="footer">
-  {#if data.description}
-    <p class="description">{data.description}</p>
-  {/if}
-  <span
-    >Added {data.contributor ? `by ${data.contributor}` : 'anonymously'}
-    <time datetime={data.created_at}>{formattedDate}</time></span
-  >
-</footer>
+  <footer class="footer">
+    {#if data.description}
+      <p class="description">{data.description}</p>
+    {/if}
+    <span
+      >Added {data.contributor ? `by ${data.contributor}` : 'anonymously'}
+      <time datetime={data.created_at}>{formattedDate}</time></span
+    >
+  </footer>
+</div>
 
 <style>
-  .header {
-    padding-block-start: var(--space-xl);
-    padding-block-end: var(--space-3xl);
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 40rem);
+    grid-template-areas:
+      'header'
+      'comparison'
+      'footer';
+    justify-content: center;
+    align-items: start;
     padding-inline: var(--space-l);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    text-wrap: balance;
+
     @supports (padding: max(0px)) {
       padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
       padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+    }
+
+    @media (min-width: 56rem) {
+      grid-template-columns: minmax(0, 26rem) minmax(0, 40rem);
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'header comparison'
+        'footer comparison';
+      column-gap: var(--space-2xl);
+      padding-block: var(--space-xl);
+    }
+  }
+
+  .comparison {
+    grid-area: comparison;
+  }
+
+  .header {
+    grid-area: header;
+    padding-block: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-wrap: balance;
+
+    :global(.tags) {
+      justify-content: flex-start;
+    }
+
+    @media (min-width: 56rem) {
+      padding-block: 0;
     }
   }
 
@@ -150,25 +208,25 @@ onMount(async () => {
   .subtitle {
     font-size: var(--step-2);
     line-height: var(--line-height-h3);
-    color: var(--mauve-11);
+    color: var(--color-text-muted);
     margin-block-start: var(--space-m);
     margin-block-end: var(--space-l);
     text-wrap: balance;
   }
 
   .artist {
-    color: var(--mauve-12);
+    color: var(--color-text);
 
     @media (hover: hover) {
       &:hover {
         text-decoration: underline;
-        text-decoration-color: var(--mauve-9);
+        text-decoration-color: var(--color-text-muted);
       }
     }
   }
 
   .description {
-    background-color: var(--mauve-3);
+    background-color: var(--color-surface);
     padding: var(--space-s) var(--space-m);
     border-radius: var(--radius-l);
     font-size: var(--step-0);
@@ -177,11 +235,11 @@ onMount(async () => {
   }
 
   .footer {
-    padding-block: var(--space-2xl);
-    padding-inline: var(--space-m);
+    grid-area: footer;
+    padding-block: var(--space-xl);
     font-size: var(--step--1);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
 </style>

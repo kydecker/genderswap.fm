@@ -28,7 +28,7 @@ let { title, children }: { title: string; children?: Snippet } = $props();
       justify-content: center;
       grid-area: number;
       font-weight: var(--font-weight-bold);
-      background: var(--mauve-4);
+      background: var(--color-surface-hover);
       border-radius: var(--radius-full);
       width: var(--space-2xl);
       height: var(--space-2xl);
@@ -41,7 +41,7 @@ let { title, children }: { title: string; children?: Snippet } = $props();
       justify-self: center;
       width: 3px;
       height: 100%;
-      background: var(--mauve-4);
+      background: var(--color-surface-hover);
     }
 
     @media (max-width: 480px) {

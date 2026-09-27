@@ -25,6 +25,7 @@ export const songs = sqliteTable("songs", {
   album_name: text("album_name").notNull(),
   album_year: integer("album_year").notNull(),
   album_img: text("album_img", { mode: "json" }).notNull().$type<string[]>(),
+  album_color: text("album_color"),
   url: text("url").notNull(),
   gender: text("gender", { mode: "json" }).notNull().$type<Gender[]>(),
   acousticness: real("acousticness"),
