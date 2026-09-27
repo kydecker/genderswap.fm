@@ -160,4 +160,4 @@ export const TAG_BY_SLUG = new Map(
   (Object.keys(TAGS) as Enums<"tags">[]).map((tag) => [TAGS[tag].slug, tag]),
 );
 
-export const LATEST_TITLE = "Latest Uploads";
+export const LATEST_TITLE = "Latest";

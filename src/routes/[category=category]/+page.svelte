@@ -1,7 +1,6 @@
 <script lang="ts">
 import CoverGrid from "$lib/components/CoverGrid.svelte";
 import PageMeta from "$lib/components/PageMeta.svelte";
-import SearchBar from "$lib/components/SearchBar.svelte";
 import { TAGS } from "$lib/constants";
 import { toTitleCase } from "$lib/helpers";
 
@@ -13,5 +12,4 @@ let title = $derived(toTitleCase(tag.label));
 
 <PageMeta {title} description={tag.description} />
 
-<SearchBar tag={data.tag} />
 <CoverGrid {data} {title} description={tag.description} />

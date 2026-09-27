@@ -224,11 +224,11 @@ $effect(() => {
     }
 
     &.prev {
-      left: var(--gutter);
+      left: max(var(--space-m), env(safe-area-inset-left));
     }
 
     &.next {
-      right: var(--gutter);
+      right: max(var(--space-m), env(safe-area-inset-right));
     }
 
     &:hover {
