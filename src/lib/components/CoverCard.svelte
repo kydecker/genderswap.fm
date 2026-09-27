@@ -92,6 +92,14 @@ function formatArtists(artists: string[]) {
         transform: rotate(0) translateX(0);
       }
     }
+
+    &:has(.link:focus-visible) {
+      background: var(--mauve-3);
+
+      .album {
+        transform: rotate(0) translateX(0);
+      }
+    }
   }
 
   .albums {
@@ -99,6 +107,7 @@ function formatArtists(artists: string[]) {
     align-items: center;
     justify-content: flex-start;
     gap: var(--space-xs);
+    padding-block-end: var(--space-s);
   }
 
   .album {
@@ -212,5 +221,7 @@ function formatArtists(artists: string[]) {
   .link {
     position: absolute;
     inset: 0;
+    z-index: 2;
+    border-radius: var(--radius-m);
   }
 </style>
