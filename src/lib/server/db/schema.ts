@@ -38,8 +38,8 @@ export const TAG_VALUES = [
   "transition_mtm",
 ] as const;
 
-type Gender = (typeof GENDERS)[number];
-type Tag = (typeof TAG_VALUES)[number];
+export type Gender = (typeof GENDERS)[number];
+export type Tag = (typeof TAG_VALUES)[number];
 
 const createdAt = () =>
   text("created_at")
@@ -100,16 +100,9 @@ export const coversRelations = relations(covers, ({ one }) => ({
   original: one(songs, {
     fields: [covers.original_id],
     references: [songs.id],
-    relationName: "original",
   }),
   cover: one(songs, {
     fields: [covers.cover_id],
     references: [songs.id],
-    relationName: "cover",
   }),
-}));
-
-export const songsRelations = relations(songs, ({ many }) => ({
-  originalOf: many(covers, { relationName: "original" }),
-  coverOf: many(covers, { relationName: "cover" }),
 }));

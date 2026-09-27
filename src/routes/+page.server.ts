@@ -1,5 +1,4 @@
-import { and, count, desc, type SQL, sql } from "drizzle-orm";
-import { toFtsQuery } from "$lib/search";
+import { and, count, desc, sql } from "drizzle-orm";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 
@@ -23,39 +22,25 @@ export async function load({ url, platform }) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const empty = {
-    covers: [],
-    totalCount: 0,
-    from,
-    to,
-    isFirst: page === 1,
-    isLast: true,
-  };
+  // Quote each word so input can't break FTS5 query syntax
+  const match = searchQuery
+    ?.match(/[\p{L}\p{N}]+/gu)
+    ?.map((word) => `"${word}"`)
+    .join(" ");
 
-  const conditions: SQL[] = [];
-
-  if (tag) {
-    conditions.push(
-      sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`,
-    );
-  }
-
-  if (!tag && !searchQuery) {
-    conditions.push(
-      sql`not exists (select 1 from json_each(${covers.tags}) where value in ('transition_mtm', 'transition_ftf'))`,
-    );
-  }
-
-  if (searchQuery) {
-    const match = toFtsQuery(searchQuery);
-    if (!match) return empty;
-
-    conditions.push(
-      sql`${covers.id} in (select rowid from covers_fts where covers_fts match ${match})`,
-    );
-  }
-
-  const where = and(...conditions);
+  const where = and(
+    tag
+      ? sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`
+      : undefined,
+    !tag && !searchQuery
+      ? sql`not exists (select 1 from json_each(${covers.tags}) where value in ('transition_mtm', 'transition_ftf'))`
+      : undefined,
+    searchQuery
+      ? match
+        ? sql`${covers.id} in (select rowid from covers_fts where covers_fts match ${match})`
+        : sql`0`
+      : undefined,
+  );
 
   const [data, [{ totalCount }]] = await db.batch([
     db.query.covers.findMany({

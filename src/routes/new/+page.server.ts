@@ -33,31 +33,37 @@ export const actions = {
       contributor,
     } = form.data;
 
-    const formatSongRow = async ({
-      song,
-      gender,
-    }: {
-      song: Track;
-      gender: Enums<"gender">[];
-    }) => {
-      const response = await fetch(`/api/getAudioFeatures?id=${song.id}`, {
-        method: "GET",
-      });
+    const db = getDb(platform);
+
+    // Existing song rows take precedence, as they did in the Postgres trigger
+    const existingSongs = await db.query.songs.findMany({
+      where: inArray(songs.id, [original.id, cover.id]),
+    });
+
+    const songRow = async (
+      song: Track,
+      gender: Enums<"gender">[],
+    ): Promise<Tables<"songs">> => {
+      const existing = existingSongs.find(({ id }) => id === song.id);
+      if (existing) return existing;
+
+      const response = await fetch(`/api/getAudioFeatures?id=${song.id}`);
       const audioFeatures = await response.json();
 
       const formattedName = song.name
         .split(" - ")[0] // "Smells Like Teen Spirit - Radio Edit" -> "Smells Like Teen Spirit"
         .replace(/\s\([^()]*\)/g, ""); // "Time After Time (2022 Remaster)" -> "Time After Time"
 
-      const row: Omit<Tables<"songs">, "created_at"> = {
+      return {
         id: song.id,
+        created_at: new Date().toISOString(),
         name: formattedName,
         artists: song.artists.map((artist) => artist.name),
         url: song.external_urls.spotify,
         album_name: song.album.name,
         album_year: Number.parseInt(song.album.release_date.slice(0, 4), 10),
         album_img: song.album.images.map((image) => image.url),
-        gender: gender,
+        gender,
         acousticness: audioFeatures.acousticness,
         danceability: audioFeatures.danceability,
         duration_ms: audioFeatures.duration_ms,
@@ -72,76 +78,42 @@ export const actions = {
         time_signature: audioFeatures.time_signature,
         valence: audioFeatures.valence,
       };
-
-      return row;
     };
 
-    const formatCoverRow = async ({
-      original,
-      cover,
-      description,
-      contributor,
-    }: {
-      original: Track;
-      cover: Track;
-      description: string;
-      contributor: string;
-    }) => {
-      const row: Omit<Tables<"covers">, "id" | "created_at" | "tags"> = {
-        original_id: original.id,
-        cover_id: cover.id,
-        slug: slugifyCover(cover.name, cover.artists[0].name),
-        description,
-        contributor,
-      };
+    const [originalSong, coverSong] = await Promise.all([
+      songRow(original, originalGenders),
+      songRow(cover, coverGenders),
+    ]);
 
-      return row;
-    };
+    const slug = slugifyCover(cover.name, cover.artists[0].name);
 
-    const originalSongRow = await formatSongRow({
-      song: original,
-      gender: originalGenders,
-    });
+    const result = await db
+      .batch([
+        db
+          .insert(songs)
+          .values([originalSong, coverSong])
+          .onConflictDoNothing(),
+        db
+          .insert(covers)
+          .values({
+            original_id: original.id,
+            cover_id: cover.id,
+            slug,
+            description,
+            contributor,
+            tags: computeTags(originalSong, coverSong),
+          })
+          .onConflictDoNothing({ target: covers.slug })
+          .returning({ slug: covers.slug }),
+      ])
+      .catch((e: Error) => e);
 
-    const coverSongRow = await formatSongRow({
-      song: cover,
-      gender: coverGenders,
-    });
+    if (result instanceof Error) return setError(form, result.message);
 
-    const coverRow = await formatCoverRow({
-      original,
-      cover,
-      description,
-      contributor,
-    });
-
-    const db = getDb(platform);
-
-    // Existing song rows take precedence, as they did in the Postgres trigger
-    const existingSongs = await db.query.songs.findMany({
-      where: inArray(songs.id, [originalSongRow.id, coverSongRow.id]),
-    });
-    const stored = (row: typeof originalSongRow) =>
-      existingSongs.find((song) => song.id === row.id) ?? row;
-
-    const tags = computeTags(stored(originalSongRow), stored(coverSongRow));
-
-    try {
-      await db.batch([
-        db.insert(songs).values(originalSongRow).onConflictDoNothing(),
-        db.insert(songs).values(coverSongRow).onConflictDoNothing(),
-        db.insert(covers).values({ ...coverRow, tags }),
-      ]);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      return setError(
-        form,
-        message.includes("covers.slug")
-          ? "This cover has already been added"
-          : message,
-      );
+    if (!result[1].length) {
+      return setError(form, "This cover has already been added");
     }
 
-    redirect(302, `/cover/${coverRow.slug}?new=true`);
+    redirect(302, `/cover/${slug}?new=true`);
   },
 };

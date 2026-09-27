@@ -7,5 +7,3 @@ export const getDb = (platform: App.Platform | undefined) => {
 
   return drizzle(platform.env.DB, { schema });
 };
-
-export type Db = ReturnType<typeof getDb>;

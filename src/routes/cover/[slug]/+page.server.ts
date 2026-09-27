@@ -14,25 +14,25 @@ export type Cover = {
   tags: Enums<"tags">[];
 };
 
+const songColumns = {
+  id: true,
+  name: true,
+  url: true,
+  artists: true,
+  gender: true,
+  album_name: true,
+  album_img: true,
+  album_year: true,
+  energy: true,
+  key: true,
+  tempo: true,
+  danceability: true,
+  valence: true,
+  time_signature: true,
+} as const;
+
 export async function load({ params: { slug }, platform }) {
   const db = getDb(platform);
-
-  const songColumns = {
-    id: true,
-    name: true,
-    url: true,
-    artists: true,
-    gender: true,
-    album_name: true,
-    album_img: true,
-    album_year: true,
-    energy: true,
-    key: true,
-    tempo: true,
-    danceability: true,
-    valence: true,
-    time_signature: true,
-  } as const;
 
   const data = await db.query.covers.findFirst({
     columns: {

@@ -5,12 +5,11 @@ import { TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
-import type { Cover } from "../+page.server";
+
+const songColumns = { name: true, artists: true, album_img: true } as const;
 
 export async function GET({ params, url, platform }) {
   const { slug } = params;
-
-  const songColumns = { name: true, artists: true, album_img: true } as const;
 
   const data = await getDb(platform).query.covers.findFirst({
     columns: { tags: true },
@@ -28,7 +27,8 @@ export async function GET({ params, url, platform }) {
     });
   }
 
-  const { original, cover, tags } = data as Cover;
+  const { original, cover } = data;
+  const tags = data.tags ?? [];
 
   const title =
     original && cover
