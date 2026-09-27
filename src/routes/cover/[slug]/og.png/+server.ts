@@ -8,26 +8,31 @@ import { covers } from "$lib/server/db/schema";
 
 const songColumns = { name: true, artists: true, album_img: true } as const;
 
-let fonts: Promise<ArrayBuffer[]> | undefined;
+let staticAssets: Promise<ArrayBuffer[]> | undefined;
 
-const loadFonts = (url: URL) => {
-  fonts ??= Promise.all(
-    ["Regular", "Bold"].map((weight) =>
-      fetch(new URL(`/fonts/LabilGrotesk-${weight}.woff`, url)).then((res) =>
-        res.arrayBuffer(),
-      ),
-    ),
+const loadStaticAssets = (url: URL, platform: App.Platform | undefined) => {
+  const assets = platform?.env.ASSETS ?? globalThis;
+  staticAssets ??= Promise.all(
+    [
+      "/fonts/LabilGrotesk-Regular.woff",
+      "/fonts/LabilGrotesk-Bold.woff",
+      "/images/og-shadow.png",
+    ].map(async (path) => {
+      const res = await assets.fetch(new URL(path, url));
+      if (!res.ok) throw new Error(`${path}: ${res.status}`);
+      return res.arrayBuffer();
+    }),
   ).catch((error) => {
-    fonts = undefined;
+    staticAssets = undefined;
     throw error;
   });
-  return fonts;
+  return staticAssets;
 };
 
 export async function GET({ params, url, platform }) {
   const { slug } = params;
 
-  const [data, [labil, labilBold]] = await Promise.all([
+  const [data, [labil, labilBold, shadowPng]] = await Promise.all([
     getDb(platform).query.covers.findFirst({
       columns: { tags: true },
       with: {
@@ -36,7 +41,7 @@ export async function GET({ params, url, platform }) {
       },
       where: eq(covers.slug, slug),
     }),
-    loadFonts(url),
+    loadStaticAssets(url, platform),
   ]);
 
   if (!data) {
@@ -47,6 +52,7 @@ export async function GET({ params, url, platform }) {
   }
 
   const { original, cover } = data;
+  const shadow = `data:image/png;base64,${Buffer.from(shadowPng).toString("base64")}`;
   const tags = data.tags ?? [];
 
   const title =
@@ -63,8 +69,38 @@ export async function GET({ params, url, platform }) {
     .map((tag) => TAGS[tag].label);
   tags.length > 4 ? displayTags.push(`+${tags.length - 4}`) : null;
 
-  const albumBoxShadow =
-    "0px 2.7px 3.6px rgba(0, 0, 0, 0.024), 0px 7.5px 10px rgba(0, 0, 0, 0.035), 0px 18.1px 24.1px rgba(0, 0, 0, 0.046), 0px 60px 80px rgba(0, 0, 0, 0.07)";
+  const album = (src: string, borderRadius: string, transform: string) => ({
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        position: "relative",
+        width: 340,
+        height: 340,
+        transform,
+      },
+      children: [
+        {
+          type: "img",
+          props: {
+            src: shadow,
+            width: 660,
+            height: 660,
+            style: { position: "absolute", left: -160, top: -160 },
+          },
+        },
+        {
+          type: "img",
+          props: {
+            src,
+            width: 340,
+            height: 340,
+            style: { borderRadius, objectFit: "cover" },
+          },
+        },
+      ],
+    },
+  });
 
   const html = {
     type: "div",
@@ -134,35 +170,12 @@ export async function GET({ params, url, platform }) {
                     width: "40%",
                   },
                   children: [
-                    {
-                      type: "img",
-                      props: {
-                        src: original.album_img[0],
-                        width: 340,
-                        height: 340,
-                        style: {
-                          borderRadius: "6px",
-                          boxShadow: albumBoxShadow,
-                          objectFit: "cover",
-                          transform:
-                            "rotate(-6deg) scale(0.9) translateX(132px) translateY(-16px)",
-                        },
-                      },
-                    },
-                    {
-                      type: "img",
-                      props: {
-                        src: cover.album_img[0],
-                        width: 340,
-                        height: 340,
-                        style: {
-                          borderRadius: "8px",
-                          boxShadow: albumBoxShadow,
-                          objectFit: "cover",
-                          transform: "rotate(6deg) scale(1.1)",
-                        },
-                      },
-                    },
+                    album(
+                      original.album_img[0],
+                      "6px",
+                      "rotate(-6deg) scale(0.9) translateX(132px) translateY(-16px)",
+                    ),
+                    album(cover.album_img[0], "8px", "rotate(6deg) scale(1.1)"),
                   ],
                 },
               },

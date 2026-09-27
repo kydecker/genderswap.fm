@@ -25,26 +25,34 @@ const tidal = {
 };
 const tempDir = mkdtempSync(join(tmpdir(), "backfill-links-"));
 
-const d1 = (args: string[]) =>
-  execFileSync(
-    "pnpm",
-    [
-      "exec",
-      "wrangler",
-      "d1",
-      "execute",
-      "genderswap-fm",
-      target,
-      "--yes",
-      ...args,
-    ],
-    { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
-  );
+const d1 = async (args: string[], attempts = 3) => {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return execFileSync(
+        "pnpm",
+        [
+          "exec",
+          "wrangler",
+          "d1",
+          "execute",
+          "genderswap-fm",
+          target,
+          "--yes",
+          ...args,
+        ],
+        { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
+      );
+    } catch (error) {
+      if (attempt === attempts) throw error;
+      await sleep(30_000);
+    }
+  }
+};
 
 const quote = (value: string | null) =>
   value === null ? "NULL" : `'${value.replaceAll("'", "''")}'`;
 
-const writeRows = (
+const writeRows = async (
   rows: (SongLinks & { id: string; isrc: string | null })[],
 ) => {
   const file = join(tempDir, "batch.sql");
@@ -57,7 +65,7 @@ const writeRows = (
       )
       .join("\n"),
   );
-  d1(["--file", file]);
+  await d1(["--file", file]);
 };
 
 const getSpotifyToken = async () => {
@@ -94,7 +102,7 @@ const fillIsrcs = async (songs: Song[]) => {
 };
 
 const [{ results: songs }] = JSON.parse(
-  d1([
+  await d1([
     "--json",
     "--command",
     "SELECT id, name, artists, duration_ms, isrc FROM songs WHERE links_checked_at IS NULL ORDER BY id",
@@ -126,7 +134,7 @@ for (const [i, song] of queue.entries()) {
   pending.push({ id: song.id, isrc: song.isrc, ...links });
 
   if (pending.length === 25 || i === queue.length - 1) {
-    writeRows(pending);
+    await writeRows(pending);
     pending = [];
     console.log(
       `${i + 1}/${queue.length} · Apple ${found.apple} · Tidal ${found.tidal} · failed ${found.failed}`,
