@@ -9,6 +9,7 @@ import { newCoverSchema } from "$lib/schemas";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
 import { findSongLinks } from "$lib/server/links";
+import { spotify } from "$lib/server/spotify";
 import { computeTags } from "$lib/tags";
 import type { Enums, Tables } from "$lib/types/types";
 
@@ -55,21 +56,32 @@ export const actions = {
       const artists = song.artists.map((artist) => artist.name);
       const isrc = song.external_ids?.isrc ?? null;
 
-      const [audioFeatures, links] = await Promise.all([
+      const albumUpc = spotify.albums
+        .get(song.album.id)
+        .then((album) => album.external_ids?.upc ?? null)
+        .catch(() => null);
+
+      const [audioFeatures, album_upc, links] = await Promise.all([
         fetch(`/api/getAudioFeatures?id=${song.id}`).then((response) =>
           response.json(),
         ),
-        findSongLinks(
-          {
-            isrc,
-            name: formattedName,
-            artists,
-            duration_ms: song.duration_ms,
-          },
-          {
-            clientId: env.TIDAL_CLIENT_ID,
-            clientSecret: env.TIDAL_CLIENT_SECRET,
-          },
+        albumUpc,
+        albumUpc.then((upc) =>
+          findSongLinks(
+            {
+              isrc,
+              upc,
+              name: formattedName,
+              artists,
+              duration_ms: song.duration_ms,
+              disc_number: song.disc_number,
+              track_number: song.track_number,
+            },
+            {
+              clientId: env.TIDAL_CLIENT_ID,
+              clientSecret: env.TIDAL_CLIENT_SECRET,
+            },
+          ),
         ),
       ]);
 
@@ -97,6 +109,7 @@ export const actions = {
         time_signature: audioFeatures.time_signature,
         valence: audioFeatures.valence,
         isrc,
+        album_upc,
         ...links,
       };
     };
