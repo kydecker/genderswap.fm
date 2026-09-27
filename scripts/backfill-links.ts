@@ -1,7 +1,4 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import { findSongLinks, type SongLinks } from "../src/lib/server/links.ts";
 
@@ -27,7 +24,6 @@ const tidal = {
   clientId: process.env.TIDAL_CLIENT_ID,
   clientSecret: process.env.TIDAL_CLIENT_SECRET,
 };
-const tempDir = mkdtempSync(join(tmpdir(), "backfill-links-"));
 
 const d1 = async (args: string[], attempts = 3) => {
   for (let attempt = 1; ; attempt++) {
@@ -63,17 +59,15 @@ const writeRows = async (
     album_upc: string | null;
   })[],
 ) => {
-  const file = join(tempDir, "batch.sql");
-  writeFileSync(
-    file,
+  await d1([
+    "--command",
     rows
       .map(
         (row) =>
           `UPDATE songs SET isrc = coalesce(${quote(row.isrc)}, isrc), album_upc = coalesce(${quote(row.album_upc)}, album_upc), apple_music_url = coalesce(${quote(row.apple_music_url)}, apple_music_url), tidal_url = coalesce(${quote(row.tidal_url)}, tidal_url), links_checked_at = ${quote(row.links_checked_at)} WHERE id = ${quote(row.id)};`,
       )
       .join("\n"),
-  );
-  await d1(["--file", file]);
+  ]);
 };
 
 const getSpotifyToken = async () => {
