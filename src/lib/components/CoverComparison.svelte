@@ -13,37 +13,6 @@ const coveredAs = $derived(
 </script>
 
 <div class="compare">
-  <div
-    class="track original"
-    itemprop="track"
-    itemscope
-    itemtype="https://schema.org/MusicRecording"
-  >
-    <div class="album">
-      <img
-        class="album-art"
-        src={originalSong.album_img[0]}
-        alt={`${originalSong.album_name} album art`}
-        itemprop="image"
-      />
-    </div>
-    <div class="details">
-      <a href={`https://open.spotify.com/track/${originalSong.id}`} class="song-link">
-        <SpotifyIcon />
-        Listen to original
-      </a>
-      <h2 class="artist" itemprop="byArtist">
-        {#each originalSong.artists as artist, i}
-          <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
-          >{#if i < originalSong.artists.length - 1}{`, `}{/if}
-        {/each}
-      </h2>
-      <time class="album-year" itemprop="datePublished">
-        {originalSong.album_year}
-      </time>
-      <em class="album-name">{smartquotes(originalSong.album_name)}</em>
-    </div>
-  </div>
   <div class="track cover" itemprop="track" itemscope itemtype="https://schema.org/MusicRecording">
     <div class="album">
       <img
@@ -75,6 +44,37 @@ const coveredAs = $derived(
       {/if}
     </div>
   </div>
+  <div
+    class="track original"
+    itemprop="track"
+    itemscope
+    itemtype="https://schema.org/MusicRecording"
+  >
+    <div class="album">
+      <img
+        class="album-art"
+        src={originalSong.album_img[0]}
+        alt={`${originalSong.album_name} album art`}
+        itemprop="image"
+      />
+    </div>
+    <div class="details">
+      <a href={`https://open.spotify.com/track/${originalSong.id}`} class="song-link">
+        <SpotifyIcon />
+        Listen to original
+      </a>
+      <h2 class="artist" itemprop="byArtist">
+        {#each originalSong.artists as artist, i}
+          <a href={getArtistLink(artist)}>{smartquotes(artist)}</a
+          >{#if i < originalSong.artists.length - 1}{`, `}{/if}
+        {/each}
+      </h2>
+      <time class="album-year" itemprop="datePublished">
+        {originalSong.album_year}
+      </time>
+      <em class="album-name">{smartquotes(originalSong.album_name)}</em>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -96,8 +96,8 @@ const coveredAs = $derived(
     scroll-padding-inline: var(--space-xl);
     gap: var(--space-l);
     grid-template:
-      'originalAlbum coverAlbum'
-      'originalContent coverContent';
+      'coverAlbum originalAlbum'
+      'coverContent originalContent';
     grid-template-columns: 1fr 1fr;
 
     @supports (padding: max(0px)) {
@@ -169,24 +169,24 @@ const coveredAs = $derived(
     }
   }
 
-  .original {
+  .cover {
     .album {
-      grid-area: originalAlbum;
+      grid-area: coverAlbum;
       margin-inline-start: auto;
     }
     .details {
-      grid-area: originalContent;
+      grid-area: coverContent;
       align-items: flex-end;
       text-align: right;
     }
   }
 
-  .cover {
+  .original {
     .album {
-      grid-area: coverAlbum;
+      grid-area: originalAlbum;
     }
     .details {
-      grid-area: coverContent;
+      grid-area: originalContent;
     }
   }
 
