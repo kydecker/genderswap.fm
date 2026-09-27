@@ -31,7 +31,7 @@ const songColumns = {
   time_signature: true,
 } as const;
 
-export async function load({ params: { slug }, platform }) {
+export async function load({ params: { slug }, platform, setHeaders }) {
   const db = getDb(platform);
 
   const data = await db.query.covers.findFirst({
@@ -53,6 +53,8 @@ export async function load({ params: { slug }, platform }) {
       message: "Cover not found",
     });
   }
+
+  setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
 
   const { original, cover, created_at, description, contributor, tags } =
     data as Cover;
