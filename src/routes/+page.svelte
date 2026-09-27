@@ -111,7 +111,7 @@ const handleNext = () => {
     content="A catalogue of the best gender-swapped song covers. Search, listen, and add your own."
   />
   <link rel="canonical" href={SITE_URL} />
-  <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
+  <meta property="og:image" content={`${page.url.origin}/og-image.png`} />
   <meta property="og:image:alt" content="Genderswap.fm" />
 </svelte:head>
 

@@ -93,7 +93,7 @@ onMount(async () => {
     content={data.description ?? 'Some covers deliver the age-old simple pleasures of drag.'}
   />
   <link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
-  <meta property="og:image" content={`${SITE_URL}${page.url.pathname}/og.png`} />
+  <meta property="og:image" content={`${page.url.origin}${page.url.pathname}/og.png`} />
   <meta property="og:image:alt" content={data.pageTitle} />
   <meta property="og:image:width" content={`${OG_WIDTH}`} />
   <meta property="og:image:height" content={`${OG_HEIGHT}`} />
