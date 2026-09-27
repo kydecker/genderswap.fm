@@ -79,7 +79,7 @@ const coverSong = $derived(cover.cover);
   .compare {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-xl);
+    gap: var(--space-l);
     align-items: start;
   }
 
@@ -160,13 +160,13 @@ const coverSong = $derived(cover.cover);
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2xs);
-    margin-inline-start: -0.35rem;
+    margin-inline: -0.35rem;
 
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 2.5rem;
+      width: 2.4rem;
       aspect-ratio: 1;
       opacity: 0.8;
       border-radius: var(--radius-full);
