@@ -54,7 +54,7 @@ export const actions = {
         .split(" - ")[0] // "Smells Like Teen Spirit - Radio Edit" -> "Smells Like Teen Spirit"
         .replace(/\s\([^()]*\)/g, ""); // "Time After Time (2022 Remaster)" -> "Time After Time"
       const artists = song.artists.map((artist) => artist.name);
-      const isrc = song.external_ids?.isrc ?? null;
+      const isrc = song.external_ids?.isrc?.toUpperCase() ?? null;
 
       const albumUpc = spotify.albums
         .get(song.album.id)
