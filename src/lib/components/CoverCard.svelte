@@ -27,25 +27,14 @@ function formatArtists(artists: string[]) {
 </script>
 
 <div class="coverCard" class:placeholder={isSkeleton} aria-hidden={isSkeleton || undefined}>
-  <div class="albums">
-    <div class="album">
-      {#if cover?.album_img}
-        <img
-          src={cover.album_img[1]}
-          alt={`${cover.name} album art`}
-          loading={lazy ? 'lazy' : 'eager'}
-        />
-      {/if}
-    </div>
-    <div class="album">
-      {#if original?.album_img}
-        <img
-          src={original.album_img[1]}
-          alt={`${original.name} album art`}
-          loading={lazy ? 'lazy' : 'eager'}
-        />
-      {/if}
-    </div>
+  <div class="album">
+    {#if cover?.album_img}
+      <img
+        src={cover.album_img[1]}
+        alt={`${cover.name} album art`}
+        loading={lazy ? 'lazy' : 'eager'}
+      />
+    {/if}
   </div>
   <div class="content">
     <h2 class="title">
@@ -58,8 +47,18 @@ function formatArtists(artists: string[]) {
         <span class="name">{formatArtists(cover.artists)}</span>
       {/if}
       {#if original}
+        {@const [firstWord, ...rest] = formatArtists(original.artists).split(" ")}
         <span class="covering"
-          >covering <span class="name">{formatArtists(original.artists)}</span></span
+          >covering <span class="name"
+            ><span class="nowrap"
+              >{#if original.album_img}<img
+                  class="originalAlbum"
+                  src={original.album_img.at(-1)}
+                  alt={`${original.name} album art`}
+                  loading={lazy ? 'lazy' : 'eager'}
+                />{/if}{firstWord}</span
+            >{rest.length ? ` ${rest.join(" ")}` : ""}</span
+          ></span
         >
       {/if}
     </div>
@@ -72,49 +71,24 @@ function formatArtists(artists: string[]) {
 <style>
   .coverCard {
     position: relative;
-    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     align-self: flex-start;
-    gap: var(--space-m);
-    padding: var(--space-m);
-    border-radius: var(--radius-m);
-
-    @media (hover: hover) {
-      &:hover {
-        background: var(--mauve-3);
-      }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:not(.placeholder):hover .album {
-        transform: rotate(0) translateX(0);
-      }
-    }
+    gap: var(--space-s);
+    border-radius: 4px;
 
     &:has(.link:focus-visible) {
-      background: var(--mauve-3);
-
-      .album {
-        transform: rotate(0) translateX(0);
-      }
+      outline: 3px solid var(--pink-a9);
+      outline-offset: var(--space-2xs);
     }
-  }
-
-  .albums {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-xs);
-    padding-block-end: var(--space-s);
   }
 
   .album {
     background: var(--mauve-3);
     border-radius: var(--radius-album);
     aspect-ratio: 1;
-    transition: transform 0.2s ease-in-out;
+    width: 100%;
     position: relative;
 
     &:not(:empty) {
@@ -132,22 +106,8 @@ function formatArtists(artists: string[]) {
     img {
       width: 100%;
       height: 100%;
-      aspect-ratio: 1;
       border-radius: var(--radius-album);
       object-fit: cover;
-    }
-
-    &:first-child {
-      width: 60%;
-      transform: rotate(-6deg) translateX(6%);
-      transform-origin: 100% 0;
-      z-index: 1;
-    }
-
-    &:last-child {
-      width: 40%;
-      transform: rotate(10deg) translateX(-6%);
-      transform-origin: 0 0;
     }
   }
 
@@ -167,10 +127,6 @@ function formatArtists(artists: string[]) {
   .title:empty,
   .artist:empty {
     animation: pulse 1s ease-in-out infinite;
-  }
-
-  .placeholder .album:last-child {
-    opacity: 0.6;
   }
 
   .content {
@@ -195,16 +151,17 @@ function formatArtists(artists: string[]) {
   }
 
   .title {
-    font-size: var(--step-1);
+    font-size: var(--step-0);
     font-feature-settings: var(--font-stable);
 
     &:empty {
       width: 70%;
-      height: var(--space-xl);
+      height: var(--space-l);
     }
   }
 
   .artist {
+    font-size: var(--step--1);
     color: var(--mauve-10);
     line-height: 1.3;
 
@@ -212,9 +169,24 @@ function formatArtists(artists: string[]) {
       color: var(--mauve-12);
     }
 
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .originalAlbum {
+      display: inline-block;
+      height: 1lh;
+      width: auto;
+      aspect-ratio: 1;
+      margin-inline-end: 0.25em;
+      vertical-align: top;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+
     &:empty {
       width: 90%;
-      height: var(--space-l);
+      height: var(--space-m);
     }
   }
 
@@ -222,6 +194,10 @@ function formatArtists(artists: string[]) {
     position: absolute;
     inset: 0;
     z-index: 2;
-    border-radius: var(--radius-m);
+    border-radius: 4px;
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 </style>

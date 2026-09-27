@@ -83,15 +83,15 @@ describe("CoverCard", () => {
       album_img: ["test-cover.jpg"],
     };
 
-    const { getByText } = render(CoverCard, {
+    const { container, getByText } = render(CoverCard, {
       props: { original, cover, slug: "test-slug" },
     });
 
     const originalNameElement = getByText("Original Name");
     expect(originalNameElement).toBeDefined();
 
-    const originalArtistElement = getByText("Original Artist");
-    expect(originalArtistElement).toBeDefined();
+    const originalArtistElement = container.querySelector(".covering .name");
+    expect(originalArtistElement?.textContent).toBe("Original Artist");
 
     const coverArtistElement = getByText("Cover Artist");
     expect(coverArtistElement).toBeDefined();
@@ -109,14 +109,14 @@ describe("CoverCard", () => {
       album_img: ["test-cover.jpg"],
     };
 
-    const { getByText } = render(CoverCard, {
+    const { container, getByText } = render(CoverCard, {
       props: { original, cover, slug: "test-slug" },
     });
 
-    const originalArtistElement = getByText(
+    const originalArtistElement = container.querySelector(".covering .name");
+    expect(originalArtistElement?.textContent).toBe(
       "Original Artist, Original Artist 2",
     );
-    expect(originalArtistElement).toBeDefined();
 
     const coverArtistElement = getByText("Cover Artist, Cover Artist 2");
     expect(coverArtistElement).toBeDefined();

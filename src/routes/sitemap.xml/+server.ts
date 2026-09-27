@@ -1,9 +1,15 @@
 import { desc } from "drizzle-orm";
-import { SITE_URL } from "$lib/constants";
+import { SITE_URL, TAGS } from "$lib/constants";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 
-const STATIC_PATHS = ["/", "/about", "/new"];
+const STATIC_PATHS = [
+  "/",
+  "/about",
+  "/new",
+  "/latest",
+  ...Object.values(TAGS).map(({ slug }) => `/${slug}`),
+];
 
 function urlEntry(path: string, lastmod?: string) {
   return `  <url>

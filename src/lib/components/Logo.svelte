@@ -97,6 +97,7 @@
 
     svg {
       overflow: visible;
+      isolation: isolate;
     }
 
     @media (hover: hover) and (pointer: fine) {

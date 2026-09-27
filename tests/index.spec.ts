@@ -74,47 +74,79 @@ test.describe("should display the correct theme", () => {
 });
 
 test.describe("should display and toggle tags", () => {
-  test("should not have any tags selected by default", async ({ page }) => {
+  test("should show category rows by default", async ({ page }) => {
     const activeTag = page.locator("button.tag.active");
     await expect(activeTag).not.toBeVisible();
 
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).not.toBeVisible();
+    const titles = page.locator(".row .heading .title");
+    await expect(titles.first()).toHaveText("Latest uploads");
+    await expect(titles.nth(1)).toHaveText("MTF");
+    await expect(
+      page.locator(".row").first().locator(".coverCard"),
+    ).toHaveCount(10);
   });
 
-  test("should add and remove tag filters when clicked", async ({ page }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
-
-    await expect(page).toHaveURL("/?tag=transition_mtf");
-
-    const activeTag = page.locator("button.tag.active");
-    await expect(activeTag).toBeVisible();
-    await expect(activeTag).toHaveText("MTF");
-
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).toBeVisible();
-    await expect(selectedTag).toHaveText("MTF");
-
-    await selectedTag.click();
-    await expect(page).toHaveURL("/");
-
-    await expect(activeTag).not.toBeVisible();
-    await expect(selectedTag).not.toBeVisible();
-  });
-
-  test("should display the selected tag if one is in the URL", async ({
+  test("should open and clear a category when its title is clicked", async ({
     page,
   }) => {
-    await page.goto("/?tag=transition_mtf");
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "MTF" })
+      .click();
+
+    await expect(page).toHaveURL("/mtf");
 
     const activeTag = page.locator("button.tag.active");
     await expect(activeTag).toBeVisible();
     await expect(activeTag).toHaveText("MTF");
+    await expect(page.locator("h1.categoryTitle")).toHaveText("MTF");
+    await expect(page.locator(".categoryDescription")).toHaveText(
+      "Girls cover boys.",
+    );
 
-    const selectedTag = page.locator("button.tag.selected");
-    await expect(selectedTag).toBeVisible();
-    await expect(selectedTag).toHaveText("MTF");
+    await activeTag.click();
+    await expect(page).toHaveURL("/");
+    await expect(activeTag).not.toBeVisible();
+  });
+
+  test("should open latest uploads when its title is clicked", async ({
+    page,
+  }) => {
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "Latest uploads" })
+      .click();
+
+    await expect(page).toHaveURL("/latest");
+    await expect(page.locator("h1.categoryTitle")).toHaveText("Latest uploads");
+  });
+
+  test("should display the category for its URL", async ({ page }) => {
+    await page.goto("/mtf");
+
+    const activeTag = page.locator("button.tag.active");
+    await expect(activeTag).toBeVisible();
+    await expect(activeTag).toHaveText("MTF");
+    await expect(page.locator("h1.categoryTitle")).toHaveText("MTF");
+    expect(await page.title()).toBe("MTF · Genderswap.fm");
+  });
+
+  test("should redirect legacy query URLs to category routes", async ({
+    page,
+  }) => {
+    await page.goto("/?tag=valence_up&page=2");
+    await expect(page).toHaveURL("/happier?page=2");
+
+    await page.goto("/?view=latest");
+    await expect(page).toHaveURL("/latest");
+
+    await page.goto("/?page=2");
+    await expect(page).toHaveURL("/latest?page=2");
+  });
+
+  test("should 404 for unknown categories", async ({ page }) => {
+    const response = await page.goto("/not-a-category");
+    expect(response?.status()).toBe(404);
   });
 });
 
@@ -136,15 +168,17 @@ test.describe("should display and submit search queries", () => {
   test("should clear the input of the selected tag and query on x button click", async ({
     page,
   }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "MTF" })
+      .click();
 
-    await expect(page).toHaveURL("/?tag=transition_mtf");
+    await expect(page).toHaveURL("/mtf");
 
     const searchInput = page.locator("input#search");
     await searchInput.fill("crazy in love");
 
-    await expect(page).toHaveURL("/?tag=transition_mtf&q=crazy+in+love");
+    await expect(page).toHaveURL("/mtf?q=crazy+in+love");
 
     const clearButton = page.locator("button.searchClear");
     await clearButton.click();
@@ -156,20 +190,20 @@ test.describe("should display and submit search queries", () => {
   test("should remove a selected tag when typing backspace in an empty input", async ({
     page,
   }) => {
-    const tag = page.locator("button.tag").filter({ hasText: "MTF" });
-    await tag.click();
+    await page
+      .locator(".row .heading .title a")
+      .filter({ hasText: "MTF" })
+      .click();
 
-    await expect(page).toHaveURL("/?tag=transition_mtf");
+    await expect(page).toHaveURL("/mtf");
 
     const searchInput = page.locator("input#search");
     await searchInput.press("Backspace");
 
     const activeTag = page.locator("button.tag.active");
-    const selectedTag = page.locator("button.tag.selected");
 
     await expect(page).toHaveURL("/");
     await expect(activeTag).not.toBeVisible();
-    await expect(selectedTag).not.toBeVisible();
   });
 
   test("should display the query in the input if one is in the URL", async ({
@@ -202,13 +236,15 @@ test.describe("should navigate to other pages successfully", () => {
   });
 
   test("should disable navigating back from first page", async ({ page }) => {
+    await page.goto("/latest");
     const backButton = page.locator("button").filter({ hasText: "Back" });
     await expect(backButton).toBeDisabled();
   });
 
   test("should navigate to the next page on click", async ({ page }) => {
+    await page.goto("/latest");
     const nextButton = page.locator("button").filter({ hasText: "Next" });
     await nextButton.click();
-    await expect(page).toHaveURL("/?page=2");
+    await expect(page).toHaveURL("/latest?page=2");
   });
 });

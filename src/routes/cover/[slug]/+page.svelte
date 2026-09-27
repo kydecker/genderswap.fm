@@ -111,7 +111,7 @@ onMount(async () => {
   {#if data.tags}
     <TagCloud>
       {#each getSortedTags(data.tags) as tag}
-        <Tag text={TAGS[tag].label} url={`/?tag=${tag}`} />
+        <Tag text={TAGS[tag].label} url={`/${TAGS[tag].slug}`} />
       {/each}
     </TagCloud>
   {/if}
