@@ -2,19 +2,20 @@
 import { tick, untrack } from "svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
-import { TAG_BY_SLUG, TAGS } from "$lib/constants";
-import { toTitleCase } from "$lib/helpers";
+import { TAG_BY_SLUG } from "$lib/constants";
+import { createDebouncer, tagTitle } from "$lib/helpers";
 import AddIcon from "~icons/ri/add-line";
 import BackIcon from "~icons/ri/arrow-left-s-line";
+import HomeFillIcon from "~icons/ri/home-5-fill";
 import HomeIcon from "~icons/ri/home-5-line";
+import InfoFillIcon from "~icons/ri/information-fill";
 import InfoIcon from "~icons/ri/information-line";
 import SearchIcon from "~icons/ri/search-line";
 import ShuffleIcon from "~icons/ri/shuffle-line";
 
-const SEARCHABLE_ROUTES = ["/", "/latest", "/[category=category]"];
-
 let urlQuery = $derived(page.url.searchParams.get("q") ?? "");
-let searching = $state(false);
+let open = $state(false);
+let searching = $derived(open || urlQuery !== "");
 let query = $state("");
 let input: HTMLInputElement | undefined = $state();
 
@@ -22,16 +23,13 @@ let category = $derived(
   page.params.category ? TAG_BY_SLUG.get(page.params.category) : undefined,
 );
 let placeholder = $derived(
-  category ? `Search ${toTitleCase(TAGS[category].label)}…` : "Search covers…",
+  category ? `Search ${tagTitle(category)}…` : "Search covers…",
 );
-let searchPath = $derived(
-  SEARCHABLE_ROUTES.includes(page.route.id ?? "") ? page.url.pathname : "/",
-);
+let searchPath = $derived(page.data.searchable ? page.url.pathname : "/");
 
 $effect(() => {
   const q = urlQuery;
   untrack(() => {
-    if (q) searching = true;
     if (document.activeElement !== input) query = q;
   });
 });
@@ -39,28 +37,28 @@ $effect(() => {
 const current = (path: string) =>
   page.url.pathname === path ? ("page" as const) : undefined;
 
+let browsing = $derived(!["/about", "/new"].includes(page.url.pathname));
+
 const openSearch = async () => {
-  searching = true;
+  open = true;
   await tick();
   input?.focus();
 };
 
-let debounceTimer: ReturnType<typeof setTimeout>;
+const debounce = createDebouncer();
 
-const search = () => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
+const search = () =>
+  debounce(() => {
     const params = query ? `?${new URLSearchParams({ q: query })}` : "";
     goto(`${searchPath}${params}`, {
       keepFocus: true,
       replaceState: page.url.pathname === searchPath,
     });
-  }, 250);
-};
+  });
 
 const closeSearch = () => {
-  clearTimeout(debounceTimer);
-  searching = false;
+  debounce.cancel();
+  open = false;
   query = "";
   if (urlQuery) goto(page.url.pathname, { replaceState: true });
 };
@@ -68,8 +66,8 @@ const closeSearch = () => {
 
 <nav class="nav" class:searching aria-label="Site">
   <div class="tabs" inert={searching}>
-    <a class="tab" href="/" aria-current={current("/")}>
-      <HomeIcon aria-hidden="true" />
+    <a class="tab" href="/" aria-current={current("/") ?? (browsing || undefined)}>
+      {#if browsing}<HomeFillIcon aria-hidden="true" />{:else}<HomeIcon aria-hidden="true" />{/if}
       <span>Browse</span>
     </a>
     <button type="button" class="tab" data-search-toggle onclick={openSearch}>
@@ -80,7 +78,7 @@ const closeSearch = () => {
       <AddIcon aria-hidden="true" />
     </a>
     <a class="tab" href="/about" aria-current={current("/about")}>
-      <InfoIcon aria-hidden="true" />
+      {#if current("/about")}<InfoFillIcon aria-hidden="true" />{:else}<InfoIcon aria-hidden="true" />{/if}
       <span>About</span>
     </a>
     <a class="tab" href="/random" data-sveltekit-preload-data="off">
@@ -110,20 +108,27 @@ const closeSearch = () => {
 
 <style>
   .nav {
+    --icon-size: min(var(--step-2), 1.375rem);
+
     position: fixed;
     inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
     inset-inline-start: 50%;
     translate: -50% 0;
     z-index: 100;
-    width: min(20rem, calc(100% - 2 * var(--space-s)));
+    width: min(24rem, calc(100% - 2 * var(--space-s)));
     padding: var(--space-2xs);
     border: 1px solid transparent;
     border-radius: var(--radius-m);
     background: var(--mauve-1);
-    box-shadow: var(--shadow-album-l);
+    box-shadow:
+      0 0.4px 0.7px rgb(0 0 0 / 0.12),
+      0 1.2px 1.9px rgb(0 0 0 / 0.11),
+      0 3.1px 4.4px rgb(0 0 0 / 0.1),
+      0 0 8px rgb(0 0 0 / 0.08);
 
     :global(html.dark) & {
       border-color: var(--white-a3);
+      background: var(--mauve-2);
     }
   }
 
@@ -151,10 +156,10 @@ const closeSearch = () => {
     cursor: pointer;
 
     :global(svg) {
-      font-size: var(--step-0);
+      font-size: var(--icon-size);
     }
 
-    &[aria-current="page"] {
+    &[aria-current] {
       color: var(--mauve-12);
       font-weight: var(--font-weight-bold);
     }
@@ -165,8 +170,8 @@ const closeSearch = () => {
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: -3px;
+      outline: var(--focus-ring);
+      outline-offset: calc(var(--focus-ring-width) * -1);
     }
   }
 
@@ -174,12 +179,12 @@ const closeSearch = () => {
     justify-self: center;
     display: grid;
     place-items: center;
-    width: var(--space-2xl);
-    height: var(--space-2xl);
+    width: min(var(--space-3xl), 2.75rem);
+    height: min(var(--space-3xl), 2.75rem);
     border-radius: var(--radius-full);
     background: var(--mauve-12);
     color: var(--mauve-1);
-    font-size: var(--step-0);
+    font-size: var(--icon-size);
 
     &:hover,
     &:focus-visible {
@@ -187,8 +192,8 @@ const closeSearch = () => {
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 
@@ -204,8 +209,8 @@ const closeSearch = () => {
     color: var(--mauve-11);
 
     &:focus-within {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 2px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
 
     input {
@@ -246,7 +251,7 @@ const closeSearch = () => {
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
+      outline: var(--focus-ring);
     }
   }
 </style>

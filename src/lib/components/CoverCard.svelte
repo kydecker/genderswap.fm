@@ -21,8 +21,6 @@ function formatArtists(artists: string[]) {
         ` +${artists.length - maxArtists}`
     : artists.join(", ");
 }
-
-let [firstWord, ...rest] = $derived(formatArtists(original.artists).split(" "));
 </script>
 
 <div class="coverCard">
@@ -38,16 +36,7 @@ let [firstWord, ...rest] = $derived(formatArtists(original.artists).split(" "));
     <div class="artist">
       <span class="name">{formatArtists(cover.artists)}</span>
       <span class="covering"
-        >covering <span class="name"
-          ><span class="nowrap"
-            ><img
-              class="originalAlbum"
-              src={original.album_img.at(-1)}
-              alt={`${original.name} album art`}
-              loading={lazy ? 'lazy' : 'eager'}
-            />{firstWord}</span
-          >{rest.length ? ` ${rest.join(" ")}` : ""}</span
-        ></span
+        >covering <span class="name">{formatArtists(original.artists)}</span></span
       >
     </div>
     <a class="link" href={`/cover/${slug}`} aria-label={`More about ${original.name}`}></a>
@@ -65,7 +54,7 @@ let [firstWord, ...rest] = $derived(formatArtists(original.artists).split(" "));
     border-radius: 4px;
 
     &:has(.link:focus-visible) {
-      outline: 3px solid var(--pink-a9);
+      outline: var(--focus-ring);
       outline-offset: var(--space-2xs);
     }
   }
@@ -115,21 +104,6 @@ let [firstWord, ...rest] = $derived(formatArtists(original.artists).split(" "));
 
     > .name {
       color: var(--mauve-12);
-    }
-
-    .nowrap {
-      white-space: nowrap;
-    }
-
-    .originalAlbum {
-      display: inline-block;
-      height: 1lh;
-      width: auto;
-      aspect-ratio: 1;
-      margin-inline-end: 0.25em;
-      vertical-align: top;
-      border-radius: 2px;
-      object-fit: cover;
     }
   }
 

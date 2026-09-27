@@ -136,6 +136,10 @@
   --font-weight-bold: 600;
 
   /* Shadows */
+  --focus-ring-width: 3px;
+  --focus-ring: var(--focus-ring-width) solid var(--pink-a9);
+  --focus-ring-offset: 3px;
+
   /* https://shadows.brumm.af/ */
   --shadow-album-s:
     0px 0.4px 0.7px rgba(0, 0, 0, 0.12), 0px 1.2px 1.9px rgba(0, 0, 0, 0.111),

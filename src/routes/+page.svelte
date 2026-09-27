@@ -2,8 +2,8 @@
 import CoverGrid from "$lib/components/CoverGrid.svelte";
 import CoverRow from "$lib/components/CoverRow.svelte";
 import PageMeta from "$lib/components/PageMeta.svelte";
-import { LATEST_TITLE, TAGS } from "$lib/constants";
-import { toTitleCase } from "$lib/helpers";
+import { LATEST_DESCRIPTION, LATEST_TITLE, TAGS } from "$lib/constants";
+import { tagTitle } from "$lib/helpers";
 
 let { data } = $props();
 </script>
@@ -16,8 +16,8 @@ let { data } = $props();
   <div class="rows">
     {#each data.rows as row, index (row.tag)}
       <CoverRow
-        title={row.tag ? toTitleCase(TAGS[row.tag].label) : LATEST_TITLE}
-        description={row.tag ? TAGS[row.tag].description : undefined}
+        title={row.tag ? tagTitle(row.tag) : LATEST_TITLE}
+        description={row.tag ? TAGS[row.tag].description : LATEST_DESCRIPTION}
         href={row.tag ? `/${TAGS[row.tag].slug}` : "/latest"}
         covers={row.slugs.map((slug) => data.covers[slug])}
         totalCount={row.totalCount}

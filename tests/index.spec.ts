@@ -230,14 +230,23 @@ test.describe("should navigate to other pages successfully", () => {
 
   test("should disable navigating back from first page", async ({ page }) => {
     await page.goto("/latest");
-    const backButton = page.locator("button").filter({ hasText: "Back" });
-    await expect(backButton).toBeDisabled();
+    const back = page.locator(".pageLink").filter({ hasText: "Back" });
+    await expect(back).toHaveAttribute("aria-disabled", "true");
+    await expect(back).not.toHaveAttribute("href");
   });
 
-  test("should navigate to the next page on click", async ({ page }) => {
+  test("should navigate between pages with links", async ({ page }) => {
     await page.goto("/latest");
-    const nextButton = page.locator("button").filter({ hasText: "Next" });
-    await nextButton.click();
+    await page.getByRole("link", { name: "Next", exact: true }).click();
     await expect(page).toHaveURL("/latest?page=2");
+
+    await page.getByRole("link", { name: "Back", exact: true }).click();
+    await expect(page).toHaveURL("/latest");
+  });
+
+  test("should keep the search query when paging", async ({ page }) => {
+    await page.goto("/?q=the&page=2");
+    const back = page.getByRole("link", { name: "Back", exact: true });
+    await expect(back).toHaveAttribute("href", "/?q=the");
   });
 });

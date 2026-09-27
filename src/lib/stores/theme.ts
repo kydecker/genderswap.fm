@@ -4,7 +4,6 @@ import { browser } from "$app/environment";
 type Theme = "light" | "dark";
 
 const updateThemeColor = () => {
-  if (!browser) return;
   const bgColor = window.getComputedStyle(
     document.documentElement,
   ).backgroundColor;

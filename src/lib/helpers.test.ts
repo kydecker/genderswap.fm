@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  createDebouncer,
   encodeSearchQuery,
   getArtistLink,
   getMaxCharacterHelpText,
@@ -276,5 +277,39 @@ describe("toTitleCase", () => {
     expect(toTitleCase("more energetic")).toBe("More Energetic");
     expect(toTitleCase("10+ years apart")).toBe("10+ Years Apart");
     expect(toTitleCase("MTF")).toBe("MTF");
+  });
+});
+
+describe("getSortedTags with unknown tags", () => {
+  it("should drop tags that no longer exist", () => {
+    expect(
+      getSortedTags(["valence_up", "key_change" as never, "transition_mtf"]),
+    ).toEqual(["transition_mtf", "valence_up"]);
+  });
+});
+
+describe("createDebouncer", () => {
+  it("should run only the last callback after the delay", () => {
+    vi.useFakeTimers();
+    const debounce = createDebouncer(100);
+    const calls: number[] = [];
+    debounce(() => calls.push(1));
+    debounce(() => calls.push(2));
+    vi.advanceTimersByTime(99);
+    expect(calls).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(calls).toEqual([2]);
+    vi.useRealTimers();
+  });
+
+  it("should not run a cancelled callback", () => {
+    vi.useFakeTimers();
+    const debounce = createDebouncer(100);
+    const calls: number[] = [];
+    debounce(() => calls.push(1));
+    debounce.cancel();
+    vi.advanceTimersByTime(200);
+    expect(calls).toEqual([]);
+    vi.useRealTimers();
   });
 });

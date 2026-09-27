@@ -1,4 +1,4 @@
-import { and, count, desc, eq, type SQL, sql } from "drizzle-orm";
+import { and, count, desc, inArray, type SQL, sql } from "drizzle-orm";
 import { HIDDEN_TAGS, ORDERED_TAGS } from "$lib/constants";
 import type { getDb } from "$lib/server/db";
 import { covers, tagCounts } from "$lib/server/db/schema";
@@ -19,6 +19,12 @@ const hasTag = (tag: string) =>
   sql`exists (select 1 from json_each(${covers.tags}) where value = ${tag})`;
 
 const isVisible = sql`not exists (select 1 from json_each(${covers.tags}) where value in ${HIDDEN_TAGS})`;
+
+const visibleCount = (countOf: Map<string, number>) =>
+  HIDDEN_TAGS.reduce(
+    (total, tag) => total - (countOf.get(tag) ?? 0),
+    countOf.get("*all") ?? 0,
+  );
 
 const findCovers = (
   db: Db,
@@ -45,40 +51,45 @@ const rankedByTag = sql`
   from covers, json_each(covers.tags) as tag`;
 
 export async function loadRows(db: Db) {
-  const [counts, latest, ranked, tagged] = await db.batch([
+  const [counts, latest, tagged] = await db.batch([
     db.select().from(tagCounts),
     findCovers(db, isVisible, ROW_SIZE),
-    db
-      .select({
-        slug: sql<string>`slug`,
-        tag: sql<Enums<"tags">>`tag`,
-      })
-      .from(sql`(${rankedByTag})`)
-      .where(sql`rank <= ${ROW_SIZE}`)
-      .orderBy(sql`rank`),
-    findCovers(
-      db,
-      sql`${covers.id} in (select id from (${rankedByTag}) where rank <= ${ROW_SIZE})`,
-    ),
+    db.query.covers.findMany({
+      columns: { slug: true, tags: true },
+      with: {
+        original: { columns: songColumns },
+        cover: { columns: songColumns },
+      },
+      where: sql`${covers.id} in (select id from (${rankedByTag}) where rank <= ${ROW_SIZE})`,
+      orderBy: [desc(covers.created_at), desc(covers.id)],
+    }),
   ]);
 
   const countOf = new Map(counts.map(({ tag, n }) => [tag, n]));
+  const slugsByTag = new Map<Enums<"tags">, string[]>();
   const coversBySlug = Object.fromEntries(
-    [...latest, ...tagged].map((cover) => [cover.slug, cover]),
+    latest.map((cover) => [cover.slug, cover]),
   );
-  const slugsByTag = Map.groupBy(ranked, ({ tag }) => tag);
+  for (const { tags, ...cover } of tagged) {
+    coversBySlug[cover.slug] = cover;
+    for (const tag of tags ?? []) {
+      const slugs = slugsByTag.get(tag) ?? [];
+      if (slugs.length < ROW_SIZE) slugsByTag.set(tag, [...slugs, cover.slug]);
+    }
+  }
 
   return {
+    searchable: true,
     covers: coversBySlug,
     rows: [
       {
         tag: null,
         slugs: latest.map(({ slug }) => slug),
-        totalCount: countOf.get("*visible") ?? 0,
+        totalCount: visibleCount(countOf),
       },
       ...ORDERED_TAGS.map((tag) => ({
         tag,
-        slugs: slugsByTag.get(tag)?.map(({ slug }) => slug) ?? [],
+        slugs: slugsByTag.get(tag) ?? [],
         totalCount: countOf.get(tag) ?? 0,
       })),
     ].filter((row) => row.slugs.length > 0),
@@ -107,19 +118,33 @@ export async function loadGrid(db: Db, url: URL, tag: Enums<"tags"> | null) {
       : undefined,
   );
 
-  const [data, [counted]] = await db.batch([
+  const [data, counts] = await db.batch([
     findCovers(db, where, PAGE_SIZE, from),
     searchQuery
-      ? db.select({ n: count() }).from(covers).where(where)
+      ? db
+          .select({ tag: sql<string>`'*search'`, n: count() })
+          .from(covers)
+          .where(where)
       : db
-          .select({ n: tagCounts.n })
+          .select()
           .from(tagCounts)
-          .where(eq(tagCounts.tag, tag ?? "*visible")),
+          .where(
+            inArray(tagCounts.tag, tag ? [tag] : ["*all", ...HIDDEN_TAGS]),
+          ),
   ]);
 
+  const countOf = new Map(counts.map(({ tag, n }) => [tag, n]));
+  const totalCount = searchQuery
+    ? (countOf.get("*search") ?? 0)
+    : tag
+      ? (countOf.get(tag) ?? 0)
+      : visibleCount(countOf);
+
   return {
+    searchable: true,
     covers: data,
-    totalCount: counted?.n ?? 0,
+    page,
+    totalCount,
     from,
     to,
     isFirst: page === 1,

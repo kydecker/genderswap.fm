@@ -52,9 +52,9 @@
       }
     }
 
-    &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 </style>

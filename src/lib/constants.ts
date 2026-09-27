@@ -161,3 +161,4 @@ export const TAG_BY_SLUG = new Map(
 );
 
 export const LATEST_TITLE = "Latest";
+export const LATEST_DESCRIPTION = "Recent submissions. Add your own.";

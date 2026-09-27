@@ -197,9 +197,9 @@ const handleSubmit = () => {
       cursor: default;
     }
 
-    &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
 
     :global(svg) {
@@ -242,8 +242,8 @@ const handleSubmit = () => {
     }
 
     &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 

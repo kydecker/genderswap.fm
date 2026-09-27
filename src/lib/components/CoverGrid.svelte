@@ -1,5 +1,4 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import CoverCard from "$lib/components/CoverCard.svelte";
 import type { GridData } from "$lib/server/browse";
@@ -12,25 +11,11 @@ let {
   description,
 }: { data: GridData; title?: string; description?: string } = $props();
 
-let currentPage = $derived(Number(page.url.searchParams.get("page")) || 1);
-
-const handleBack = () => {
-  if (currentPage > 1) {
-    const newURL = new URL(page.url);
-    const newPage = currentPage - 1;
-
-    newPage === 1
-      ? newURL.searchParams.delete("page")
-      : newURL.searchParams.set("page", newPage.toString());
-
-    goto(newURL);
-  }
-};
-
-const handleNext = () => {
-  const newURL = new URL(page.url);
-  newURL.searchParams.set("page", (currentPage + 1).toString());
-  goto(newURL);
+const pageHref = (n: number) => {
+  const params = new URLSearchParams(page.url.searchParams);
+  if (n === 1) params.delete("page");
+  else params.set("page", String(n));
+  return params.size ? `${page.url.pathname}?${params}` : page.url.pathname;
 };
 </script>
 
@@ -67,14 +52,22 @@ const handleNext = () => {
       </div>
     {/if}
     {#if !(data.isFirst && data.isLast)}
-      <div class="buttons">
-        <button type="button" disabled={data.isFirst} onclick={handleBack}
-          ><ArrowLeftIcon />Back</button
-        >
-        <button type="button" disabled={data.isLast} onclick={handleNext}
-          >Next<ArrowRightIcon /></button
-        >
-      </div>
+      <nav class="buttons" aria-label="Pagination">
+        {#if data.isFirst}
+          <span class="pageLink" aria-disabled="true"><ArrowLeftIcon aria-hidden="true" />Back</span>
+        {:else}
+          <a class="pageLink" href={pageHref(data.page - 1)} rel="prev"
+            ><ArrowLeftIcon aria-hidden="true" />Back</a
+          >
+        {/if}
+        {#if data.isLast}
+          <span class="pageLink" aria-disabled="true">Next<ArrowRightIcon aria-hidden="true" /></span>
+        {:else}
+          <a class="pageLink" href={pageHref(data.page + 1)} rel="next"
+            >Next<ArrowRightIcon aria-hidden="true" /></a
+          >
+        {/if}
+      </nav>
     {/if}
   </div>
 {/if}
@@ -84,7 +77,7 @@ const handleNext = () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
     padding-block-start: var(--space-xl);
     padding-inline: max(var(--space-l), env(safe-area-inset-left));
   }
@@ -101,8 +94,8 @@ const handleNext = () => {
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 
@@ -161,9 +154,9 @@ const handleNext = () => {
       }
     }
 
-    &:focus {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 
@@ -180,7 +173,7 @@ const handleNext = () => {
       gap: var(--space-s);
     }
 
-    button {
+    .pageLink {
       background: var(--mauve-12);
       color: var(--mauve-1);
       border: none;
@@ -204,21 +197,21 @@ const handleNext = () => {
       }
 
       @media (hover: hover) and (pointer: fine) {
-        &:not([disabled]):hover {
+        &:not([aria-disabled]):hover {
           background: var(--pink-9);
           color: white;
         }
       }
 
-      &[disabled] {
+      &[aria-disabled] {
         background-color: var(--mauve-4);
         color: var(--mauve-8);
         cursor: default;
       }
 
-      &:focus {
-        outline: 3px solid var(--pink-a9);
-        outline-offset: 3px;
+      &:focus-visible {
+        outline: var(--focus-ring);
+        outline-offset: var(--focus-ring-offset);
       }
     }
   }

@@ -4,8 +4,9 @@ import CoverCard from "$lib/components/CoverCard.svelte";
 import ArrowLeftIcon from "~icons/ri/arrow-left-s-line";
 import ArrowRightIcon from "~icons/ri/arrow-right-s-line";
 
-type Cover = Required<
-  Pick<ComponentProps<typeof CoverCard>, "original" | "cover" | "slug">
+type Cover = Pick<
+  ComponentProps<typeof CoverCard>,
+  "original" | "cover" | "slug"
 >;
 
 let {
@@ -70,7 +71,7 @@ $effect(() => {
       {/each}
       {#if totalCount && totalCount > covers.length}
         <a class="seeAll" {href}>
-          <span>See all {totalCount}</span>
+          <span>All {totalCount}</span>
           <ArrowRightIcon aria-hidden="true" />
         </a>
       {/if}
@@ -105,7 +106,7 @@ $effect(() => {
   .heading {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-2xs);
     padding-inline: var(--gutter);
   }
 
@@ -117,7 +118,6 @@ $effect(() => {
     a {
       display: inline-flex;
       align-items: baseline;
-      gap: var(--space-2xs);
       border-radius: var(--radius-xs);
 
       :global(svg) {
@@ -137,8 +137,8 @@ $effect(() => {
       }
 
       &:focus-visible {
-        outline: 3px solid var(--pink-a9);
-        outline-offset: 3px;
+        outline: var(--focus-ring);
+        outline-offset: var(--focus-ring-offset);
       }
     }
   }
@@ -195,8 +195,8 @@ $effect(() => {
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 
@@ -211,8 +211,8 @@ $effect(() => {
     height: var(--space-2xl);
     border: none;
     border-radius: var(--radius-full);
-    background: var(--mauve-12);
-    color: var(--mauve-1);
+    background: white;
+    color: black;
     font-size: var(--step-1);
     box-shadow: var(--shadow-album-s);
     cursor: pointer;
@@ -232,14 +232,13 @@ $effect(() => {
     }
 
     &:hover {
-      background: var(--pink-9);
-      color: white;
+      filter: brightness(0.94);
     }
 
     &:focus-visible {
       opacity: 1;
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 3px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 

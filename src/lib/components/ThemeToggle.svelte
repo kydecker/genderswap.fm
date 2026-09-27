@@ -56,8 +56,8 @@ import SunIcon from "~icons/ri/sun-line";
     }
 
     &:focus-visible {
-      outline: 3px solid var(--pink-a9);
-      outline-offset: 2px;
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 </style>
