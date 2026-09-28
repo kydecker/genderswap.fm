@@ -70,7 +70,7 @@ $effect(() => {
         </div>
       {/each}
       {#if totalCount && totalCount > covers.length}
-        <a class="seeAll" {href}>
+        <a class="seeAll" {href} aria-label={`More ${title} covers`}>
           More<ArrowRightIcon aria-hidden="true" />
         </a>
       {/if}

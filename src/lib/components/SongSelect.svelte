@@ -243,6 +243,7 @@ $effect(() => {
     right: 0;
     overflow-y: scroll;
     background-color: var(--color-surface);
+    backdrop-filter: var(--backdrop-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-m);
     box-shadow: var(--shadow-popover);
