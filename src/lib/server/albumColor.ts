@@ -172,3 +172,27 @@ export const getAlbumColor = async (url: string): Promise<string | null> => {
   });
   return extractAlbumColor(data);
 };
+
+const hexToOklch = (hex: string) => {
+  const value = Number.parseInt(hex.replace("#", "").slice(0, 6), 16);
+  const { l, a, b } = rgbToOklab(
+    (value >> 16) & 255,
+    (value >> 8) & 255,
+    value & 255,
+  );
+  return { l, c: Math.hypot(a, b), h: Math.atan2(b, a) };
+};
+
+export const DEFAULT_PAGE_COLOR = "#999999";
+
+export const getPagePalette = (color: string | null | undefined) => {
+  const page = /^#[0-9a-f]{6}$/i.test(color ?? "")
+    ? (color as string)
+    : DEFAULT_PAGE_COLOR;
+  const { c, h } = hexToOklch(page);
+  return {
+    bg: page,
+    surfaceRaised: toHex(oklchToLab(0.92, c * 0.25, h)),
+    text: toHex(oklchToLab(0.18, c * 0.4, h)),
+  };
+};
