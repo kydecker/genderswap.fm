@@ -98,7 +98,7 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
             <strong class="bannerTitle">Earliest release available on Spotify</strong>
           </div>
         </div>
-      {:else if earlierRelease.album.release_date < song.album.release_date}
+      {:else}
         <div class="bannerContents">
           <HistoryIcon />
           <div class="bannerLabel">

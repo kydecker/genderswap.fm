@@ -28,10 +28,11 @@ export async function GET({ url }) {
 
   if (!results) return Response.json(null);
 
+  const normalizedName = normalize(trackNoExtras);
+
   const earliestRelease = results
-    .filter((result) => result.id !== track.id)
     // Exclude tracks with different names
-    .filter((result) => normalize(result.name) === normalize(trackNoExtras))
+    .filter((result) => normalize(result.name) === normalizedName)
     // Exclude tracks from a different artist
     .filter((result) => result.artists[0].name === artist)
     // Exclude singles
@@ -42,7 +43,5 @@ export async function GET({ url }) {
       a.album.release_date.localeCompare(b.album.release_date),
     )[0];
 
-  if (!earliestRelease) return Response.json(null);
-
-  return Response.json(earliestRelease);
+  return Response.json(earliestRelease ?? null);
 }
