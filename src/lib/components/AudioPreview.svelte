@@ -120,5 +120,10 @@ $effect(() => {
       color: var(--color-bg);
       border-color: var(--color-surface);
     }
+
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
   }
 </style>

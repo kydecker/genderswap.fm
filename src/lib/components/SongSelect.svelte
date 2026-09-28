@@ -35,7 +35,7 @@ let searching = $state(false);
 let searchFailed = $state(false);
 
 const MIN_QUERY_LENGTH = 2;
-const debounceSearch = createDebouncer();
+const debounceSearch = createDebouncer(350);
 const debounceChecks = createDebouncer();
 const cache = new Map<string, ITunesTrack[]>();
 let inputElement: HTMLInputElement | undefined = $state();
@@ -133,7 +133,11 @@ const search = async (query: string) => {
   }
 };
 
+let activeQuery = "";
+
 const onQueryChange = (query: string) => {
+  if (query === activeQuery) return;
+  activeQuery = query;
   debounceSearch.cancel();
   searchController?.abort();
   searchFailed = false;
@@ -157,6 +161,8 @@ const onQueryChange = (query: string) => {
 const handleClearSelection = () => {
   discoveredExistingCover = null;
   discoveredEarlierRelease = null;
+  activeQuery = "";
+  searchResults = undefined;
   inputValue.set("");
   value = undefined;
 };
@@ -167,7 +173,7 @@ const handleUseEarlierRelease = async () => {
 };
 
 $effect(() => {
-  const query = $inputValue.trim();
+  const query = $inputValue.trim().replace(/\s+/g, " ");
   if ($touchedInput && !value) onQueryChange(query);
 });
 </script>
