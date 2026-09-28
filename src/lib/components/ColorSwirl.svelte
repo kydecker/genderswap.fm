@@ -11,6 +11,9 @@ const RANGE = 0.5;
 const FADE_MIN = 0.05;
 const FADE_MAX = 0.45;
 
+const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
 type Oklab = [number, number, number];
 
 const toLinear = (c: number) =>
@@ -40,7 +43,7 @@ const oklabToRgb = ([L, a, b]: Oklab) => {
     4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
     -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
     -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-  ].map((c) => Math.round(Math.min(1, Math.max(0, fromLinear(c))) * 255));
+  ].map((c) => Math.round(clamp01(fromLinear(c)) * 255));
 };
 
 const buildGradient = (from: string, to: string) => {
@@ -68,7 +71,6 @@ const createNoise = () => {
   for (let i = 0; i < 512; i++) perm[i] = order[i & 255];
   for (let i = 0; i < 256; i++) values[i] = Math.random();
 
-  const smooth = (t: number) => t * t * (3 - 2 * t);
   const noise = (x: number, y: number) => {
     const xi = Math.floor(x);
     const yi = Math.floor(y);
@@ -100,6 +102,8 @@ const swirl = (canvas: HTMLCanvasElement) => {
   const gradient = buildGradient(colors[0], colors[1]);
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let image: ImageData;
+  let topDepth: Float32Array;
+  let bottomDepth: Float32Array;
   let frame = 0;
 
   const resize = () => {
@@ -107,6 +111,8 @@ const swirl = (canvas: HTMLCanvasElement) => {
     canvas.width = aspect > 1 ? Math.round(RESOLUTION / aspect) : RESOLUTION;
     canvas.height = aspect > 1 ? RESOLUTION : Math.round(RESOLUTION * aspect);
     image = context.createImageData(canvas.width, canvas.height);
+    topDepth = new Float32Array(canvas.width);
+    bottomDepth = new Float32Array(canvas.width);
   };
 
   const draw = (time: number) => {
@@ -115,33 +121,35 @@ const swirl = (canvas: HTMLCanvasElement) => {
     const scale = BLOB_SCALE / Math.max(width, height);
     const fadeDepth = (column: number, seed: number) => {
       const n = fbm(column * scale * 1.3 + seed, t * 1.5 + seed);
-      const k = Math.min(1, Math.max(0, (n - 0.3) / 0.4));
+      const k = clamp01((n - 0.3) / 0.4);
       return Math.max(1, (FADE_MIN + (FADE_MAX - FADE_MIN) * k) * height);
     };
-    const topDepth = Float32Array.from({ length: width }, (_, x) =>
-      fadeDepth(x, 17.3),
-    );
-    const bottomDepth = Float32Array.from({ length: width }, (_, x) =>
-      fadeDepth(x, 41.9),
-    );
+    for (let x = 0; x < width; x++) {
+      topDepth[x] = fadeDepth(x, 17.3);
+      bottomDepth[x] = fadeDepth(x, 41.9);
+    }
     for (let y = 0; y < height; y++) {
-      const fromTop = y;
+      const py = y * scale;
+      const qyWarp = py - t * 0.7;
+      const qyBase = py + 1.3 + t * 0.5;
+      const vyBase = py - t * 0.2;
+      const wispY = py * 3 + t * 0.6;
       const fromBottom = height - 1 - y;
       for (let x = 0; x < width; x++) {
         const px = x * scale;
-        const py = y * scale;
-        const qx = fbm(px + t, py - t * 0.7);
-        const qy = fbm(px + 5.2 - t * 0.8, py + 1.3 + t * 0.5);
-        const v = fbm(px + 3 * qx + t * 0.3, py + 3 * qy - t * 0.2);
-        const wisp = 0.4 + 1.2 * fbm(px * 3 + 9.1 - t, py * 3 + t * 0.6);
-        const edge = Math.min(
-          1,
-          (fromTop / topDepth[x]) * wisp,
-          (fromBottom / bottomDepth[x]) * wisp,
-        );
-        const fade = edge * edge * (3 - 2 * edge);
-        const blend = Math.min(1, Math.max(0, (v - THRESHOLD) / RANGE));
-        const mix = blend * blend * (3 - 2 * blend) * fade;
+        const qx = fbm(px + t, qyWarp);
+        const qy = fbm(px + 5.2 - t * 0.8, qyBase);
+        const v = fbm(px + 3 * qx + t * 0.3, vyBase + 3 * qy);
+        const blend = clamp01((v - THRESHOLD) / RANGE);
+        let mix = 0;
+        if (blend > 0) {
+          const wisp = 0.4 + 1.2 * fbm(px * 3 + 9.1 - t, wispY);
+          const edge = Math.min(
+            1,
+            wisp * Math.min(y / topDepth[x], fromBottom / bottomDepth[x]),
+          );
+          mix = smooth(blend) * smooth(edge);
+        }
         const index = Math.round(mix * 255) * 3;
         const offset = (y * width + x) * 4;
         data[offset] = gradient[index];

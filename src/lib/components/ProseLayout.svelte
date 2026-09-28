@@ -49,7 +49,9 @@ const formattedModifiedDate = $derived(
   }
 
   .prose-header {
-    text-align: center;
+    box-sizing: content-box;
+    max-inline-size: 54ch;
+    margin-inline: auto;
     padding-inline: var(--space-xl);
     padding-block-start: var(--space-xl);
     padding-block-end: var(--space-3xl);
@@ -62,7 +64,6 @@ const formattedModifiedDate = $derived(
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     column-gap: var(--space-l);
   }
 

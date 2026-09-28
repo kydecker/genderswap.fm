@@ -131,6 +131,8 @@
   --shadow-popover:
     0px 10px 38px -10px rgba(0, 0, 0, 0.35),
     0px 10px 20px -15px rgba(0, 0, 0, 0.2);
+  --shadow-bar:
+    0px 4px 16px -6px rgba(0, 0, 0, 0.3), 0px 4px 8px -6px rgba(0, 0, 0, 0.2);
 
   /* https://shadows.brumm.af/ */
   --shadow-album-s:

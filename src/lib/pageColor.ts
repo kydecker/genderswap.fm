@@ -47,25 +47,26 @@ export const pageColorOnHover =
     };
   };
 
+const closest = <T extends Element>(
+  items: Iterable<T>,
+  distance: (rect: DOMRect) => number,
+) => {
+  let best: T | undefined;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const item of items) {
+    const d = Math.abs(distance(item.getBoundingClientRect()));
+    if (d < bestDistance) {
+      bestDistance = d;
+      best = item;
+    }
+  }
+  return best;
+};
+
 export const pageColorOnFocus = (node: HTMLElement) => {
   const touchOnly = matchMedia("(hover: none)");
   let frame = 0;
-
-  const closest = <T extends Element>(
-    items: Iterable<T>,
-    distance: (rect: DOMRect) => number,
-  ) => {
-    let best: T | undefined;
-    let bestDistance = Number.POSITIVE_INFINITY;
-    for (const item of items) {
-      const d = Math.abs(distance(item.getBoundingClientRect()));
-      if (d < bestDistance) {
-        bestDistance = d;
-        best = item;
-      }
-    }
-    return best;
-  };
+  let focused: HTMLElement | undefined;
 
   const update = () => {
     frame = 0;
@@ -86,19 +87,13 @@ export const pageColorOnFocus = (node: HTMLElement) => {
       track.querySelectorAll<HTMLElement>("[data-focus-item]"),
       (rect) => rect.left - start,
     );
-    if (item) setPageColor(item.dataset.pageColor);
+    if (!item || item === focused) return;
+    focused = item;
+    setPageColor(item.dataset.pageColor);
   };
 
   const schedule = () => {
     if (!frame) frame = requestAnimationFrame(update);
-  };
-
-  const listen = () => {
-    window.addEventListener("scroll", schedule, {
-      capture: true,
-      passive: true,
-    });
-    window.addEventListener("resize", schedule);
   };
 
   const unlisten = () => {
@@ -110,8 +105,13 @@ export const pageColorOnFocus = (node: HTMLElement) => {
 
   const onModeChange = () => {
     unlisten();
+    focused = undefined;
     if (touchOnly.matches) {
-      listen();
+      window.addEventListener("scroll", schedule, {
+        capture: true,
+        passive: true,
+      });
+      window.addEventListener("resize", schedule);
       schedule();
     } else {
       releasePageColor();

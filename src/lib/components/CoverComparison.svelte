@@ -161,14 +161,13 @@ const coverSong = $derived(cover.cover);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--space-xs);
-    justify-content: space-between;
 
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: var(--radius-s);
-      padding-block: var(--space-xs);
+      padding: var(--space-xs);
       color: var(--color-text-muted);
       background-color: var(--color-surface);
 
@@ -186,7 +185,7 @@ const coverSong = $derived(cover.cover);
     }
 
     :global(svg) {
-      width: 1.8rem;
+      max-width: 1.8rem;
       aspect-ratio: 1;
     }
   }
