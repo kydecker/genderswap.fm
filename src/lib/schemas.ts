@@ -1,21 +1,21 @@
-import type { Track } from "@spotify/web-api-ts-sdk";
 import { z } from "zod";
 import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from "$lib/constants";
+import type { ITunesTrack } from "$lib/itunes";
 import type { Enums } from "$lib/types/types";
+
+const track = (message: string) =>
+  z.custom<ITunesTrack>(
+    (value) => typeof (value as ITunesTrack | undefined)?.trackId === "number",
+    message,
+  );
 
 export const newCoverSchema = z
   .object({
-    original: z.custom<Track>(
-      (value) => (value as Track) !== undefined,
-      "Please select an original song",
-    ),
+    original: track("Please select an original song"),
     originalGenders: z
       .array(z.custom<Enums<"gender">>())
       .nonempty("Please select at least one gender"),
-    cover: z.custom<Track>(
-      (value) => (value as Track) !== undefined,
-      "Please select a cover song",
-    ),
+    cover: track("Please select a cover song"),
     coverGenders: z
       .array(z.custom<Enums<"gender">>())
       .nonempty("Please select at least one gender"),
@@ -39,6 +39,6 @@ export const newCoverSchema = z
       .default(""),
   })
   .refine(
-    (data) => data.cover.id !== data.original.id,
+    (data) => data.cover.trackId !== data.original.trackId,
     "Cover and original songs can't be the same",
   );

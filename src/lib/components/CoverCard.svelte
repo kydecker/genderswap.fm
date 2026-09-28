@@ -1,11 +1,12 @@
 <script lang="ts">
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import { smartquotes } from "$lib/helpers";
 import { pageColorOnHover } from "$lib/pageColor";
 
 type Album = {
   name: string;
   artists: string[];
-  album_img: string[];
+  artwork: string;
   album_color?: string | null;
 };
 
@@ -15,7 +16,7 @@ let {
   slug,
   lazy,
 }: {
-  original: Omit<Album, "album_img">;
+  original: Omit<Album, "artwork">;
   cover: Album;
   slug: string;
   lazy?: boolean;
@@ -33,7 +34,8 @@ function formatArtists(artists: string[]) {
 <div class="coverCard" {@attach pageColorOnHover(cover.album_color)}>
   <div class="album">
     <img
-      src={cover.album_img[1]}
+      src={artworkUrl(cover.artwork, 300)}
+      srcset={artworkSrcset(cover.artwork, 300)}
       alt={`${cover.name} album art`}
       loading={lazy ? 'lazy' : 'eager'}
     />

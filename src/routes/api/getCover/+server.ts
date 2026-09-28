@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
+import { covers, songs } from "$lib/server/db/schema";
 
 export type ExistingCover = {
   original: {
@@ -14,24 +14,29 @@ export type ExistingCover = {
   created_at: string;
 };
 
-// Given a Spotify track ID, returns a new Track object with the earliest release of that song
 export async function GET({ url, platform }) {
-  const id = url.searchParams.get("id");
+  const appleId = url.searchParams.get("appleId");
 
-  if (!id) {
-    throw new Error("No ID provided");
+  if (!appleId) {
+    return Response.json(null, { status: 400 });
   }
 
-  const existingCover: ExistingCover | undefined = await getDb(
-    platform,
-  ).query.covers.findFirst({
-    columns: { slug: true, created_at: true },
-    with: {
-      original: { columns: { name: true, artists: true } },
-      cover: { columns: { artists: true } },
-    },
-    where: eq(covers.cover_id, id),
-  });
+  const db = getDb(platform);
+  const existingCover: ExistingCover | undefined =
+    await db.query.covers.findFirst({
+      columns: { slug: true, created_at: true },
+      with: {
+        original: { columns: { name: true, artists: true } },
+        cover: { columns: { artists: true } },
+      },
+      where: inArray(
+        covers.cover_id,
+        db
+          .select({ id: songs.id })
+          .from(songs)
+          .where(eq(songs.apple_id, appleId)),
+      ),
+    });
 
   return Response.json(existingCover ?? null);
 }

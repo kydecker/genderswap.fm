@@ -65,7 +65,7 @@ $effect(() => {
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
-            lazy={lazy || index > 5}
+            lazy={lazy}
           />
         </div>
       {/each}

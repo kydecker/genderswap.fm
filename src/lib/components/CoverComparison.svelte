@@ -1,4 +1,5 @@
 <script lang="ts">
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import { getArtistLink, getYouTubeLink, smartquotes } from "$lib/helpers";
 import type { Tables } from "$lib/types/types";
 import AppleMusicIcon from "~icons/simple-icons/applemusic";
@@ -15,9 +16,11 @@ const coverSong = $derived(cover.cover);
 
 {#snippet listenLinks(song: Tables<"songs">, label: string)}
   <div class="song-links">
-    <a href={`https://open.spotify.com/track/${song.id}`} aria-label={`Listen to ${label} on Spotify`}>
-      <SpotifyIcon />
-    </a>
+    {#if song.spotify_url}
+      <a href={song.spotify_url} aria-label={`Listen to ${label} on Spotify`}>
+        <SpotifyIcon />
+      </a>
+    {/if}
     {#if song.apple_music_url}
       <a href={song.apple_music_url} aria-label={`Listen to ${label} on Apple Music`}>
         <AppleMusicIcon />
@@ -44,7 +47,8 @@ const coverSong = $derived(cover.cover);
     <div class="album">
       <img
         class="album-art"
-        src={song.album_img[0]}
+        src={artworkUrl(song.artwork, 320)}
+        srcset={artworkSrcset(song.artwork, 320)}
         alt={`${song.album_name} album art`}
         itemprop="image"
       />

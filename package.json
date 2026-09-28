@@ -28,6 +28,8 @@
     "db:migrate:local": "wrangler d1 migrations apply genderswap-fm --local",
     "db:migrate:remote": "wrangler d1 migrations apply genderswap-fm --remote",
     "db:seed:local": "wrangler d1 execute genderswap-fm --local --file tests/fixtures/seed.sql",
+    "db:backfill-apple:local": "node scripts/backfill-apple.ts",
+    "db:backfill-apple:remote": "node scripts/backfill-apple.ts --remote",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },
@@ -43,7 +45,6 @@
     "@cf-wasm/resvg": "^0.4.0",
     "@cf-wasm/satori": "^0.4.2",
     "@lhci/cli": "^0.15.1",
-    "@spotify/web-api-ts-sdk": "^1.2.0",
     "@sveltejs/adapter-cloudflare": "^7.2.9",
     "@tsparticles/confetti": "^3.9.1",
     "dayjs": "^1.11.21",

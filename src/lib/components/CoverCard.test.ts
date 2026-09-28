@@ -4,7 +4,7 @@ import CoverCard from "./CoverCard.svelte";
 
 describe("CoverCard", () => {
   it("should link to the slug", async ({ expect }) => {
-    const album = { name: "Name", artists: ["Artist"], album_img: ["a.jpg"] };
+    const album = { name: "Name", artists: ["Artist"], artwork: "a.jpg" };
     const { container } = render(CoverCard, {
       props: { original: album, cover: album, slug: "test-slug" },
     });
@@ -18,12 +18,12 @@ describe("CoverCard", () => {
     const original = {
       name: "Original Name",
       artists: ["Original Artist"],
-      album_img: ["test.jpg"],
+      artwork: "test.jpg",
     };
     const cover = {
       name: "Cover Name",
       artists: ["Cover Artist"],
-      album_img: ["test-cover.jpg"],
+      artwork: "test-cover.jpg",
     };
 
     const { container } = render(CoverCard, {
@@ -41,12 +41,12 @@ describe("CoverCard", () => {
     const original = {
       name: "Original Name",
       artists: ["Original Artist"],
-      album_img: ["test.jpg"],
+      artwork: "test.jpg",
     };
     const cover = {
       name: "Cover Name",
       artists: ["Cover Artist"],
-      album_img: ["test-cover.jpg"],
+      artwork: "test-cover.jpg",
     };
 
     const { container } = render(CoverCard, {
@@ -64,12 +64,12 @@ describe("CoverCard", () => {
     const original = {
       name: "Original Name",
       artists: ["Original Artist"],
-      album_img: ["test.jpg"],
+      artwork: "test.jpg",
     };
     const cover = {
       name: "Cover Name",
       artists: ["Cover Artist"],
-      album_img: ["test-cover.jpg"],
+      artwork: "test-cover.jpg",
     };
 
     const { container, getByText } = render(CoverCard, {
@@ -90,12 +90,12 @@ describe("CoverCard", () => {
     const original = {
       name: "Original Name",
       artists: ["Original Artist", "Original Artist 2"],
-      album_img: ["test.jpg"],
+      artwork: "test.jpg",
     };
     const cover = {
       name: "Cover Name",
       artists: ["Cover Artist", "Cover Artist 2"],
-      album_img: ["test-cover.jpg"],
+      artwork: "test-cover.jpg",
     };
 
     const { container, getByText } = render(CoverCard, {

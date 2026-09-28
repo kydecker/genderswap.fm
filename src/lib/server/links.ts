@@ -1,49 +1,11 @@
-export type SongLinks = {
-  apple_music_url: string | null;
-  tidal_url: string | null;
-};
-
 type LinkQuery = {
   isrc: string | null;
   upc: string | null;
-  name: string;
-  artists: string[];
-  duration_ms: number | null;
   disc_number: number | null;
   track_number: number | null;
 };
 
 type TidalCredentials = { clientId: string; clientSecret: string };
-
-type ITunesTrack = {
-  wrapperType?: string;
-  discNumber?: number;
-  trackNumber?: number;
-  trackName: string;
-  artistName: string;
-  trackTimeMillis?: number;
-  trackViewUrl: string;
-};
-
-const normalize = (text: string) =>
-  text
-    .normalize("NFKD")
-    .toLowerCase()
-    .split(" - ")[0]
-    .replace(/\s[([][^)\]]*[)\]]/g, "")
-    .replace(/&/g, "and")
-    .replace(/[^\p{L}\p{N}]/gu, "");
-
-const isSameLength = (
-  a: number | null | undefined,
-  b: number | null | undefined,
-) => !!a && !!b && Math.abs(a - b) < 5000;
-
-const appleTrackUrl = (track: ITunesTrack) => {
-  const url = new URL(track.trackViewUrl);
-  url.searchParams.delete("uo");
-  return url.toString();
-};
 
 const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
   const response = await fetch(url, init);
@@ -51,75 +13,6 @@ const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
     throw new Error(`${response.status} ${response.statusText}: ${url}`);
   }
   return response.json();
-};
-
-export const findAppleMusicUrl = async ({
-  name,
-  artists,
-  duration_ms,
-}: LinkQuery) => {
-  const term = encodeURIComponent(`${artists[0]} ${name}`);
-  const { results } = await fetchJson<{ results: ITunesTrack[] }>(
-    `https://itunes.apple.com/search?term=${term}&country=us&media=music&entity=song&limit=25`,
-  );
-
-  const title = normalize(name);
-  const artist = normalize(artists[0]);
-
-  const matches = results.filter((track) => {
-    const trackArtist = normalize(track.artistName);
-    const sameTitle = normalize(track.trackName) === title;
-    const sameArtist =
-      trackArtist.includes(artist) || artist.includes(trackArtist);
-    const sameLength =
-      !duration_ms ||
-      !track.trackTimeMillis ||
-      Math.abs(track.trackTimeMillis - duration_ms) < 5000;
-    return title && artist && sameTitle && sameArtist && sameLength;
-  });
-
-  const exactTitle = (track: ITunesTrack) =>
-    track.trackName.toLowerCase() === name.toLowerCase() ? 0 : 1;
-  const lengthDifference = (track: ITunesTrack) =>
-    duration_ms ? Math.abs((track.trackTimeMillis ?? 0) - duration_ms) : 0;
-
-  matches.sort(
-    (a, b) =>
-      exactTitle(a) - exactTitle(b) ||
-      lengthDifference(a) - lengthDifference(b),
-  );
-
-  return matches.length ? appleTrackUrl(matches[0]) : null;
-};
-
-export const findAppleMusicUrlByUpc = async ({
-  upc,
-  name,
-  duration_ms,
-  disc_number,
-  track_number,
-}: LinkQuery) => {
-  if (!upc || !track_number) return null;
-
-  const { results } = await fetchJson<{ results: ITunesTrack[] }>(
-    `https://itunes.apple.com/lookup?upc=${upc}&country=us&entity=song`,
-  );
-
-  const track = results.find(
-    (result) =>
-      result.wrapperType === "track" &&
-      result.discNumber === (disc_number ?? 1) &&
-      result.trackNumber === track_number,
-  );
-
-  if (!track) return null;
-  if (
-    !isSameLength(track.trackTimeMillis, duration_ms) &&
-    normalize(track.trackName) !== normalize(name)
-  ) {
-    return null;
-  }
-  return appleTrackUrl(track);
 };
 
 let tidalToken: { value: string; expires: number } | undefined;
@@ -204,24 +97,18 @@ export const findTidalUrlByUpc = async (
   return id ? `https://tidal.com/track/${id}` : null;
 };
 
-export const findSongLinks = async (
+export const findTidalLink = async (
   query: LinkQuery,
-  credentials: Partial<TidalCredentials>,
-): Promise<SongLinks> => {
-  const { clientId, clientSecret } = credentials;
-  const [apple, tidal] = await Promise.allSettled([
-    findAppleMusicUrlByUpc(query).then(
-      (url) => url ?? findAppleMusicUrl(query),
-    ),
-    clientId && clientSecret
-      ? findTidalUrl(query, { clientId, clientSecret }).then(
-          (url) => url ?? findTidalUrlByUpc(query, { clientId, clientSecret }),
-        )
-      : Promise.reject(new Error("Missing Tidal credentials")),
-  ]);
-
-  return {
-    apple_music_url: apple.status === "fulfilled" ? apple.value : null,
-    tidal_url: tidal.status === "fulfilled" ? tidal.value : null,
-  };
+  { clientId, clientSecret }: Partial<TidalCredentials>,
+) => {
+  if (!clientId || !clientSecret) return null;
+  const credentials = { clientId, clientSecret };
+  try {
+    return (
+      (await findTidalUrl(query, credentials)) ??
+      (await findTidalUrlByUpc(query, credentials))
+    );
+  } catch {
+    return null;
+  }
 };

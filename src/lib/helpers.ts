@@ -83,9 +83,8 @@ export const getYearsEarlierText = (
   selectedReleaseDate: string,
   earlierReleaseDate: string,
 ) => {
-  const afterDate = dayjs(selectedReleaseDate);
-  const beforeDate = dayjs(earlierReleaseDate);
-  const yearsDiff = afterDate.diff(beforeDate, "year");
+  const yearsDiff =
+    dayjs(selectedReleaseDate).year() - dayjs(earlierReleaseDate).year();
 
   return yearsDiff === 0
     ? "earlier that year"
@@ -112,14 +111,6 @@ export const toTitleCase = (text: string) =>
   text.replace(/(^|\s)\p{Ll}/gu, (c) => c.toUpperCase());
 
 export const tagTitle = (tag: Enums<"tags">) => toTitleCase(TAGS[tag].label);
-
-export const encodeSearchQuery = (query: string) => {
-  return encodeURIComponent(
-    query
-      .replace(/\//g, "-") // Replace all forward slashes with dashes
-      .replace(/\?/g, ""), // Remove question marks
-  ).replace(/'/g, "%27"); // Replace all single quotes with %27;
-};
 
 export const getArtistLink = (artist: string) => {
   return `/?q=${encodeURIComponent(artist)}`;

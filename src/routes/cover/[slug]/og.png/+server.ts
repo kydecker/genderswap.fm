@@ -1,6 +1,7 @@
 import { Resvg } from "@cf-wasm/resvg";
 import { satori } from "@cf-wasm/satori";
 import { eq } from "drizzle-orm";
+import { artworkUrl } from "$lib/artwork";
 import { OG_HEIGHT, OG_WIDTH, TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
 import { getPagePalette } from "$lib/server/albumColor";
@@ -8,7 +9,7 @@ import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 import logoSvg from "$lib/server/og-logo.svg?raw";
 
-const songColumns = { name: true, artists: true, album_img: true } as const;
+const songColumns = { name: true, artists: true, artwork: true } as const;
 const ALBUM_SIZE = 400;
 
 const getLogo = (text: string, fill: string) =>
@@ -184,7 +185,9 @@ export async function GET({ params, url, platform }) {
                     justifyContent: "flex-end",
                     width: "45%",
                   },
-                  children: [album(cover.album_img[0])],
+                  children: [
+                    album(artworkUrl(cover.artwork, ALBUM_SIZE, "jpg")),
+                  ],
                 },
               },
             ],

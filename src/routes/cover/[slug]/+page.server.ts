@@ -1,5 +1,6 @@
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
+import { artworkUrl } from "$lib/artwork";
 import { getReadableTitle, smartquotes } from "$lib/helpers";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
@@ -15,13 +16,11 @@ export type Cover = {
 };
 
 const songColumns = {
-  id: true,
   name: true,
-  url: true,
   artists: true,
   gender: true,
   album_name: true,
-  album_img: true,
+  artwork: true,
   album_color: true,
   album_year: true,
   energy: true,
@@ -29,8 +28,8 @@ const songColumns = {
   tempo: true,
   danceability: true,
   valence: true,
-  time_signature: true,
   apple_music_url: true,
+  spotify_url: true,
   tidal_url: true,
 } as const;
 
@@ -77,6 +76,6 @@ export async function load({ params: { slug }, platform, setHeaders }) {
     created_at,
     contributor,
     tags,
-    favicon: cover.album_img.at(-1),
+    favicon: artworkUrl(cover.artwork, 64, "jpg"),
   };
 }
