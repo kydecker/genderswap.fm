@@ -92,6 +92,8 @@ CREATE INDEX `songs_apple_id_idx` ON `songs` (`apple_id`);
 --> statement-breakpoint
 CREATE INDEX `songs_isrc_idx` ON `songs` (`isrc`);
 --> statement-breakpoint
+CREATE INDEX `songs_unmatched_duration_idx` ON `songs` (`duration_ms`) WHERE `apple_id` IS NULL;
+--> statement-breakpoint
 CREATE UNIQUE INDEX `covers_slug_unique` ON `covers` (`slug`);
 --> statement-breakpoint
 CREATE INDEX `covers_cover_id_idx` ON `covers` (`cover_id`);

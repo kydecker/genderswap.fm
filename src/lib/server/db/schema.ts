@@ -51,6 +51,9 @@ export const songs = sqliteTable(
   (table) => [
     index("songs_apple_id_idx").on(table.apple_id),
     index("songs_isrc_idx").on(table.isrc),
+    index("songs_unmatched_duration_idx")
+      .on(table.duration_ms)
+      .where(sql`${table.apple_id} IS NULL`),
   ],
 );
 

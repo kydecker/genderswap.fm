@@ -1,5 +1,6 @@
 import { type ITunesTrack, trackIdentity } from "$lib/itunes";
 import { bestMatch } from "$lib/matching";
+import { fetchJson } from "./fetchJson";
 
 type DeezerSearch = {
   data: {
@@ -18,33 +19,37 @@ type DeezerTrack = {
 
 type DeezerAlbum = { upc?: string };
 
-type ReccoBeatsFeatures = {
-  content: {
-    href: string;
-    acousticness: number;
-    danceability: number;
-    energy: number;
-    instrumentalness: number;
-    key: number;
-    liveness: number;
-    loudness: number;
-    mode: number;
-    speechiness: number;
-    tempo: number;
-    valence: number;
-  }[];
+const AUDIO_FEATURES = [
+  "acousticness",
+  "danceability",
+  "energy",
+  "instrumentalness",
+  "key",
+  "liveness",
+  "loudness",
+  "mode",
+  "speechiness",
+  "tempo",
+  "valence",
+] as const;
+
+type AudioFeatures = Record<(typeof AUDIO_FEATURES)[number], number | null> & {
+  spotify_url: string | null;
 };
 
-export type DeezerMatch = {
-  isrc: string | null;
-  upc: string | null;
-  artists: string[];
+type ReccoBeatsFeatures = {
+  content: (Record<(typeof AUDIO_FEATURES)[number], number> & {
+    href: string;
+  })[];
 };
+
+export const NO_AUDIO_FEATURES = {
+  spotify_url: null,
+  ...Object.fromEntries(AUDIO_FEATURES.map((key) => [key, null])),
+} as AudioFeatures;
 
 const getJson = async <T>(url: string): Promise<T> => {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`${response.status}: ${url}`);
-  const body = await response.json();
+  const body = await fetchJson<T | { error: unknown }>(url);
   if (body && typeof body === "object" && "error" in body) {
     throw new Error(`${JSON.stringify(body.error)}: ${url}`);
   }
@@ -53,9 +58,7 @@ const getJson = async <T>(url: string): Promise<T> => {
 
 const DEEZER = "https://api.deezer.com";
 
-export const findDeezerMatch = async (
-  track: ITunesTrack,
-): Promise<DeezerMatch | null> => {
+export const findDeezerMatch = async (track: ITunesTrack) => {
   const q = new URLSearchParams({
     q: `${track.artistName} ${track.trackName}`,
     limit: "25",
@@ -91,20 +94,10 @@ export const getAudioFeatures = async (isrc: string) => {
     `https://api.reccobeats.com/v1/audio-features?ids=${encodeURIComponent(isrc)}`,
   );
   const features = content[0];
-  if (!features) return null;
+  if (!features) return NO_AUDIO_FEATURES;
 
   return {
     spotify_url: features.href,
-    acousticness: features.acousticness,
-    danceability: features.danceability,
-    energy: features.energy,
-    instrumentalness: features.instrumentalness,
-    key: features.key,
-    liveness: features.liveness,
-    loudness: features.loudness,
-    mode: features.mode,
-    speechiness: features.speechiness,
-    tempo: features.tempo,
-    valence: features.valence,
-  };
+    ...Object.fromEntries(AUDIO_FEATURES.map((key) => [key, features[key]])),
+  } as AudioFeatures;
 };

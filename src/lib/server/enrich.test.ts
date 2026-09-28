@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ITunesTrack } from "$lib/itunes";
-import { findDeezerMatch, getAudioFeatures } from "./enrich";
+import { findDeezerMatch, getAudioFeatures, NO_AUDIO_FEATURES } from "./enrich";
 
 const mockFetch = (...bodies: unknown[]) => {
   const fetch = vi.fn();
@@ -26,6 +26,7 @@ const track = {
   collectionName: "folklore",
   releaseDate: "2020-07-24T07:00:00Z",
   artworkUrl100: "",
+  artwork: "",
   trackTimeMillis: 210240,
   trackViewUrl: "",
 } satisfies ITunesTrack;
@@ -166,9 +167,9 @@ describe("getAudioFeatures", () => {
     });
   });
 
-  it("should return null when the ISRC is unknown", async () => {
+  it("should return empty features when the ISRC is unknown", async () => {
     mockFetch({ content: [] });
 
-    expect(await getAudioFeatures("XX0000000000")).toBeNull();
+    expect(await getAudioFeatures("XX0000000000")).toEqual(NO_AUDIO_FEATURES);
   });
 });

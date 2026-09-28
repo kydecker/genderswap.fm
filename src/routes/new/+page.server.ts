@@ -1,9 +1,10 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { and, between, eq, inArray, isNull, type SQL, sql } from "drizzle-orm";
+import type { BatchItem } from "drizzle-orm/batch";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
-import { artworkId, artworkUrl } from "$lib/artwork";
+import { artworkUrl } from "$lib/artwork";
 import { slugifyCover } from "$lib/helpers";
 import {
   albumName,
@@ -13,24 +14,25 @@ import {
   songName,
   trackIdentity,
 } from "$lib/itunes";
-import { appleTrackUrl, bestMatch } from "$lib/matching";
+import { appleTrackUrl, bestMatch, songRowIdentity } from "$lib/matching";
 import { newCoverSchema } from "$lib/schemas";
 import { getAlbumColor } from "$lib/server/albumColor";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
-import { findDeezerMatch, getAudioFeatures } from "$lib/server/enrich";
+import {
+  findDeezerMatch,
+  getAudioFeatures,
+  NO_AUDIO_FEATURES,
+} from "$lib/server/enrich";
 import { findTidalLink } from "$lib/server/links";
 import { computeTags } from "$lib/tags";
 import type { Enums, Tables } from "$lib/types/types";
 
-type NewSong = typeof songs.$inferInsert & Omit<Tables<"songs">, "id">;
-
-type ResolvedSong =
-  | { id: number; song: NewSong; status: "existing" | "claimed" }
-  | { id: SQL; song: NewSong; status: "new" };
+type Db = ReturnType<typeof getDb>;
+type NewSong = Omit<Tables<"songs">, "id">;
 
 const findKnownSong = async (
-  db: ReturnType<typeof getDb>,
+  db: Db,
   track: ITunesTrack,
   isrc: string | null,
 ) => {
@@ -50,12 +52,17 @@ const findKnownSong = async (
       between(songs.duration_ms, duration - 5000, duration + 5000),
     ),
   });
-  return bestMatch(trackIdentity(track), unmatched, (song) => ({
-    name: song.name,
-    artist: song.artists[0],
-    durationMs: song.duration_ms,
-  }));
+  return bestMatch(trackIdentity(track), unmatched, songRowIdentity);
 };
+
+const claimSong = (db: Db, id: number, track: ITunesTrack) =>
+  db
+    .update(songs)
+    .set({
+      apple_id: String(track.trackId),
+      apple_music_url: sql`coalesce(${songs.apple_music_url}, ${appleTrackUrl(track.trackViewUrl)})`,
+    })
+    .where(and(eq(songs.id, id), isNull(songs.apple_id)));
 
 export const load = async () => {
   const form = await superValidate(zod4(newCoverSchema));
@@ -100,68 +107,69 @@ export const actions = {
     const resolveSong = async (
       track: ITunesTrack,
       gender: Enums<"gender">[],
-    ): Promise<ResolvedSong> => {
+    ): Promise<{
+      id: number | SQL;
+      song: NewSong;
+      write: BatchItem<"sqlite">;
+    }> => {
       const appleId = String(track.trackId);
+      const known = (song: Tables<"songs">) => ({
+        id: song.id,
+        song,
+        write: claimSong(db, song.id, track),
+      });
+
       const existing = existingSongs.find((song) => song.apple_id === appleId);
-      if (existing)
-        return { id: existing.id, song: existing, status: "existing" };
+      if (existing) return known(existing);
 
       const match = await findDeezerMatch(track).catch(() => null);
-      const isrc = match?.isrc ?? null;
-      const known = await findKnownSong(db, track, isrc);
-      if (known) return { id: known.id, song: known, status: "claimed" };
+      const found = await findKnownSong(db, track, match?.isrc ?? null);
+      if (found) return known(found);
 
-      const artwork = artworkId(track.artworkUrl100) ?? "";
+      const isrc = match?.isrc ?? null;
       const upc = match?.upc ?? null;
 
       const [features, tidal_url, album_color] = await Promise.all([
-        isrc ? getAudioFeatures(isrc).catch(() => null) : null,
+        isrc
+          ? getAudioFeatures(isrc).catch(() => NO_AUDIO_FEATURES)
+          : NO_AUDIO_FEATURES,
         findTidalLink(
           {
             isrc,
             upc,
-            disc_number: track.discNumber ?? null,
-            track_number: track.trackNumber ?? null,
+            disc_number: track.discNumber,
+            track_number: track.trackNumber,
           },
           {
             clientId: env.TIDAL_CLIENT_ID,
             clientSecret: env.TIDAL_CLIENT_SECRET,
           },
         ),
-        getAlbumColor(artworkUrl(artwork, 64, "jpg")).catch(() => null),
+        getAlbumColor(artworkUrl(track.artwork, 64, "jpg")).catch(() => null),
       ]);
+
+      const song: NewSong = {
+        created_at: new Date().toISOString(),
+        name: songName(track),
+        artists: match?.artists ?? [track.artistName],
+        album_name: albumName(track),
+        album_year: releaseYear(track),
+        artwork: track.artwork,
+        album_color,
+        gender,
+        ...features,
+        duration_ms: track.trackTimeMillis ?? null,
+        isrc,
+        album_upc: upc,
+        apple_id: appleId,
+        apple_music_url: appleTrackUrl(track.trackViewUrl),
+        tidal_url,
+      };
 
       return {
         id: sql`(select max(${songs.id}) from ${songs} where ${songs.apple_id} = ${appleId})`,
-        status: "new",
-        song: {
-          created_at: new Date().toISOString(),
-          name: songName(track),
-          artists: match?.artists ?? [track.artistName],
-          album_name: albumName(track),
-          album_year: releaseYear(track),
-          artwork,
-          album_color,
-          gender,
-          acousticness: features?.acousticness ?? null,
-          danceability: features?.danceability ?? null,
-          duration_ms: track.trackTimeMillis ?? null,
-          energy: features?.energy ?? null,
-          instrumentalness: features?.instrumentalness ?? null,
-          key: features?.key ?? null,
-          liveness: features?.liveness ?? null,
-          loudness: features?.loudness ?? null,
-          mode: features?.mode ?? null,
-          speechiness: features?.speechiness ?? null,
-          tempo: features?.tempo ?? null,
-          valence: features?.valence ?? null,
-          isrc,
-          album_upc: upc,
-          apple_id: appleId,
-          apple_music_url: appleTrackUrl(track.trackViewUrl),
-          spotify_url: features?.spotify_url ?? null,
-          tidal_url,
-        },
+        song,
+        write: db.insert(songs).values(song),
       };
     };
 
@@ -176,27 +184,6 @@ export const actions = {
     ) {
       return setError(form, "Cover and original songs can't be the same");
     }
-
-    const resolved = [
-      { resolvedSong: originalSong, track: originalTrack },
-      { resolvedSong: coverSong, track: coverTrack },
-    ];
-    const songWrites = resolved.map(({ resolvedSong, track }) =>
-      resolvedSong.status === "new"
-        ? db.insert(songs).values(resolvedSong.song)
-        : db
-            .update(songs)
-            .set({
-              apple_id: String(track.trackId),
-              apple_music_url: sql`coalesce(${songs.apple_music_url}, ${appleTrackUrl(track.trackViewUrl)})`,
-            })
-            .where(
-              and(
-                eq(songs.id, resolvedSong.id as number),
-                isNull(songs.apple_id),
-              ),
-            ),
-    );
 
     const slug = slugifyCover(coverTrack.trackName, coverSong.song.artists[0]);
 
@@ -214,13 +201,12 @@ export const actions = {
       .returning({ slug: covers.slug });
 
     const result = await db
-      .batch([...songWrites, insertCover] as unknown as [typeof insertCover])
+      .batch([originalSong.write, coverSong.write, insertCover])
       .catch((e: Error) => e);
 
     if (result instanceof Error) return setError(form, result.message);
 
-    const inserted = result.at(-1) as Awaited<typeof insertCover>;
-    if (!inserted.length) {
+    if (!result[2].length) {
       return setError(form, "This cover has already been added");
     }
 

@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   albumName,
   type ITunesTrack,
+  lookupTracks,
   parseAppleMusicUrl,
   pickEarliestRelease,
 } from "./itunes";
@@ -17,6 +18,7 @@ const track = (overrides: Partial<ITunesTrack>): ITunesTrack => ({
   collectionName: "American IV: The Man Comes Around",
   releaseDate: "2002-11-05T08:00:00Z",
   artworkUrl100: "",
+  artwork: "",
   trackViewUrl: "",
   ...overrides,
 });
@@ -34,6 +36,27 @@ describe("parseAppleMusicUrl", () => {
     expect(
       parseAppleMusicUrl("https://music.apple.com/us/song/cardigan/1524793743"),
     ).toBe("1524793743");
+  });
+
+  it("should accept Apple Music subdomains", () => {
+    expect(
+      parseAppleMusicUrl(
+        "https://geo.music.apple.com/us/album/folklore/1524793738?i=1524793743",
+      ),
+    ).toBe("1524793743");
+  });
+
+  it("should reject hosts that only end in music.apple.com", () => {
+    expect(
+      parseAppleMusicUrl(
+        "https://notmusic.apple.com/us/album/folklore/1524793738?i=1524793743",
+      ),
+    ).toBeNull();
+    expect(
+      parseAppleMusicUrl(
+        "https://music.apple.com.example.net/us/album/x/1?i=1524793743",
+      ),
+    ).toBeNull();
   });
 
   it("should ignore other text", () => {
@@ -117,5 +140,37 @@ describe("pickEarliestRelease", () => {
         [live],
       ),
     ).toBe(live);
+  });
+});
+
+describe("lookupTracks", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("should attach artwork IDs and drop results without them", async () => {
+    const song = {
+      wrapperType: "track",
+      kind: "song",
+      trackId: 1,
+      artworkUrl100:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/03/1a/4a/mzi.jrahtjbc.jpg/100x100bb.jpg",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        Response.json({
+          results: [
+            song,
+            { ...song, trackId: 2, artworkUrl100: "" },
+            { ...song, trackId: 3, wrapperType: "collection" },
+          ],
+        }),
+      ),
+    );
+
+    expect(await lookupTracks([1, 2, 3])).toEqual([
+      { ...song, artwork: "Music/03/1a/4a/mzi.jrahtjbc.jpg" },
+    ]);
   });
 });

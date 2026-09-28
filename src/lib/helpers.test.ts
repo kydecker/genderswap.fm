@@ -7,12 +7,12 @@ import {
   getReadableTitle,
   getSortedTags,
   getYearsEarlierText,
-  removeSongExtraText,
   slugify,
   slugifyCover,
   smartquotes,
   toTitleCase,
 } from "./helpers";
+import { removeSongExtraText } from "./matching";
 
 describe("maxCharacterHelpText", () => {
   it("should display default value", () => {

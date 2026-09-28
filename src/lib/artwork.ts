@@ -1,4 +1,4 @@
-export type ArtworkFormat = "webp" | "jpg";
+type ArtworkFormat = "webp" | "jpg";
 
 const SPOTIFY_PREFIX = "spotify:";
 const SPOTIFY_SIZES = [

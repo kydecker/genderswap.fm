@@ -3,13 +3,18 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { MouseEventHandler } from "svelte/elements";
 import { slide } from "svelte/transition";
-import { artworkId, artworkSrcset, artworkUrl } from "$lib/artwork";
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import {
   getReadableTitle,
   getYearsEarlierText,
   smartquotes,
 } from "$lib/helpers";
-import { albumName, type ITunesTrack, songName } from "$lib/itunes";
+import {
+  albumName,
+  type ITunesTrack,
+  releaseYear,
+  songName,
+} from "$lib/itunes";
 import AlertIcon from "~icons/ri/alert-line";
 import CheckIcon from "~icons/ri/check-line";
 import CloseCircleIcon from "~icons/ri/close-circle-line";
@@ -33,8 +38,6 @@ let {
 
 dayjs.extend(relativeTime);
 
-const artwork = $derived(artworkId(song.artworkUrl100) ?? "");
-
 let wasKeepThisReleaseClicked = $state(false);
 let wasEarlierReleaseClicked = $state(false);
 
@@ -53,14 +56,14 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
 <div class="selectedSong">
   <div class="selectedSongContents">
     <div class="selectedAlbum">
-      <img src={artworkUrl(artwork, 160)} srcset={artworkSrcset(artwork, 160)} alt="" />
+      <img src={artworkUrl(song.artwork, 160)} srcset={artworkSrcset(song.artwork, 160)} alt="" />
     </div>
     <div class="selectedLabel">
       <div class="selectedName">{smartquotes(songName(song))}</div>
       <div>{song.artistName}</div>
       <div class="selectedAlbumNameAndYear">
         <em>{smartquotes(albumName(song))}</em> &middot;{' '}
-        {song.releaseDate.slice(0, 4)}
+        {releaseYear(song)}
       </div>
     </div>
     {#if song.previewUrl}
@@ -97,7 +100,7 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
         <div class="bannerContents">
           <CheckIcon />
           <div class="bannerLabel">
-            <strong class="bannerTitle">Earliest release available on Apple Music</strong>
+            <strong class="bannerTitle">Earliest release available</strong>
           </div>
         </div>
       {:else}
@@ -111,7 +114,7 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
               was released {getYearsEarlierText(
                 song.releaseDate,
                 earlierRelease.releaseDate
-              )} in <strong>{earlierRelease.releaseDate.slice(0, 4)}</strong> on
+              )} in <strong>{releaseYear(earlierRelease)}</strong> on
               <strong>{albumName(earlierRelease)}</strong>.
             </p>
           </div>

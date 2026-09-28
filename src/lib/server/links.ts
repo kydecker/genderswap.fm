@@ -1,19 +1,13 @@
+import { fetchJson } from "./fetchJson";
+
 type LinkQuery = {
   isrc: string | null;
   upc: string | null;
-  disc_number: number | null;
-  track_number: number | null;
+  disc_number?: number;
+  track_number?: number;
 };
 
 type TidalCredentials = { clientId: string; clientSecret: string };
-
-const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(url, init);
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}: ${url}`);
-  }
-  return response.json();
-};
 
 let tidalToken: { value: string; expires: number } | undefined;
 

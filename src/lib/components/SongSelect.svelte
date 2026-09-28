@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createCombobox, melt } from "@melt-ui/svelte";
 import { scale } from "svelte/transition";
-import { artworkId, artworkSrcset, artworkUrl } from "$lib/artwork";
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import SongPreview from "$lib/components/SongPreview.svelte";
 import { createDebouncer } from "$lib/helpers";
 import {
@@ -9,6 +9,7 @@ import {
   type ITunesTrack,
   lookupTracks,
   parseAppleMusicUrl,
+  releaseYear,
   searchTracks,
 } from "$lib/itunes";
 import SearchIcon from "~icons/ri/search-line";
@@ -84,7 +85,10 @@ const whenCurrent = async <T>(
   }
 };
 
+let searchController: AbortController | undefined;
+
 const search = async (query: string | undefined) => {
+  searchController?.abort();
   if (!query?.trim()) {
     searchResults = undefined;
     return;
@@ -96,10 +100,11 @@ const search = async (query: string | undefined) => {
       const [track] = await lookupTracks([appleId]);
       if (track) selected.set({ value: track });
     } else {
-      searchResults = await searchTracks(query);
+      searchController = new AbortController();
+      searchResults = await searchTracks(query, 10, searchController.signal);
     }
   } catch (error) {
-    if (error instanceof Error) {
+    if (error instanceof Error && error.name !== "AbortError") {
       console.error(error.message);
     }
   }
@@ -162,8 +167,8 @@ $effect(() => {
             >
               <img
                 class="resultAlbum"
-                src={artworkUrl(artworkId(track.artworkUrl100) ?? "", 64)}
-                srcset={artworkSrcset(artworkId(track.artworkUrl100) ?? "", 64)}
+                src={artworkUrl(track.artwork, 64)}
+                srcset={artworkSrcset(track.artwork, 64)}
                 alt=""
               />
               <div class="resultLabel">
@@ -173,7 +178,7 @@ $effect(() => {
                     {track.artistName}{' '}
                     {' · '}
                     <span class="resultYear">
-                      {track.releaseDate.slice(0, 4)}
+                      {releaseYear(track)}
                     </span>
                   </div>
                 </div>
