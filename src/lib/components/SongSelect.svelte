@@ -37,6 +37,8 @@ const {
   },
   onSelectedChange: ({ next }) => {
     if (next) {
+      discoveredEarlierRelease = null;
+      discoveredExistingCover = null;
       debounce(() => {
         checkForEarlierRelease(next.value);
         checkForExistingCover(next.value);
@@ -55,7 +57,10 @@ const checkForExistingCover = async (track: Track) => {
       method: "GET",
     });
 
-    if (response.ok) discoveredExistingCover = await response.json();
+    const existingCover: ExistingCover | null = response.ok
+      ? await response.json()
+      : null;
+    if (value?.id === track.id) discoveredExistingCover = existingCover;
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -69,7 +74,10 @@ const checkForEarlierRelease = async (track: Track) => {
       method: "GET",
     });
 
-    if (response.ok) discoveredEarlierRelease = await response.json();
+    const earlierRelease: Track | null = response.ok
+      ? await response.json()
+      : null;
+    if (value?.id === track.id) discoveredEarlierRelease = earlierRelease;
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
