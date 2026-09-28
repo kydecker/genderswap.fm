@@ -15,6 +15,12 @@
       "migrations_dir": "drizzle/migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "ARTWORK",
+      "bucket_name": "genderswap-fm"
+    }
+  ],
   "observability": {
     "logs": {
       "enabled": false,

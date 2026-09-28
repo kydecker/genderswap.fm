@@ -11,7 +11,7 @@ const mockCover: Cover = {
     artists: ["ABBA"],
     album_name: "Voulez-Vous",
     album_year: 1979,
-    artwork: "spotify:aa22899360d8ba6704732dec",
+    artwork: "abba-voulez-vous",
     gender: ["female"],
     acousticness: 0.523,
     danceability: 0.719,
@@ -41,8 +41,7 @@ const mockCover: Cover = {
     artists: ["The Czars"],
     album_name: "Best Of",
     album_year: 2014,
-    artwork:
-      "Music115/v4/9b/1c/1f/9b1c1f7e-8ee4-8a0e-1d3f-3a5f5b1c0b8e/5051083083546.jpg",
+    artwork: "the-czars-best-of",
     gender: ["male"],
     acousticness: 0.84,
     danceability: 0.717,
@@ -104,16 +103,16 @@ describe("CoverComparison", async () => {
     ]);
   });
 
-  it("should size album art for each artwork source", async ({ expect }) => {
+  it("should serve album art from stored images", async ({ expect }) => {
     const { container } = render(CoverComparison, {
       props: { cover: mockCover },
     });
     const [coverArt, originalArt] = container.querySelectorAll(".album-art");
     expect(coverArt.getAttribute("src")).toBe(
-      "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/9b/1c/1f/9b1c1f7e-8ee4-8a0e-1d3f-3a5f5b1c0b8e/5051083083546.jpg/320x320bb.webp",
+      "https://img.genderswap.fm/cdn-cgi/image/width=384,format=auto/640/the-czars-best-of.jpg",
     );
     expect(originalArt.getAttribute("src")).toBe(
-      "https://i.scdn.co/image/ab67616d0000b273aa22899360d8ba6704732dec",
+      "https://img.genderswap.fm/cdn-cgi/image/width=384,format=auto/640/abba-voulez-vous.jpg",
     );
   });
 

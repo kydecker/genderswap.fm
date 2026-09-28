@@ -67,14 +67,15 @@ $effect(() => {
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
+            sizes="clamp(8.75rem, 7.5rem + 3vw, 12rem)"
             {lazy}
             priority={priority && index < 3}
           />
         </div>
       {/each}
       {#if totalCount && totalCount > covers.length}
-        <a class="seeAll" {href} aria-label={`More ${title} covers`}>
-          More<ArrowRightIcon aria-hidden="true" />
+        <a class="seeAll" {href}>
+          More<span class="visually-hidden">{` ${title} covers`}</span><ArrowRightIcon aria-hidden="true" />
         </a>
       {/if}
     </div>
@@ -183,6 +184,16 @@ $effect(() => {
     &:hover {
       background: var(--color-surface-hover);
     }
+  }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
   }
 
   .nav {

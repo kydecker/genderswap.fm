@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createCombobox, melt } from "@melt-ui/svelte";
 import { scale } from "svelte/transition";
-import { artworkSrcset, artworkUrl } from "$lib/artwork";
+import { sourceArtworkSrcset, sourceArtworkUrl } from "$lib/artwork";
 import SongPreview from "$lib/components/SongPreview.svelte";
 import { createDebouncer } from "$lib/helpers";
 import {
@@ -232,8 +232,8 @@ $effect(() => {
             >
               <img
                 class="resultAlbum"
-                src={artworkUrl(track.artwork, 64)}
-                srcset={artworkSrcset(track.artwork, 64)}
+                src={sourceArtworkUrl(track.artwork, 64)}
+                srcset={sourceArtworkSrcset(track.artwork, 64)}
                 alt=""
               />
               <div class="resultLabel">

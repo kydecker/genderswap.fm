@@ -47,8 +47,9 @@ const coverSong = $derived(cover.cover);
     <div class="album">
       <img
         class="album-art"
-        src={artworkUrl(song.artwork, 320)}
-        srcset={artworkSrcset(song.artwork, 320)}
+        src={artworkUrl(song.artwork, 384)}
+        srcset={artworkSrcset(song.artwork)}
+        sizes="min(48.7vw - 1.24rem, 19.25rem)"
         fetchpriority="high"
         alt={`${song.album_name} album art`}
         itemprop="image"

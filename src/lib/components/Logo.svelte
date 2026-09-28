@@ -81,24 +81,14 @@
   }
 
   .logo {
-    max-width: 100%;
+    display: inline-block;
     pointer-events: auto;
 
     svg {
-      display: block;
       width: auto;
       max-width: 100%;
       height: var(--space-2xl);
       overflow: visible;
-    }
-
-    @media (max-width: 599.98px) {
-      flex: 1;
-
-      svg {
-        width: 100%;
-        height: auto;
-      }
     }
 
     .fill {

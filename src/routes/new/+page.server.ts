@@ -3,7 +3,7 @@ import { and, between, eq, inArray, isNull, sql } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
-import { artworkUrl } from "$lib/artwork";
+import { artworkName, sourceArtworkUrl } from "$lib/artwork";
 import { slugifyCover } from "$lib/helpers";
 import {
   albumName,
@@ -15,6 +15,7 @@ import {
 import { appleTrackUrl, bestMatch, songRowIdentity } from "$lib/matching";
 import { newCoverSchema } from "$lib/schemas";
 import { getAlbumColor } from "$lib/server/albumColor";
+import { type ArtworkBucket, saveTrackArtwork } from "$lib/server/artwork";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
 import {
@@ -53,6 +54,17 @@ const findKnownSong = async (
   return bestMatch(trackIdentity(track), unmatched, songRowIdentity);
 };
 
+const saveArtwork = async (
+  bucket: ArtworkBucket | undefined,
+  name: string,
+  source: string,
+) => {
+  if (!bucket) return console.error("Artwork bucket not available");
+  await saveTrackArtwork(bucket, name, source).catch((error: Error) =>
+    console.error(`Artwork ${name}: ${error.message}`),
+  );
+};
+
 const claimSong = (db: Db, id: number, track: ITunesTrack) =>
   db
     .update(songs)
@@ -86,6 +98,7 @@ export const actions = {
     } = form.data;
 
     const db = getDb(platform);
+    const bucket = platform?.env.ARTWORK;
     const appleIds = [String(original.trackId), String(cover.trackId)];
 
     const existingSongs = await db.query.songs.findMany({
@@ -111,6 +124,8 @@ export const actions = {
       if (found) return known(found);
 
       const isrc = match?.isrc ?? null;
+      const artists = match?.artists ?? [track.artistName];
+      const artwork = artworkName(artists[0], albumName(track));
       const upc = match?.upc ?? null;
 
       const [features, tidal_url, album_color] = await Promise.all([
@@ -129,16 +144,19 @@ export const actions = {
             clientSecret: env.TIDAL_CLIENT_SECRET,
           },
         ),
-        getAlbumColor(artworkUrl(track.artwork, 64, "jpg")).catch(() => null),
+        getAlbumColor(sourceArtworkUrl(track.artwork, 64, "jpg")).catch(
+          () => null,
+        ),
+        saveArtwork(bucket, artwork, track.artwork),
       ]);
 
       const song: NewSong = {
         created_at: new Date().toISOString(),
         name: songName(track),
-        artists: match?.artists ?? [track.artistName],
+        artists,
         album_name: albumName(track),
         album_year: releaseYear(track),
-        artwork: track.artwork,
+        artwork,
         album_color,
         gender,
         ...features,
