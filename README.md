@@ -1,4 +1,4 @@
-![Some covers deliver the age-old simple pleasures of drag](/static/og-image.png)
+![Some covers deliver the age-old simple pleasures of drag. Genderswap.fm logo.](/static/og-image.png)
 
 # genderswap.fm
 
