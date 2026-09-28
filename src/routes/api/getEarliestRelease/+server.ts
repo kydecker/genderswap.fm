@@ -1,9 +1,10 @@
-import dayjs from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { encodeSearchQuery, removeSongExtraText } from "$lib/helpers";
+import { removeSongExtraText } from "$lib/helpers";
 import { spotify } from "$lib/server/spotify";
 
-dayjs.extend(isSameOrBefore);
+const normalize = (str: string) =>
+  str.toLocaleLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, " ").trim();
+
+const quoteFilter = (str: string) => `"${str.replace(/"/g, "")}"`;
 
 // Given a Spotify track ID, returns a new Track object with the earliest release of that song
 export async function GET({ url }) {
@@ -17,33 +18,30 @@ export async function GET({ url }) {
 
   // Remove extras like " - Live", "(Remastered)", etc.
   const trackNoExtras = removeSongExtraText(track.name);
+  const artist = track.artists[0].name;
+  const releaseDate = track.album.release_date;
 
-  const encodedTrack = encodeSearchQuery(trackNoExtras);
-  const encodedArtist = encodeSearchQuery(track.artists[0].name);
-  const encodedYear = encodeSearchQuery(track.album.release_date.slice(0, 4));
+  const query = `track:${quoteFilter(trackNoExtras)} artist:${quoteFilter(artist)} year:1900-${releaseDate.slice(0, 4)}`;
 
-  const query = `${encodedTrack}%20artist:${encodedArtist}%20year:1900-${encodedYear}`;
-
-  const results = (await spotify.search(query, ["track"], undefined, 5)).tracks
+  const results = (await spotify.search(query, ["track"], undefined, 50)).tracks
     .items;
 
   if (!results) return Response.json(null);
 
-  const filteredResults = results
+  const normalizedName = normalize(trackNoExtras);
+
+  const earliestRelease = results
     // Exclude tracks with different names
-    .filter((result) => result.name === trackNoExtras)
+    .filter((result) => normalize(result.name) === normalizedName)
     // Exclude tracks from a different artist
-    .filter((result) => result.artists[0].name === track.artists[0].name)
+    .filter((result) => result.artists[0].name === artist)
     // Exclude singles
-    .filter((result) => result.album.album_type === "album");
+    .filter((result) => result.album.album_type !== "single")
+    // Exclude releases that aren't earlier than the selected track
+    .filter((result) => result.album.release_date < releaseDate)
+    .sort((a, b) =>
+      a.album.release_date.localeCompare(b.album.release_date),
+    )[0];
 
-  const earliestRelease = filteredResults.sort((a, b) =>
-    dayjs(a.album.release_date).isSameOrBefore(dayjs(b.album.release_date))
-      ? -1
-      : 1,
-  )[0];
-
-  if (!earliestRelease) return Response.json(null);
-
-  return Response.json(earliestRelease);
+  return Response.json(earliestRelease ?? null);
 }

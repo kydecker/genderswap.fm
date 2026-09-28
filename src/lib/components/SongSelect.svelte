@@ -37,9 +37,15 @@ const {
   },
   onSelectedChange: ({ next }) => {
     if (next) {
+      discoveredEarlierRelease = null;
+      discoveredExistingCover = null;
       debounce(() => {
-        checkForEarlierRelease(next.value);
-        checkForExistingCover(next.value);
+        fetchForTrack<Track>("getEarliestRelease", next.value, (data) => {
+          discoveredEarlierRelease = data;
+        });
+        fetchForTrack<ExistingCover>("getCover", next.value, (data) => {
+          discoveredExistingCover = data;
+        });
       });
       value = next.value;
     }
@@ -49,27 +55,15 @@ const {
 
 selected.set(value ? { value } : undefined);
 
-const checkForExistingCover = async (track: Track) => {
+const fetchForTrack = async <T>(
+  endpoint: string,
+  track: Track,
+  set: (data: T | null) => void,
+) => {
   try {
-    const response = await fetch(`/api/getCover?id=${track.id}`, {
-      method: "GET",
-    });
-
-    if (response.ok) discoveredExistingCover = await response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
-  }
-};
-
-const checkForEarlierRelease = async (track: Track) => {
-  try {
-    const response = await fetch(`/api/getEarliestRelease?id=${track.id}`, {
-      method: "GET",
-    });
-
-    if (response.ok) discoveredEarlierRelease = await response.json();
+    const response = await fetch(`/api/${endpoint}?id=${track.id}`);
+    const data: T | null = response.ok ? await response.json() : null;
+    if (value?.id === track.id) set(data);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
