@@ -4,6 +4,8 @@ import "$lib/styles/theme.css";
 import "$lib/styles/base.css";
 
 import { afterNavigate } from "$app/navigation";
+import { asset } from "$app/paths";
+import { page } from "$app/state";
 import Logo from "$lib/components/Logo.svelte";
 import Nav from "$lib/components/Nav.svelte";
 import { resetPageColor } from "$lib/pageColor";
@@ -12,6 +14,16 @@ let { children } = $props();
 
 afterNavigate(resetPageColor);
 </script>
+
+<svelte:head>
+  {#if page.data.favicon}
+    <link rel="icon" href={page.data.favicon} type="image/jpeg" />
+  {:else}
+    <link rel="icon" href={asset("/favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={asset("/favicon-light.png")} type="image/png" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href={asset("/favicon-dark.png")} type="image/png" media="(prefers-color-scheme: dark)" />
+  {/if}
+</svelte:head>
 
 <header class="siteHeader">
   <Logo />
