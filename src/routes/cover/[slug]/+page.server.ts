@@ -77,5 +77,6 @@ export async function load({ params: { slug }, platform, setHeaders }) {
     created_at,
     contributor,
     tags,
+    favicon: cover.album_img.at(-1),
   };
 }
