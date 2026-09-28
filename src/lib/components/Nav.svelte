@@ -88,20 +88,22 @@ const closeSearch = () => {
   </div>
   {#if searching}
     <form class="search" role="search" onsubmit={(e) => e.preventDefault()}>
-      <button type="button" class="close" aria-label="Close search" onclick={closeSearch}>
+      <button type="button" class="close bubble" aria-label="Close search" onclick={closeSearch}>
         <BackIcon aria-hidden="true" />
       </button>
-      <SearchIcon aria-hidden="true" />
-      <input
-        bind:this={input}
-        bind:value={query}
-        id="search"
-        type="search"
-        aria-label="Search covers"
-        {placeholder}
-        oninput={search}
-        onkeydown={(e) => e.key === "Escape" && closeSearch()}
-      />
+      <div class="field bubble">
+        <SearchIcon aria-hidden="true" />
+        <input
+          bind:this={input}
+          bind:value={query}
+          id="search"
+          type="search"
+          aria-label="Search covers"
+          {placeholder}
+          oninput={search}
+          onkeydown={(e) => e.key === "Escape" && closeSearch()}
+        />
+      </div>
     </form>
   {/if}
 </nav>
@@ -111,13 +113,17 @@ const closeSearch = () => {
     --icon-size: min(var(--step-2), 1.375rem);
     --icon-shift: calc(var(--icon-size) * 0.1);
 
+    --nav-padding: var(--space-2xs);
+
     position: relative;
     width: 24rem;
-    padding: var(--space-2xs);
-    border: 1px solid transparent;
-    border-radius: var(--radius-full);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-bar);
+    padding: var(--nav-padding);
+
+    &.searching {
+      background: none;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
 
     @media (max-width: 599.98px) {
       position: fixed;
@@ -127,6 +133,15 @@ const closeSearch = () => {
       z-index: 100;
       width: min(24rem, calc(100% - 2 * var(--space-s)));
     }
+  }
+
+  .nav,
+  .bubble {
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    backdrop-filter: var(--backdrop-surface);
+    box-shadow: var(--shadow-bar);
   }
 
   .tabs {
@@ -189,18 +204,28 @@ const closeSearch = () => {
 
   .search {
     position: absolute;
-    inset: var(--space-2xs);
+    inset: -1px;
+    display: grid;
+    grid-template-columns:
+      calc((100% - 2 * var(--nav-padding) - 2px) / 5 + 2 * var(--nav-padding) + 2px)
+      minmax(0, 1fr);
+    gap: var(--nav-padding);
+    color: var(--color-text-muted);
+  }
+
+  .field {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    padding-inline: var(--space-2xs) var(--space-s);
-    border-radius: var(--radius-full);
-    background: var(--color-surface);
-    color: var(--color-text-muted);
+    padding-inline: var(--space-m);
 
     &:focus-within {
       outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
+      outline-offset: 0;
+    }
+
+    :global(svg) {
+      flex-shrink: 0;
     }
 
     input {
@@ -226,13 +251,12 @@ const closeSearch = () => {
   }
 
   .close {
-    all: unset;
+    appearance: none;
+    padding: 0;
+    color: inherit;
     display: grid;
     place-items: center;
-    flex-shrink: 0;
-    width: var(--space-xl);
-    height: var(--space-xl);
-    border-radius: var(--radius-full);
+    font-size: var(--icon-size);
     cursor: pointer;
 
     &:hover,
@@ -242,6 +266,7 @@ const closeSearch = () => {
 
     &:focus-visible {
       outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
     }
   }
 </style>
