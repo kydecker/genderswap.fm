@@ -47,14 +47,11 @@ export const pageColorOnHover =
     };
   };
 
-const closest = <T extends Element>(
-  items: Iterable<T>,
-  distance: (rect: DOMRect) => number,
-) => {
+const closest = <T>(items: Iterable<T>, distance: (item: T) => number) => {
   let best: T | undefined;
   let bestDistance = Number.POSITIVE_INFINITY;
   for (const item of items) {
-    const d = Math.abs(distance(item.getBoundingClientRect()));
+    const d = Math.abs(distance(item));
     if (d < bestDistance) {
       bestDistance = d;
       best = item;
@@ -68,23 +65,6 @@ const visibleFraction = (element: Element) => {
   if (!height) return 0;
   const visible = Math.min(bottom, window.innerHeight) - Math.max(top, 0);
   return Math.max(0, visible) / height;
-};
-
-const nearestMostVisible = (
-  fractions: number[],
-  max: number,
-  anchor: number,
-) => {
-  let best = -1;
-  fractions.forEach((fraction, index) => {
-    if (
-      fraction === max &&
-      (best < 0 || Math.abs(index - anchor) < Math.abs(best - anchor))
-    ) {
-      best = index;
-    }
-  });
-  return best;
 };
 
 export const pageColorOnFocus = (node: HTMLElement) => {
@@ -104,10 +84,14 @@ export const pageColorOnFocus = (node: HTMLElement) => {
     const max = Math.max(...fractions);
     const next =
       index < 0 || (fraction < trackFraction && fraction < max)
-        ? nearestMostVisible(fractions, max, Math.max(index, 0))
+        ? closest(
+            [...fractions.keys()].filter((i) => fractions[i] === max),
+            (i) => i - Math.max(index, 0),
+          )
         : index;
+    if (next === undefined) return;
     track = tracks[next];
-    trackFraction = fractions[next] ?? 0;
+    trackFraction = fractions[next];
   };
 
   const update = () => {
@@ -119,7 +103,7 @@ export const pageColorOnFocus = (node: HTMLElement) => {
       Number.parseFloat(getComputedStyle(track).paddingInlineStart);
     const item = closest(
       track.querySelectorAll<HTMLElement>("[data-focus-item]"),
-      (rect) => rect.left - start,
+      (item) => item.getBoundingClientRect().left - start,
     );
     if (!item || item === focused) return;
     focused = item;
