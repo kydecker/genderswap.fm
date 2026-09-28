@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { artworkUrl } from "$lib/artwork";
+import { artworkFaviconUrl } from "$lib/artwork";
 import { getReadableTitle, smartquotes } from "$lib/helpers";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
@@ -76,6 +76,6 @@ export async function load({ params: { slug }, platform, setHeaders }) {
     created_at,
     contributor,
     tags,
-    favicon: artworkUrl(cover.artwork, 64, "jpg"),
+    favicon: artworkFaviconUrl(cover.artwork),
   };
 }

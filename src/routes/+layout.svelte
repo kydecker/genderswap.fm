@@ -35,7 +35,6 @@ afterNavigate(resetPageColor);
 
 <style>
   .siteHeader {
-    display: flex;
     width: 100%;
     padding-block: var(--space-l) var(--space-s);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
@@ -43,6 +42,7 @@ afterNavigate(resetPageColor);
     gap: var(--space-l);
 
     @media (min-width: 600px) {
+      display: flex;
       position: sticky;
       top: 0;
       z-index: 100;

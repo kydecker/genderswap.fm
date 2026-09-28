@@ -236,6 +236,9 @@ importers:
       nano-staged:
         specifier: ^1.0.2
         version: 1.0.2
+      sharp:
+        specifier: ^0.35.2
+        version: 0.35.2
       simple-git-hooks:
         specifier: ^2.13.1
         version: 2.13.1

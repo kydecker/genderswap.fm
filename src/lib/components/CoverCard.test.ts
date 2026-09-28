@@ -6,7 +6,12 @@ describe("CoverCard", () => {
   it("should link to the slug", async ({ expect }) => {
     const album = { name: "Name", artists: ["Artist"], artwork: "a.jpg" };
     const { container } = render(CoverCard, {
-      props: { original: album, cover: album, slug: "test-slug" },
+      props: {
+        original: album,
+        cover: album,
+        slug: "test-slug",
+        sizes: "10rem",
+      },
     });
 
     const linkElement = container.querySelector("a");
@@ -27,7 +32,7 @@ describe("CoverCard", () => {
     };
 
     const { container } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug", lazy: true },
+      props: { original, cover, slug: "test-slug", sizes: "10rem", lazy: true },
     });
 
     const coverImage = container.querySelector("img");
@@ -50,7 +55,7 @@ describe("CoverCard", () => {
     };
 
     const { container } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug" },
+      props: { original, cover, slug: "test-slug", sizes: "10rem" },
     });
 
     const coverImage = container.querySelector("img");
@@ -73,7 +78,7 @@ describe("CoverCard", () => {
     };
 
     const { container, getByText } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug" },
+      props: { original, cover, slug: "test-slug", sizes: "10rem" },
     });
 
     const originalNameElement = getByText("Original Name");
@@ -99,7 +104,7 @@ describe("CoverCard", () => {
     };
 
     const { container, getByText } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug" },
+      props: { original, cover, slug: "test-slug", sizes: "10rem" },
     });
 
     const originalArtistElement = container.querySelector(".covering .name");

@@ -5,7 +5,7 @@ import { superForm } from "sveltekit-superforms";
 import { browser } from "$app/environment";
 import { page } from "$app/state";
 import { albumColorFromImage } from "$lib/albumColor";
-import { artworkUrl } from "$lib/artwork";
+import { sourceArtworkUrl } from "$lib/artwork";
 import ColorSwirl from "$lib/components/ColorSwirl.svelte";
 import ErrorMessage from "$lib/components/ErrorMessage.svelte";
 import GenderSelect from "$lib/components/GenderSelect.svelte";
@@ -49,7 +49,7 @@ const watchColor = (
   set(null);
   if (!artwork) return;
   let current = true;
-  albumColorFromImage(artworkUrl(artwork, 64, "jpg"))
+  albumColorFromImage(sourceArtworkUrl(artwork, 64, "jpg"))
     .then((color) => current && set(color))
     .catch(() => {});
   return () => {

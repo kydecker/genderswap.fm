@@ -28,6 +28,8 @@
     "db:migrate:local": "wrangler d1 migrations apply genderswap-fm --local",
     "db:migrate:remote": "wrangler d1 migrations apply genderswap-fm --remote",
     "db:seed:local": "wrangler d1 execute genderswap-fm --local --file tests/fixtures/seed.sql",
+    "artwork:backfill:local": "node scripts/backfill-artwork.ts",
+    "artwork:backfill:remote": "node scripts/backfill-artwork.ts --remote",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },
@@ -65,6 +67,7 @@
     "jsdom": "^29.0.2",
     "mdsvex": "^0.12.8",
     "nano-staged": "^1.0.2",
+    "sharp": "^0.35.2",
     "simple-git-hooks": "^2.13.1",
     "svelte": "^5.56.8",
     "svelte-check": "^4.7.4",

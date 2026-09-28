@@ -2,7 +2,7 @@ import { Resvg } from "@cf-wasm/resvg";
 import { satori } from "@cf-wasm/satori";
 import { eq } from "drizzle-orm";
 import { getPagePalette } from "$lib/albumColor";
-import { artworkUrl } from "$lib/artwork";
+import { artworkOriginalUrl } from "$lib/artwork";
 import { OG_HEIGHT, OG_WIDTH, TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
 import { getDb } from "$lib/server/db";
@@ -185,9 +185,7 @@ export async function GET({ params, url, platform }) {
                     justifyContent: "flex-end",
                     width: "45%",
                   },
-                  children: [
-                    album(artworkUrl(cover.artwork, ALBUM_SIZE, "jpg")),
-                  ],
+                  children: [album(artworkOriginalUrl(cover.artwork))],
                 },
               },
             ],

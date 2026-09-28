@@ -14,12 +14,14 @@ let {
   original,
   cover,
   slug,
+  sizes,
   lazy,
   priority,
 }: {
   original: Omit<Album, "artwork">;
   cover: Album;
   slug: string;
+  sizes: string;
   lazy?: boolean;
   priority?: boolean;
 } = $props();
@@ -36,8 +38,9 @@ function formatArtists(artists: string[]) {
 <div class="coverCard" {@attach pageColorOnHover(cover.album_color)}>
   <div class="album">
     <img
-      src={artworkUrl(cover.artwork, 300)}
-      srcset={artworkSrcset(cover.artwork, 300)}
+      src={artworkUrl(cover.artwork, 384)}
+      srcset={artworkSrcset(cover.artwork)}
+      {sizes}
       alt={`${cover.name} album art`}
       loading={lazy ? 'lazy' : 'eager'}
       fetchpriority={priority ? 'high' : 'auto'}

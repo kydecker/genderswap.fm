@@ -27,8 +27,6 @@ pnpm db:migrate:remote
 
 Songs are searched and selected with the iTunes Search API, straight from the browser. When a cover is submitted, each song is matched on Deezer by title, artist, and length to get its ISRC, which is used to fetch audio features and a Spotify link from [ReccoBeats](https://reccobeats.com) and a Tidal link. Tidal needs `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
 
-Album art is stored as an artwork ID and sized on request with `artworkUrl` in [src/lib/artwork.ts](src/lib/artwork.ts). A few older songs with no Apple Music match still use Spotify art.
-
 ## Colophon
 
 This site was built by [Ky Decker](https://ky.fyi) using [Sveltekit](https://kit.svelte.dev). It's hosted on [Cloudflare](https://cloudflare.com/) Workers with data stored in [D1](https://developers.cloudflare.com/d1/). Tracks and album art come from the iTunes Search API, audio features from ReccoBeats, ISRCs from Deezer, and streaming links from Apple Music, Spotify, and Tidal. Text is set in [Labil Grotesk](https://www.kometa.xyz/typefaces/labil-grotesk/) by Kometa Typefaces.
