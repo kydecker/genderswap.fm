@@ -23,6 +23,7 @@ let { data } = $props();
         covers={row.slugs.map((slug) => data.covers[slug])}
         totalCount={row.totalCount}
         lazy={index > 2}
+        priority={index === 0}
       />
     {/each}
   </div>

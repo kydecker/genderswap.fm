@@ -27,12 +27,7 @@ pnpm db:migrate:remote
 
 Songs are searched and selected with the iTunes Search API, straight from the browser. When a cover is submitted, each song is matched on Deezer by title, artist, and length to get its ISRC, which is used to fetch audio features and a Spotify link from [ReccoBeats](https://reccobeats.com) and a Tidal link. Tidal needs `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
 
-Album art is stored as an artwork ID and sized on request with `artworkUrl` in [src/lib/artwork.ts](src/lib/artwork.ts). Songs added before the switch from Spotify keep Spotify art until they're matched to an Apple Music track. To match them and fetch Apple art, run:
-
-```
-pnpm db:backfill-apple:remote            # every song without an Apple track
-pnpm db:backfill-apple:remote --ids=1,2  # specific songs
-```
+Album art is stored as an artwork ID and sized on request with `artworkUrl` in [src/lib/artwork.ts](src/lib/artwork.ts). A few older songs with no Apple Music match still use Spotify art.
 
 ## Colophon
 

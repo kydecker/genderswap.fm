@@ -47,6 +47,11 @@ let {
     }
   }
 
+  a.tag:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
   a.tag:hover:not(.active) {
     background: var(--color-surface-hover);
     color: var(--color-text);

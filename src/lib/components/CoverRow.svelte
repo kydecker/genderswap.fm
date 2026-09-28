@@ -16,6 +16,7 @@ let {
   covers,
   totalCount,
   lazy,
+  priority,
 }: {
   title: string;
   description?: string;
@@ -23,6 +24,7 @@ let {
   covers: Cover[];
   totalCount?: number;
   lazy?: boolean;
+  priority?: boolean;
 } = $props();
 
 let track: HTMLDivElement;
@@ -59,13 +61,14 @@ $effect(() => {
   </div>
   <div class="scroller">
     <div class="track" data-focus-track bind:this={track} onscroll={updateEnds}>
-      {#each covers as cover}
+      {#each covers as cover, index}
         <div class="item" data-focus-item data-page-color={cover.cover.album_color}>
           <CoverCard
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
             {lazy}
+            priority={priority && index < 3}
           />
         </div>
       {/each}

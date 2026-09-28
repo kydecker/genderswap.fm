@@ -35,6 +35,7 @@ let {
         cover={cover.cover}
         slug={cover.slug}
         lazy={index >= 30}
+        priority={index < 3}
       />
     {/each}
   </div>
