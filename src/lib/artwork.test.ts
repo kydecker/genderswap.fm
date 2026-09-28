@@ -6,14 +6,13 @@ import {
   artworkOriginalUrl,
   artworkSrcset,
   artworkUrl,
-  sourceArtworkSrcset,
-  sourceArtworkUrl,
+  itunesArtworkSrcset,
+  itunesArtworkUrl,
 } from "./artwork";
 
 const apple =
   "Music125/v4/7c/04/ba/7c04ba17-2ff8-21b3-0ac0-7d141f86e924/20UMGIM64216.rgb.jpg";
 const mzstatic = `https://is1-ssl.mzstatic.com/image/thumb/${apple}`;
-const spotify = "spotify:aa22899360d8ba6704732dec";
 
 describe("artworkId", () => {
   it("should extract the path from an iTunes artwork URL", () => {
@@ -22,26 +21,19 @@ describe("artworkId", () => {
   });
 });
 
-describe("sourceArtworkUrl", () => {
+describe("itunesArtworkUrl", () => {
   it("should size Apple artwork in the requested format", () => {
-    expect(sourceArtworkUrl(apple, 300)).toBe(`${mzstatic}/300x300bb.webp`);
-    expect(sourceArtworkUrl(apple, 64, "jpg")).toBe(`${mzstatic}/64x64bb.jpg`);
-  });
-
-  it.each([
-    [64, "ab67616d00004851"],
-    [160, "ab67616d00001e02"],
-    [1000, "ab67616d0000b273"],
-  ])("should pick the Spotify size covering %ipx", (size, prefix) => {
-    expect(sourceArtworkUrl(spotify, size)).toBe(
-      `https://i.scdn.co/image/${prefix}aa22899360d8ba6704732dec`,
+    expect(itunesArtworkUrl(apple, 300)).toBe(`${mzstatic}/300x300bb.webp`);
+    expect(itunesArtworkUrl(apple, 64, "jpg")).toBe(`${mzstatic}/64x64bb.jpg`);
+    expect(itunesArtworkUrl(apple, 256, "webp", 50)).toBe(
+      `${mzstatic}/256x256bb-50.webp`,
     );
   });
 });
 
-describe("sourceArtworkSrcset", () => {
+describe("itunesArtworkSrcset", () => {
   it("should offer a 2x size", () => {
-    expect(sourceArtworkSrcset(apple, 300)).toBe(
+    expect(itunesArtworkSrcset(apple, 300)).toBe(
       `${mzstatic}/300x300bb.webp, ${mzstatic}/600x600bb.webp 2x`,
     );
   });
@@ -64,9 +56,9 @@ describe("artworkName", () => {
 });
 
 describe("artworkUrl", () => {
-  it("should resize the stored original", () => {
+  it("should point at the stored WebP for a width", () => {
     expect(artworkUrl("abba-voulez-vous", 256)).toBe(
-      "https://img.genderswap.fm/cdn-cgi/image/width=256,format=auto/640/abba-voulez-vous.jpg",
+      "https://img.genderswap.fm/256/abba-voulez-vous.webp",
     );
   });
 
@@ -87,13 +79,10 @@ describe("artworkUrl", () => {
 });
 
 describe("artworkSrcset", () => {
-  it("should offer each resized width", () => {
+  it("should offer each stored width", () => {
     expect(artworkSrcset("a")).toBe(
       [256, 384, 512, 640]
-        .map(
-          (width) =>
-            `https://img.genderswap.fm/cdn-cgi/image/width=${width},format=auto/640/a.jpg ${width}w`,
-        )
+        .map((width) => `https://img.genderswap.fm/${width}/a.webp ${width}w`)
         .join(", "),
     );
   });

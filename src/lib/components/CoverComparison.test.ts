@@ -109,10 +109,10 @@ describe("CoverComparison", async () => {
     });
     const [coverArt, originalArt] = container.querySelectorAll(".album-art");
     expect(coverArt.getAttribute("src")).toBe(
-      "https://img.genderswap.fm/cdn-cgi/image/width=384,format=auto/640/the-czars-best-of.jpg",
+      "https://img.genderswap.fm/384/the-czars-best-of.webp",
     );
     expect(originalArt.getAttribute("src")).toBe(
-      "https://img.genderswap.fm/cdn-cgi/image/width=384,format=auto/640/abba-voulez-vous.jpg",
+      "https://img.genderswap.fm/384/abba-voulez-vous.webp",
     );
   });
 

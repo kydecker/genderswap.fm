@@ -11,7 +11,7 @@ const memoryBucket = (keys: string[] = []) => {
 };
 
 describe("saveTrackArtwork", () => {
-  it("should store the original and favicon from the iTunes source", async () => {
+  it("should store the original, favicon, and WebP widths from iTunes", async () => {
     const { bucket, objects } = memoryBucket();
     const fetched: string[] = [];
     const fetch = globalThis.fetch;
@@ -27,13 +27,19 @@ describe("saveTrackArtwork", () => {
     }
 
     expect([...objects].sort()).toEqual([
+      "256/abba-voulez-vous.webp",
       "32/abba-voulez-vous.jpg",
+      "384/abba-voulez-vous.webp",
+      "512/abba-voulez-vous.webp",
       "640/abba-voulez-vous.jpg",
+      "640/abba-voulez-vous.webp",
     ]);
-    expect(fetched.sort()).toEqual([
-      "https://is1-ssl.mzstatic.com/image/thumb/Music/a.jpg/32x32bb.jpg",
+    expect(fetched).toContain(
       "https://is1-ssl.mzstatic.com/image/thumb/Music/a.jpg/640x640bb.jpg",
-    ]);
+    );
+    expect(fetched).toContain(
+      "https://is1-ssl.mzstatic.com/image/thumb/Music/a.jpg/256x256bb-50.webp",
+    );
   });
 
   it("should reuse artwork already stored under the name", async () => {

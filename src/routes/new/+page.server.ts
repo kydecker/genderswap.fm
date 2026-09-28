@@ -3,7 +3,7 @@ import { and, between, eq, inArray, isNull, sql } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
-import { artworkName, sourceArtworkUrl } from "$lib/artwork";
+import { artworkName, itunesArtworkUrl } from "$lib/artwork";
 import { slugifyCover } from "$lib/helpers";
 import {
   albumName,
@@ -144,7 +144,7 @@ export const actions = {
             clientSecret: env.TIDAL_CLIENT_SECRET,
           },
         ),
-        getAlbumColor(sourceArtworkUrl(track.artwork, 64, "jpg")).catch(
+        getAlbumColor(itunesArtworkUrl(track.artwork, 64, "jpg")).catch(
           () => null,
         ),
         saveArtwork(bucket, artwork, track.artwork),
