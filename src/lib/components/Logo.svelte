@@ -81,14 +81,12 @@
   }
 
   .logo {
-    max-width: 100%;
     pointer-events: auto;
 
     svg {
-      display: block;
-      width: auto;
+      width: 320px;
       max-width: 100%;
-      height: var(--space-2xl);
+      display: block;
       overflow: visible;
     }
 
@@ -96,7 +94,6 @@
       flex: 1;
 
       svg {
-        width: 100%;
         height: auto;
       }
     }

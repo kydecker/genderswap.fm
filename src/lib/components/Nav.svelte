@@ -114,7 +114,8 @@ const closeSearch = () => {
     --nav-padding: var(--space-2xs);
 
     position: relative;
-    width: 24rem;
+    width: 22rem;
+    flex-shrink: 0;
     padding: var(--nav-padding);
 
     &.searching {

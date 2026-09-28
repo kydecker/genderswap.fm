@@ -40,7 +40,7 @@ afterNavigate(resetPageColor);
     padding-block: var(--space-l) var(--space-s);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
     padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
-    gap: var(--space-l);
+    gap: var(--space-m);
 
     @media (min-width: 600px) {
       position: sticky;
