@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { MouseEventHandler } from "svelte/elements";
 import { slide } from "svelte/transition";
-import { sourceArtworkSrcset, sourceArtworkUrl } from "$lib/artwork";
+import { itunesArtworkSrcset, itunesArtworkUrl } from "$lib/artwork";
 import {
   getReadableTitle,
   getYearsEarlierText,
@@ -56,7 +56,7 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
 <div class="selectedSong">
   <div class="selectedSongContents">
     <div class="selectedAlbum">
-      <img src={sourceArtworkUrl(song.artwork, 160)} srcset={sourceArtworkSrcset(song.artwork, 160)} alt="" />
+      <img src={itunesArtworkUrl(song.artwork, 160)} srcset={itunesArtworkSrcset(song.artwork, 160)} alt="" />
     </div>
     <div class="selectedLabel">
       <div class="selectedName">{smartquotes(songName(song))}</div>
