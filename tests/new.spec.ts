@@ -93,16 +93,16 @@ test("should submit a new cover", async ({ page }) => {
   await page.goto("/new");
   const initialColor = await pageColor(page);
 
-  await selectSong(page, `e2e original ${runId}`, original.trackName);
+  await selectSong(page, `e2e cover ${runId}`, cover.trackName);
   await expect(page.locator(".selectedSong").first()).toContainText(
-    "E2E Original Album · 1973",
+    "E2E Cover Album · 2002",
   );
   await expect.poll(() => pageColor(page)).not.toBe(initialColor);
-  await page.getByRole("button", { name: "Select women" }).first().click();
+  await page.getByRole("button", { name: "Select men" }).first().click();
 
-  await selectSong(page, `e2e cover ${runId}`, cover.trackName);
+  await selectSong(page, `e2e original ${runId}`, original.trackName);
   await expect(page.locator("canvas.colorSwirl")).toHaveClass(/ready/);
-  await page.getByRole("button", { name: "Select men" }).nth(1).click();
+  await page.getByRole("button", { name: "Select women" }).nth(1).click();
 
   await page.locator("textarea").fill("Written by an end-to-end test.");
   await page.locator("form button[type=submit]").last().click();

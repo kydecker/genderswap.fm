@@ -118,7 +118,6 @@ $effect(() => {
     &.playing {
       background: var(--color-text);
       color: var(--color-bg);
-      border-color: var(--color-surface);
     }
 
     &:focus-visible {

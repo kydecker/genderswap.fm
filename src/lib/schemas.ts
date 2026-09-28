@@ -29,12 +29,12 @@ const track = (message: string) => z.custom<ITunesTrack>(isValidTrack, message);
 
 export const newCoverSchema = z
   .object({
-    original: track("Please select an original song"),
-    originalGenders: z
-      .array(z.custom<Enums<"gender">>())
-      .nonempty("Please select at least one gender"),
     cover: track("Please select a cover song"),
     coverGenders: z
+      .array(z.custom<Enums<"gender">>())
+      .nonempty("Please select at least one gender"),
+    original: track("Please select an original song"),
+    originalGenders: z
       .array(z.custom<Enums<"gender">>())
       .nonempty("Please select at least one gender"),
     description: z

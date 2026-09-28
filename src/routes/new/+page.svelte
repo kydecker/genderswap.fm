@@ -100,20 +100,20 @@ const handleSubmit = () => {
 <form class="submitForm" method="POST" use:enhance>
   <h1 class="header">Add a cover</h1>
   <Steps>
-    <Step title="Select the original">
-      <SongSelect name="original" bind:value={$form.original} errors={$errors.original as string[] | undefined} />
-      <GenderSelect
-        name="originalGenders"
-        bind:value={$form.originalGenders}
-        errors={$errors.originalGenders?._errors}
-      />
-    </Step>
     <Step title="Select the cover">
       <SongSelect name="cover" bind:value={$form.cover} errors={$errors.cover as string[] | undefined} />
       <GenderSelect
         name="coverGenders"
         bind:value={$form.coverGenders}
         errors={$errors.coverGenders?._errors}
+      />
+    </Step>
+    <Step title="Select the original">
+      <SongSelect name="original" bind:value={$form.original} errors={$errors.original as string[] | undefined} />
+      <GenderSelect
+        name="originalGenders"
+        bind:value={$form.originalGenders}
+        errors={$errors.originalGenders?._errors}
       />
       {#if $form.originalGenders.length === 1 && $form.coverGenders.length === 1}
         {#if JSON.stringify($form.originalGenders) === JSON.stringify($form.coverGenders)}
