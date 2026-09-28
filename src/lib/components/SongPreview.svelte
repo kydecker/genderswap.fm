@@ -211,6 +211,11 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
         background: var(--color-surface-hover);
       }
     }
+
+    &:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
   }
 
   .banner {
@@ -269,6 +274,11 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
         &:hover {
           background: var(--color-border);
         }
+      }
+
+      &:focus-visible {
+        outline: var(--focus-ring);
+        outline-offset: var(--focus-ring-offset);
       }
     }
   }

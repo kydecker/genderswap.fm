@@ -104,15 +104,16 @@ innerValue.set(value);
       }
     }
 
+    &:focus-visible {
+      background-color: var(--color-surface-hover);
+      outline: var(--focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+
     &[data-state='on'] {
       background-color: var(--color-text);
       border-color: var(--color-text);
       color: var(--color-bg);
-    }
-
-    &:focus-visible {
-      outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
     }
   }
 </style>

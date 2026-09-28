@@ -1,10 +1,10 @@
 import { Resvg } from "@cf-wasm/resvg";
 import { satori } from "@cf-wasm/satori";
 import { eq } from "drizzle-orm";
+import { getPagePalette } from "$lib/albumColor";
 import { artworkUrl } from "$lib/artwork";
 import { OG_HEIGHT, OG_WIDTH, TAGS } from "$lib/constants";
 import { getReadableTitle, getSortedTags } from "$lib/helpers";
-import { getPagePalette } from "$lib/server/albumColor";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 import logoSvg from "$lib/server/og-logo.svg?raw";
