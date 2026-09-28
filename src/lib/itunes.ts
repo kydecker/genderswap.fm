@@ -6,16 +6,12 @@ import {
 } from "./matching.ts";
 
 export type ITunesTrack = {
-  wrapperType: "track";
-  kind: "song";
   trackId: number;
   trackName: string;
   artistId: number;
   artistName: string;
-  collectionId: number;
   collectionName: string;
   releaseDate: string;
-  artworkUrl100: string;
   artwork: string;
   trackTimeMillis?: number;
   discNumber?: number;

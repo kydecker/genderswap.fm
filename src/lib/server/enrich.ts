@@ -17,8 +17,6 @@ type DeezerTrack = {
   contributors?: { name: string }[];
 };
 
-type DeezerAlbum = { upc?: string };
-
 const AUDIO_FEATURES = [
   "acousticness",
   "danceability",
@@ -74,7 +72,7 @@ export const findDeezerMatch = async (track: ITunesTrack) => {
   if (!match) return null;
 
   const details = await getJson<DeezerTrack>(`${DEEZER}/track/${match.id}`);
-  const album = await getJson<DeezerAlbum>(
+  const album = await getJson<{ upc?: string }>(
     `${DEEZER}/album/${details.album.id}`,
   ).catch(() => null);
 

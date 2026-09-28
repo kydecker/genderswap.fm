@@ -1,6 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { and, between, eq, inArray, isNull, type SQL, sql } from "drizzle-orm";
-import type { BatchItem } from "drizzle-orm/batch";
+import { and, between, eq, inArray, isNull, sql } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
@@ -107,11 +106,7 @@ export const actions = {
     const resolveSong = async (
       track: ITunesTrack,
       gender: Enums<"gender">[],
-    ): Promise<{
-      id: number | SQL;
-      song: NewSong;
-      write: BatchItem<"sqlite">;
-    }> => {
+    ) => {
       const appleId = String(track.trackId);
       const known = (song: Tables<"songs">) => ({
         id: song.id,

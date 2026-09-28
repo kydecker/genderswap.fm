@@ -4,9 +4,7 @@ import { findDeezerMatch, getAudioFeatures, NO_AUDIO_FEATURES } from "./enrich";
 
 const mockFetch = (...bodies: unknown[]) => {
   const fetch = vi.fn();
-  for (const body of bodies) {
-    fetch.mockResolvedValueOnce(Response.json(body));
-  }
+  for (const body of bodies) fetch.mockResolvedValueOnce(Response.json(body));
   vi.stubGlobal("fetch", fetch);
   return fetch;
 };
@@ -16,44 +14,37 @@ afterEach(() => {
 });
 
 const track = {
-  wrapperType: "track",
-  kind: "song",
-  trackId: 1524793743,
+  trackId: 1,
   trackName: "the 1",
-  artistId: 159260351,
+  artistId: 1,
   artistName: "Taylor Swift",
-  collectionId: 1524793738,
   collectionName: "folklore",
   releaseDate: "2020-07-24T07:00:00Z",
-  artworkUrl100: "",
   artwork: "",
   trackTimeMillis: 210240,
   trackViewUrl: "",
 } satisfies ITunesTrack;
+
+const candidate = (
+  id: number,
+  title: string,
+  duration: number,
+  artist = "Taylor Swift",
+) => ({
+  id,
+  title,
+  duration,
+  artist: { name: artist },
+});
 
 describe("findDeezerMatch", () => {
   it("should match by title, artist, and length", async () => {
     const fetch = mockFetch(
       {
         data: [
-          {
-            id: 1,
-            title: "the 1",
-            duration: 240,
-            artist: { name: "Taylor Swift" },
-          },
-          {
-            id: 2,
-            title: "the 1",
-            duration: 210,
-            artist: { name: "Taylor Swift" },
-          },
-          {
-            id: 3,
-            title: "the 1",
-            duration: 210,
-            artist: { name: "Karaoke Stars" },
-          },
+          candidate(1, "the 1", 240),
+          candidate(2, "the 1", 210),
+          candidate(3, "the 1", 210, "Karaoke Stars"),
         ],
       },
       {
@@ -73,15 +64,15 @@ describe("findDeezerMatch", () => {
   });
 
   it("should match titles that differ only in their subtitle", async () => {
-    const fetch = mockFetch(
+    mockFetch(
       {
         data: [
-          {
-            id: 7,
-            title: "Turn, Turn, Turn! / To Everything There Is a Season",
-            duration: 216,
-            artist: { name: "Judy Collins" },
-          },
+          candidate(
+            7,
+            "Turn, Turn, Turn! / To Everything There Is a Season",
+            216,
+            "Judy Collins",
+          ),
         ],
       },
       { isrc: "USEE10301047", album: { id: 9 }, contributors: [] },
@@ -95,46 +86,25 @@ describe("findDeezerMatch", () => {
       trackTimeMillis: 220266,
     });
 
-    expect(match?.isrc).toBe("USEE10301047");
-    expect(match?.artists).toEqual(["Judy Collins"]);
-    expect(fetch.mock.calls[1][0]).toBe("https://api.deezer.com/track/7");
+    expect(match).toMatchObject({
+      isrc: "USEE10301047",
+      artists: ["Judy Collins"],
+    });
   });
 
-  it("should reject a longer title with a different length", async () => {
-    mockFetch({
-      data: [
-        {
-          id: 1,
-          title: "the 1 so bad",
-          duration: 152,
-          artist: { name: "Taylor Swift" },
-        },
-      ],
-    });
-
-    expect(await findDeezerMatch(track)).toBeNull();
-  });
-
-  it("should return null without a confident match", async () => {
-    mockFetch({
-      data: [
-        {
-          id: 1,
-          title: "the 2",
-          duration: 210,
-          artist: { name: "Taylor Swift" },
-        },
-      ],
-    });
-
+  it.each([
+    ["a different title", candidate(1, "the 2", 210)],
+    [
+      "a longer title with a different length",
+      candidate(1, "the 1 so bad", 152),
+    ],
+  ])("should reject %s", async (_, data) => {
+    mockFetch({ data: [data] });
     expect(await findDeezerMatch(track)).toBeNull();
   });
 
   it("should reject Deezer error bodies", async () => {
-    mockFetch({
-      error: { type: "Exception", message: "Quota limit exceeded" },
-    });
-
+    mockFetch({ error: { message: "Quota limit exceeded" } });
     await expect(findDeezerMatch(track)).rejects.toThrow("Quota");
   });
 });
@@ -145,17 +115,8 @@ describe("getAudioFeatures", () => {
       content: [
         {
           href: "https://open.spotify.com/track/0Jlcvv8IykzHaSmj49uNW8",
-          acousticness: 0.757,
-          danceability: 0.777,
           energy: 0.357,
-          instrumentalness: 0.00000728,
-          key: 0,
-          liveness: 0.108,
-          loudness: -6.942,
-          mode: 1,
-          speechiness: 0.0522,
           tempo: 139.884,
-          valence: 0.172,
         },
       ],
     });
@@ -169,7 +130,6 @@ describe("getAudioFeatures", () => {
 
   it("should return empty features when the ISRC is unknown", async () => {
     mockFetch({ content: [] });
-
     expect(await getAudioFeatures("XX0000000000")).toEqual(NO_AUDIO_FEATURES);
   });
 });

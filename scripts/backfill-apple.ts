@@ -35,11 +35,7 @@ const d1 = (args: string[]) =>
   execFileSync(
     "pnpm",
     [
-      "exec",
-      "wrangler",
-      "d1",
-      "execute",
-      "genderswap-fm",
+      ..."exec wrangler d1 execute genderswap-fm".split(" "),
       target,
       "--yes",
       ...args,
