@@ -66,7 +66,7 @@
   --color-surface-hover: oklch(
     from var(--color-page) calc(l + 0.084) calc(c * 0.6) h
   );
-  --color-surface-raised: oklch(from var(--color-page) 0.97 calc(c * 0.25) h);
+  --color-surface-raised: oklch(from var(--color-page) 0.92 calc(c * 0.25) h);
   --color-border: oklch(from var(--color-page) calc(l - 0.083) c h);
   --color-text: oklch(from var(--color-page) 0.18 calc(c * 0.4) h);
   --color-text-muted: color-mix(var(--color-text), transparent 30%);
@@ -131,6 +131,8 @@
   --shadow-popover:
     0px 10px 38px -10px rgba(0, 0, 0, 0.35),
     0px 10px 20px -15px rgba(0, 0, 0, 0.2);
+  --shadow-bar:
+    0px 4px 16px -6px rgba(0, 0, 0, 0.3), 0px 4px 8px -6px rgba(0, 0, 0, 0.2);
 
   /* https://shadows.brumm.af/ */
   --shadow-album-s:

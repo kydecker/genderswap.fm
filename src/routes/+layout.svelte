@@ -28,26 +28,18 @@ afterNavigate(resetPageColor);
     padding-block: var(--space-l) var(--space-s);
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
     padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+    gap: var(--space-l);
 
     @media (min-width: 600px) {
-      --logo-height: max(4rem, var(--space-3xl));
-
       position: sticky;
       top: 0;
       z-index: 100;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       pointer-events: none;
 
       > :global(*) {
         pointer-events: auto;
-      }
-
-      > :global(.logo) {
-        width: calc(
-          (var(--space-2xl) * 3 + var(--logo-height) * 70 / 40) / 2
-        );
-        margin-block-start: calc(var(--logo-height) * -0.04);
       }
     }
   }

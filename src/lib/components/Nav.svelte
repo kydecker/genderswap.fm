@@ -117,7 +117,7 @@ const closeSearch = () => {
     border: 1px solid transparent;
     border-radius: var(--radius-full);
     background: var(--color-surface);
-    box-shadow: var(--shadow-popover);
+    box-shadow: var(--shadow-bar);
 
     @media (max-width: 599.98px) {
       position: fixed;
