@@ -58,9 +58,9 @@ $effect(() => {
     {/if}
   </div>
   <div class="scroller">
-    <div class="track" bind:this={track} onscroll={updateEnds}>
+    <div class="track" data-focus-track bind:this={track} onscroll={updateEnds}>
       {#each covers as cover, index}
-        <div class="item">
+        <div class="item" data-focus-item data-page-color={cover.cover.album_color}>
           <CoverCard
             original={cover.original}
             cover={cover.cover}

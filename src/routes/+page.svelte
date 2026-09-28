@@ -4,6 +4,7 @@ import CoverRow from "$lib/components/CoverRow.svelte";
 import PageMeta from "$lib/components/PageMeta.svelte";
 import { LATEST_DESCRIPTION, LATEST_TITLE, TAGS } from "$lib/constants";
 import { tagTitle } from "$lib/helpers";
+import { pageColorOnFocus } from "$lib/pageColor";
 
 let { data } = $props();
 </script>
@@ -13,7 +14,7 @@ let { data } = $props();
 />
 
 {#if data.view === "rows"}
-  <div class="rows">
+  <div class="rows" {@attach pageColorOnFocus}>
     {#each data.rows as row, index (row.tag)}
       <CoverRow
         title={row.tag ? tagTitle(row.tag) : LATEST_TITLE}

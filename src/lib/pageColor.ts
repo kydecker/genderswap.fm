@@ -47,6 +47,86 @@ export const pageColorOnHover =
     };
   };
 
+export const pageColorOnFocus = (node: HTMLElement) => {
+  const touchOnly = matchMedia("(hover: none)");
+  let frame = 0;
+
+  const closest = <T extends Element>(
+    items: Iterable<T>,
+    distance: (rect: DOMRect) => number,
+  ) => {
+    let best: T | undefined;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const item of items) {
+      const d = Math.abs(distance(item.getBoundingClientRect()));
+      if (d < bestDistance) {
+        bestDistance = d;
+        best = item;
+      }
+    }
+    return best;
+  };
+
+  const update = () => {
+    frame = 0;
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const progress =
+      maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0;
+    const focusY = window.innerHeight * (0.3 + 0.4 * progress);
+    const track = closest(
+      node.querySelectorAll<HTMLElement>("[data-focus-track]"),
+      (rect) => rect.top + rect.height / 2 - focusY,
+    );
+    if (!track) return;
+    const start =
+      track.getBoundingClientRect().left +
+      Number.parseFloat(getComputedStyle(track).paddingInlineStart);
+    const item = closest(
+      track.querySelectorAll<HTMLElement>("[data-focus-item]"),
+      (rect) => rect.left - start,
+    );
+    if (item) setPageColor(item.dataset.pageColor);
+  };
+
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+
+  const listen = () => {
+    window.addEventListener("scroll", schedule, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", schedule);
+  };
+
+  const unlisten = () => {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    window.removeEventListener("scroll", schedule, { capture: true });
+    window.removeEventListener("resize", schedule);
+  };
+
+  const onModeChange = () => {
+    unlisten();
+    if (touchOnly.matches) {
+      listen();
+      schedule();
+    } else {
+      releasePageColor();
+    }
+  };
+
+  onModeChange();
+  touchOnly.addEventListener("change", onModeChange);
+
+  return () => {
+    unlisten();
+    touchOnly.removeEventListener("change", onModeChange);
+  };
+};
+
 export const resolveColorToken = (token: string) => {
   const probe = document.createElement("span");
   probe.style.color = `var(${token})`;

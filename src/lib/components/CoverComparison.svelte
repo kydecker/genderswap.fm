@@ -157,29 +157,31 @@ const coverSong = $derived(cover.cover);
   }
 
   .song-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-    margin-inline: -0.35rem;
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xs);
+    justify-content: space-between;
 
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 2.4rem;
-      aspect-ratio: 1;
-      opacity: 0.8;
-      border-radius: var(--radius-full);
-      background-color: transparent;
+      border-radius: var(--radius-s);
+      padding-block: var(--space-xs);
+      color: var(--color-text-muted);
+      background-color: var(--color-surface);
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {
-          opacity: 1;
+          background-color: var(--color-surface-hover);
+          color: var(--color-text);
         }
       }
 
       &:focus-visible {
-        opacity: 1;
+        background-color: var(--color-surface-hover);
+        color: var(--color-text);
       }
     }
 
