@@ -70,8 +70,11 @@ const visibleFraction = (element: Element) => {
   return Math.max(0, visible) / height;
 };
 
-const nearestMostVisible = (fractions: number[], anchor: number) => {
-  const max = Math.max(...fractions);
+const nearestMostVisible = (
+  fractions: number[],
+  max: number,
+  anchor: number,
+) => {
   let best = -1;
   fractions.forEach((fraction, index) => {
     if (
@@ -89,27 +92,19 @@ export const pageColorOnFocus = (node: HTMLElement) => {
   let frame = 0;
   let track: HTMLElement | undefined;
   let trackFraction = 0;
-  let scrolledTrack: HTMLElement | undefined;
   let focused: HTMLElement | undefined;
 
   const pickTrack = () => {
-    if (scrolledTrack) {
-      track = scrolledTrack;
-      trackFraction = visibleFraction(track);
-      scrolledTrack = undefined;
-      return;
-    }
     const tracks = [
       ...node.querySelectorAll<HTMLElement>("[data-focus-track]"),
     ];
     const fractions = tracks.map(visibleFraction);
     const index = track ? tracks.indexOf(track) : -1;
     const fraction = fractions[index] ?? 0;
-    const leaving = fraction < trackFraction;
-    const outdone = fraction < Math.max(...fractions);
+    const max = Math.max(...fractions);
     const next =
-      index < 0 || (leaving && outdone)
-        ? nearestMostVisible(fractions, Math.max(index, 0))
+      index < 0 || (fraction < trackFraction && fraction < max)
+        ? nearestMostVisible(fractions, max, Math.max(index, 0))
         : index;
     track = tracks[next];
     trackFraction = fractions[next] ?? 0;
@@ -142,7 +137,8 @@ export const pageColorOnFocus = (node: HTMLElement) => {
       target.matches("[data-focus-track]") &&
       node.contains(target)
     ) {
-      scrolledTrack = target;
+      track = target;
+      trackFraction = 0;
     }
     schedule();
   };
