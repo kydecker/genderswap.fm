@@ -111,8 +111,6 @@ const closeSearch = () => {
 <style>
   .nav {
     --icon-size: min(var(--step-2), 1.375rem);
-    --icon-shift: calc(var(--icon-size) * 0.1);
-
     --nav-padding: var(--space-2xs);
 
     position: relative;
@@ -169,7 +167,7 @@ const closeSearch = () => {
 
     :global(svg) {
       font-size: var(--icon-size);
-      margin-block-start: calc(var(--icon-shift) * -1);
+      margin-block-start: -0.1em;
     }
 
     &[aria-current] {
@@ -219,7 +217,14 @@ const closeSearch = () => {
     gap: var(--space-xs);
     padding-inline: var(--space-m);
 
+    @media (hover:hover) {
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+    }
+
     &:focus-within {
+      background: var(--color-surface-hover);
       outline: var(--focus-ring);
       outline-offset: 0;
     }
@@ -261,12 +266,13 @@ const closeSearch = () => {
 
     &:hover,
     &:focus-visible {
+      background-color: var(--color-surface-hover);
       color: var(--color-text);
     }
 
     &:focus-visible {
       outline: var(--focus-ring);
-      outline-offset: var(--focus-ring-offset);
+      outline-offset: 0;
     }
   }
 </style>
