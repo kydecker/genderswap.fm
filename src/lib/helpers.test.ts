@@ -1,19 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   createDebouncer,
-  encodeSearchQuery,
   getArtistLink,
   getMaxCharacterHelpText,
   getPageHref,
   getReadableTitle,
   getSortedTags,
   getYearsEarlierText,
-  removeSongExtraText,
   slugify,
   slugifyCover,
   smartquotes,
   toTitleCase,
 } from "./helpers";
+import { removeSongExtraText } from "./matching";
 
 describe("maxCharacterHelpText", () => {
   it("should display default value", () => {
@@ -212,7 +211,13 @@ describe("getYearsEarlierText", () => {
   });
 
   it("should handle when dates are formatted differently", () => {
-    expect(getYearsEarlierText("2000", "1990-08-03")).toBe("9 years earlier");
+    expect(getYearsEarlierText("2000", "1990-08-03")).toBe("10 years earlier");
+  });
+
+  it("should compare calendar years", () => {
+    expect(getYearsEarlierText("2002-01-05T08:00:00Z", "2001-12-20")).toBe(
+      "1 year earlier",
+    );
   });
 
   it("should handle when less than one year", () => {
@@ -250,18 +255,6 @@ describe("getSortedTags", () => {
       "years_apart_10", // Years apart eighth
       "transition_mtm", // MTM and FTF last
     ]);
-  });
-});
-
-describe("encodeSearchQuery", () => {
-  it("should encode forward slashes", () => {
-    expect(encodeSearchQuery("trying/failing")).toBe("trying-failing");
-  });
-
-  it("should remove question marks", () => {
-    expect(encodeSearchQuery("why'd you only call me when you're high?")).toBe(
-      "why%27d%20you%20only%20call%20me%20when%20you%27re%20high",
-    );
   });
 });
 

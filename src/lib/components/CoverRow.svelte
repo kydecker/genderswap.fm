@@ -59,13 +59,13 @@ $effect(() => {
   </div>
   <div class="scroller">
     <div class="track" data-focus-track bind:this={track} onscroll={updateEnds}>
-      {#each covers as cover, index}
+      {#each covers as cover}
         <div class="item" data-focus-item data-page-color={cover.cover.album_color}>
           <CoverCard
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
-            lazy={lazy || index > 5}
+            {lazy}
           />
         </div>
       {/each}

@@ -7,6 +7,7 @@ Genderswap.fm is a repository of song covers with performing artists of differen
 ## Getting Started
 
 ```
+pnpm install
 pnpm db:migrate:local
 pnpm db:seed:local # optional synthetic data
 pnpm dev
@@ -24,8 +25,15 @@ pnpm db:migrate:remote
 
 ## Streaming links
 
-Songs link to Spotify, Apple Music, YouTube, and Tidal, looked up automatically when a cover is submitted. Apple Music links come from the iTunes API, matched by the album's UPC and track position, falling back to a search by title, artist, and length. Tidal links are matched by ISRC, falling back to the album's UPC, and need `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
+Songs are searched and selected with the iTunes Search API, straight from the browser. When a cover is submitted, each song is matched on Deezer by title, artist, and length to get its ISRC, which is used to fetch audio features and a Spotify link from [ReccoBeats](https://reccobeats.com) and a Tidal link. Tidal needs `TIDAL_CLIENT_ID` and `TIDAL_CLIENT_SECRET` from the [Tidal developer portal](https://developer.tidal.com) in `.env` and as Worker secrets. YouTube links are searches.
+
+Album art is stored as an artwork ID and sized on request with `artworkUrl` in [src/lib/artwork.ts](src/lib/artwork.ts). Songs added before the switch from Spotify keep Spotify art until they're matched to an Apple Music track. To match them and fetch Apple art, run:
+
+```
+pnpm db:backfill-apple:remote            # every song without an Apple track
+pnpm db:backfill-apple:remote --ids=1,2  # specific songs
+```
 
 ## Colophon
 
-This site was built by [Ky Decker](https://ky.fyi) using [Sveltekit](https://kit.svelte.dev). It's hosted on [Cloudflare](https://cloudflare.com/) Workers with data stored in [D1](https://developers.cloudflare.com/d1/). Tracks and audio features are fetched from Spotify's API via the [Typescript SDK](https://github.com/spotify/spotify-web-api-ts-sdk), with streaming links from the iTunes Search API and Tidal's API. Text is set in [Labil Grotesk](https://www.kometa.xyz/typefaces/labil-grotesk/) by Kometa Typefaces.
+This site was built by [Ky Decker](https://ky.fyi) using [Sveltekit](https://kit.svelte.dev). It's hosted on [Cloudflare](https://cloudflare.com/) Workers with data stored in [D1](https://developers.cloudflare.com/d1/). Tracks and album art come from the iTunes Search API, audio features from ReccoBeats, ISRCs from Deezer, and streaming links from Apple Music, Spotify, and Tidal. Text is set in [Labil Grotesk](https://www.kometa.xyz/typefaces/labil-grotesk/) by Kometa Typefaces.

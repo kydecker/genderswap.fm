@@ -1,15 +1,20 @@
 <script lang="ts">
-import type { Track } from "@spotify/web-api-ts-sdk";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { MouseEventHandler } from "svelte/elements";
 import { slide } from "svelte/transition";
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import {
   getReadableTitle,
   getYearsEarlierText,
-  removeSongExtraText,
   smartquotes,
 } from "$lib/helpers";
+import {
+  albumName,
+  type ITunesTrack,
+  releaseYear,
+  songName,
+} from "$lib/itunes";
 import AlertIcon from "~icons/ri/alert-line";
 import CheckIcon from "~icons/ri/check-line";
 import CloseCircleIcon from "~icons/ri/close-circle-line";
@@ -24,9 +29,9 @@ let {
   onUseEarlierRelease,
   onClearSelection,
 }: {
-  song: Track;
+  song: ITunesTrack;
   existingCover: ExistingCover | null;
-  earlierRelease: Track | null;
+  earlierRelease: ITunesTrack | null;
   onUseEarlierRelease: () => void;
   onClearSelection: () => void;
 } = $props();
@@ -51,18 +56,18 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
 <div class="selectedSong">
   <div class="selectedSongContents">
     <div class="selectedAlbum">
-      <img src={song.album.images[0].url} alt={song.name} />
+      <img src={artworkUrl(song.artwork, 160)} srcset={artworkSrcset(song.artwork, 160)} alt="" />
     </div>
     <div class="selectedLabel">
-      <div class="selectedName">{smartquotes(removeSongExtraText(song.name))}</div>
-      <div>{song.artists.map((artist) => artist.name).join(', ')}</div>
+      <div class="selectedName">{smartquotes(songName(song))}</div>
+      <div>{song.artistName}</div>
       <div class="selectedAlbumNameAndYear">
-        <em>{smartquotes(song.album.name)}</em> &middot;{' '}
-        {song.album.release_date.slice(0, 4)}
+        <em>{smartquotes(albumName(song))}</em> &middot;{' '}
+        {releaseYear(song)}
       </div>
     </div>
-    {#if song.preview_url}
-      <AudioPreview src={song.preview_url} title={smartquotes(removeSongExtraText(song.name))} />
+    {#if song.previewUrl}
+      <AudioPreview src={song.previewUrl} title={smartquotes(songName(song))} />
     {/if}
     <button class="clearSelection" onclick={onClearSelection} aria-label="Remove selection">
       <CloseCircleIcon />
@@ -91,11 +96,11 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
     </div>
   {:else if earlierRelease && !wasKeepThisReleaseClicked}
     <div class="banner" transition:slide>
-      {#if earlierRelease.id === song.id || wasEarlierReleaseClicked}
+      {#if wasEarlierReleaseClicked}
         <div class="bannerContents">
           <CheckIcon />
           <div class="bannerLabel">
-            <strong class="bannerTitle">Earliest release available on Spotify</strong>
+            <strong class="bannerTitle">Earliest release available</strong>
           </div>
         </div>
       {:else}
@@ -104,13 +109,13 @@ const handleUseEarlierRelease: MouseEventHandler<HTMLButtonElement> = (e) => {
           <div class="bannerLabel">
             <strong class="bannerTitle">There’s an earlier release!</strong>
             <p>
-              A version of {earlierRelease.artists[0].name}’s
-              <strong>{earlierRelease.name}</strong>
+              A version of {earlierRelease.artistName}’s
+              <strong>{songName(earlierRelease)}</strong>
               was released {getYearsEarlierText(
-                song.album.release_date,
-                earlierRelease.album.release_date
-              )} in <strong>{earlierRelease.album.release_date.slice(0, 4)}</strong> on the album
-              <strong>{earlierRelease.album.name}</strong>.
+                song.releaseDate,
+                earlierRelease.releaseDate
+              )} in <strong>{releaseYear(earlierRelease)}</strong> on
+              <strong>{albumName(earlierRelease)}</strong>.
             </p>
           </div>
         </div>

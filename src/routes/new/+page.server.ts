@@ -1,18 +1,67 @@
-import type { Track } from "@spotify/web-api-ts-sdk";
 import { fail, redirect } from "@sveltejs/kit";
-import { inArray } from "drizzle-orm";
+import { and, between, eq, inArray, isNull, sql } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { env } from "$env/dynamic/private";
+import { artworkUrl } from "$lib/artwork";
 import { slugifyCover } from "$lib/helpers";
+import {
+  albumName,
+  type ITunesTrack,
+  lookupTracks,
+  releaseYear,
+  songName,
+  trackIdentity,
+} from "$lib/itunes";
+import { appleTrackUrl, bestMatch, songRowIdentity } from "$lib/matching";
 import { newCoverSchema } from "$lib/schemas";
 import { getAlbumColor } from "$lib/server/albumColor";
 import { getDb } from "$lib/server/db";
 import { covers, songs } from "$lib/server/db/schema";
-import { findSongLinks } from "$lib/server/links";
-import { spotify } from "$lib/server/spotify";
+import {
+  findDeezerMatch,
+  getAudioFeatures,
+  NO_AUDIO_FEATURES,
+} from "$lib/server/enrich";
+import { findTidalLink } from "$lib/server/links";
 import { computeTags } from "$lib/tags";
 import type { Enums, Tables } from "$lib/types/types";
+
+type Db = ReturnType<typeof getDb>;
+type NewSong = Omit<Tables<"songs">, "id">;
+
+const findKnownSong = async (
+  db: Db,
+  track: ITunesTrack,
+  isrc: string | null,
+) => {
+  if (isrc) {
+    const byIsrc = await db.query.songs.findFirst({
+      where: eq(songs.isrc, isrc),
+    });
+    if (byIsrc) return byIsrc;
+  }
+
+  const duration = track.trackTimeMillis;
+  if (!duration) return null;
+
+  const unmatched = await db.query.songs.findMany({
+    where: and(
+      isNull(songs.apple_id),
+      between(songs.duration_ms, duration - 5000, duration + 5000),
+    ),
+  });
+  return bestMatch(trackIdentity(track), unmatched, songRowIdentity);
+};
+
+const claimSong = (db: Db, id: number, track: ITunesTrack) =>
+  db
+    .update(songs)
+    .set({
+      apple_id: String(track.trackId),
+      apple_music_url: sql`coalesce(${songs.apple_music_url}, ${appleTrackUrl(track.trackViewUrl)})`,
+    })
+    .where(and(eq(songs.id, id), isNull(songs.apple_id)));
 
 export const load = async () => {
   const form = await superValidate(zod4(newCoverSchema));
@@ -21,7 +70,7 @@ export const load = async () => {
 };
 
 export const actions = {
-  default: async ({ request, fetch, platform }) => {
+  default: async ({ request, platform }) => {
     const form = await superValidate(request, zod4(newCoverSchema));
 
     if (!form.valid) {
@@ -38,116 +87,121 @@ export const actions = {
     } = form.data;
 
     const db = getDb(platform);
+    const appleIds = [String(original.trackId), String(cover.trackId)];
 
-    // Existing song rows take precedence, as they did in the Postgres trigger
-    const existingSongs = await db.query.songs.findMany({
-      where: inArray(songs.id, [original.id, cover.id]),
-    });
+    const [tracks, existingSongs] = await Promise.all([
+      lookupTracks(appleIds).catch(() => []),
+      db.query.songs.findMany({ where: inArray(songs.apple_id, appleIds) }),
+    ]);
 
-    const songRow = async (
-      song: Track,
+    const originalTrack = tracks.find(
+      ({ trackId }) => trackId === original.trackId,
+    );
+    const coverTrack = tracks.find(({ trackId }) => trackId === cover.trackId);
+
+    if (!originalTrack || !coverTrack) {
+      return setError(form, "Couldn’t load these songs from Apple Music");
+    }
+
+    const resolveSong = async (
+      track: ITunesTrack,
       gender: Enums<"gender">[],
-    ): Promise<Tables<"songs">> => {
-      const existing = existingSongs.find(({ id }) => id === song.id);
-      if (existing) return existing;
+    ) => {
+      const appleId = String(track.trackId);
+      const known = (song: Tables<"songs">) => ({
+        id: song.id,
+        song,
+        write: claimSong(db, song.id, track),
+      });
 
-      const formattedName = song.name
-        .split(" - ")[0] // "Smells Like Teen Spirit - Radio Edit" -> "Smells Like Teen Spirit"
-        .replace(/\s\([^()]*\)/g, ""); // "Time After Time (2022 Remaster)" -> "Time After Time"
-      const artists = song.artists.map((artist) => artist.name);
-      const isrc = song.external_ids?.isrc?.toUpperCase() ?? null;
+      const existing = existingSongs.find((song) => song.apple_id === appleId);
+      if (existing) return known(existing);
 
-      const albumUpc = spotify.albums
-        .get(song.album.id)
-        .then((album) => album.external_ids?.upc ?? null)
-        .catch(() => null);
+      const match = await findDeezerMatch(track).catch(() => null);
+      const found = await findKnownSong(db, track, match?.isrc ?? null);
+      if (found) return known(found);
 
-      const [audioFeatures, album_upc, links, album_color] = await Promise.all([
-        fetch(`/api/getAudioFeatures?id=${song.id}`).then((response) =>
-          response.json(),
+      const isrc = match?.isrc ?? null;
+      const upc = match?.upc ?? null;
+
+      const [features, tidal_url, album_color] = await Promise.all([
+        isrc
+          ? getAudioFeatures(isrc).catch(() => NO_AUDIO_FEATURES)
+          : NO_AUDIO_FEATURES,
+        findTidalLink(
+          {
+            isrc,
+            upc,
+            disc_number: track.discNumber,
+            track_number: track.trackNumber,
+          },
+          {
+            clientId: env.TIDAL_CLIENT_ID,
+            clientSecret: env.TIDAL_CLIENT_SECRET,
+          },
         ),
-        albumUpc,
-        albumUpc.then((upc) =>
-          findSongLinks(
-            {
-              isrc,
-              upc,
-              name: formattedName,
-              artists,
-              duration_ms: song.duration_ms,
-              disc_number: song.disc_number,
-              track_number: song.track_number,
-            },
-            {
-              clientId: env.TIDAL_CLIENT_ID,
-              clientSecret: env.TIDAL_CLIENT_SECRET,
-            },
-          ),
-        ),
-        getAlbumColor(song.album.images.at(-1)?.url ?? "").catch(() => null),
+        getAlbumColor(artworkUrl(track.artwork, 64, "jpg")).catch(() => null),
       ]);
 
-      return {
-        id: song.id,
+      const song: NewSong = {
         created_at: new Date().toISOString(),
-        name: formattedName,
-        artists,
-        url: song.external_urls.spotify,
-        album_name: song.album.name,
-        album_year: Number.parseInt(song.album.release_date.slice(0, 4), 10),
-        album_img: song.album.images.map((image) => image.url),
+        name: songName(track),
+        artists: match?.artists ?? [track.artistName],
+        album_name: albumName(track),
+        album_year: releaseYear(track),
+        artwork: track.artwork,
         album_color,
         gender,
-        acousticness: audioFeatures.acousticness,
-        danceability: audioFeatures.danceability,
-        duration_ms: audioFeatures.duration_ms,
-        energy: audioFeatures.energy,
-        instrumentalness: audioFeatures.instrumentalness,
-        key: audioFeatures.key,
-        liveness: audioFeatures.liveness,
-        loudness: audioFeatures.loudness,
-        mode: audioFeatures.mode,
-        speechiness: audioFeatures.speechiness,
-        tempo: audioFeatures.tempo,
-        time_signature: audioFeatures.time_signature,
-        valence: audioFeatures.valence,
+        ...features,
+        duration_ms: track.trackTimeMillis ?? null,
         isrc,
-        album_upc,
-        ...links,
+        album_upc: upc,
+        apple_id: appleId,
+        apple_music_url: appleTrackUrl(track.trackViewUrl),
+        tidal_url,
+      };
+
+      return {
+        id: sql`(select max(${songs.id}) from ${songs} where ${songs.apple_id} = ${appleId})`,
+        song,
+        write: db.insert(songs).values(song),
       };
     };
 
     const [originalSong, coverSong] = await Promise.all([
-      songRow(original, originalGenders),
-      songRow(cover, coverGenders),
+      resolveSong(originalTrack, originalGenders),
+      resolveSong(coverTrack, coverGenders),
     ]);
 
-    const slug = slugifyCover(cover.name, cover.artists[0].name);
+    if (
+      typeof originalSong.id === "number" &&
+      originalSong.id === coverSong.id
+    ) {
+      return setError(form, "Cover and original songs can't be the same");
+    }
+
+    const slug = slugifyCover(coverTrack.trackName, coverSong.song.artists[0]);
+
+    const insertCover = db
+      .insert(covers)
+      .values({
+        original_id: originalSong.id,
+        cover_id: coverSong.id,
+        slug,
+        description,
+        contributor,
+        tags: computeTags(originalSong.song, coverSong.song),
+      })
+      .onConflictDoNothing({ target: covers.slug })
+      .returning({ slug: covers.slug });
 
     const result = await db
-      .batch([
-        db
-          .insert(songs)
-          .values([originalSong, coverSong])
-          .onConflictDoNothing(),
-        db
-          .insert(covers)
-          .values({
-            original_id: original.id,
-            cover_id: cover.id,
-            slug,
-            description,
-            contributor,
-            tags: computeTags(originalSong, coverSong),
-          })
-          .onConflictDoNothing({ target: covers.slug })
-          .returning({ slug: covers.slug }),
-      ])
+      .batch([originalSong.write, coverSong.write, insertCover])
       .catch((e: Error) => e);
 
     if (result instanceof Error) return setError(form, result.message);
 
-    if (!result[1].length) {
+    if (!result[2].length) {
       return setError(form, "This cover has already been added");
     }
 

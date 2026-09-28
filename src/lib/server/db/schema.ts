@@ -17,35 +17,45 @@ const createdAt = () =>
     .notNull()
     .default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`);
 
-export const songs = sqliteTable("songs", {
-  id: text("id").primaryKey(),
-  created_at: createdAt(),
-  name: text("name").notNull(),
-  artists: text("artists", { mode: "json" }).notNull().$type<string[]>(),
-  album_name: text("album_name").notNull(),
-  album_year: integer("album_year").notNull(),
-  album_img: text("album_img", { mode: "json" }).notNull().$type<string[]>(),
-  album_color: text("album_color"),
-  url: text("url").notNull(),
-  gender: text("gender", { mode: "json" }).notNull().$type<Gender[]>(),
-  acousticness: real("acousticness"),
-  danceability: real("danceability"),
-  duration_ms: integer("duration_ms"),
-  energy: real("energy"),
-  instrumentalness: real("instrumentalness"),
-  key: integer("key"),
-  liveness: real("liveness"),
-  loudness: real("loudness"),
-  mode: integer("mode"),
-  speechiness: real("speechiness"),
-  tempo: real("tempo"),
-  time_signature: integer("time_signature"),
-  valence: real("valence"),
-  isrc: text("isrc"),
-  album_upc: text("album_upc"),
-  apple_music_url: text("apple_music_url"),
-  tidal_url: text("tidal_url"),
-});
+export const songs = sqliteTable(
+  "songs",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    created_at: createdAt(),
+    name: text("name").notNull(),
+    artists: text("artists", { mode: "json" }).notNull().$type<string[]>(),
+    album_name: text("album_name").notNull(),
+    album_year: integer("album_year").notNull(),
+    artwork: text("artwork").notNull(),
+    album_color: text("album_color"),
+    gender: text("gender", { mode: "json" }).notNull().$type<Gender[]>(),
+    acousticness: real("acousticness"),
+    danceability: real("danceability"),
+    duration_ms: integer("duration_ms"),
+    energy: real("energy"),
+    instrumentalness: real("instrumentalness"),
+    key: integer("key"),
+    liveness: real("liveness"),
+    loudness: real("loudness"),
+    mode: integer("mode"),
+    speechiness: real("speechiness"),
+    tempo: real("tempo"),
+    valence: real("valence"),
+    isrc: text("isrc"),
+    album_upc: text("album_upc"),
+    apple_id: text("apple_id"),
+    apple_music_url: text("apple_music_url"),
+    spotify_url: text("spotify_url"),
+    tidal_url: text("tidal_url"),
+  },
+  (table) => [
+    index("songs_apple_id_idx").on(table.apple_id),
+    index("songs_isrc_idx").on(table.isrc),
+    index("songs_unmatched_duration_idx")
+      .on(table.duration_ms)
+      .where(sql`${table.apple_id} IS NULL`),
+  ],
+);
 
 export const covers = sqliteTable(
   "covers",
@@ -53,10 +63,10 @@ export const covers = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     slug: text("slug").notNull().unique(),
     created_at: createdAt(),
-    original_id: text("original_id")
+    original_id: integer("original_id")
       .notNull()
       .references(() => songs.id),
-    cover_id: text("cover_id")
+    cover_id: integer("cover_id")
       .notNull()
       .references(() => songs.id),
     description: text("description"),
@@ -66,9 +76,9 @@ export const covers = sqliteTable(
   (table) => [
     index("covers_cover_id_idx").on(table.cover_id),
     index("covers_created_at_idx").on(table.created_at),
-    check("covers_contributor_check", sql`length(${table.contributor}) < 24`),
-    check("covers_description_check", sql`length(${table.description}) < 160`),
-    check("ids_cannot_equal", sql`${table.original_id} <> ${table.cover_id}`),
+    check("covers_contributor_check", sql`length("contributor") < 24`),
+    check("covers_description_check", sql`length("description") < 160`),
+    check("ids_cannot_equal", sql`"original_id" <> "cover_id"`),
   ],
 );
 

@@ -1,9 +1,17 @@
 <script lang="ts">
 import { createCombobox, melt } from "@melt-ui/svelte";
-import type { Track } from "@spotify/web-api-ts-sdk";
 import { scale } from "svelte/transition";
+import { artworkSrcset, artworkUrl } from "$lib/artwork";
 import SongPreview from "$lib/components/SongPreview.svelte";
-import { createDebouncer, encodeSearchQuery } from "$lib/helpers";
+import { createDebouncer } from "$lib/helpers";
+import {
+  findEarliestRelease,
+  type ITunesTrack,
+  lookupTracks,
+  parseAppleMusicUrl,
+  releaseYear,
+  searchTracks,
+} from "$lib/itunes";
 import SearchIcon from "~icons/ri/search-line";
 import type { ExistingCover } from "../../routes/api/getCover/+server";
 import ErrorMessage from "./ErrorMessage.svelte";
@@ -14,13 +22,13 @@ let {
   errors,
 }: {
   name: string;
-  value: Track | undefined;
+  value: ITunesTrack | undefined;
   errors: string[] | undefined;
 } = $props();
 
-let discoveredEarlierRelease: Track | null = $state(null);
+let discoveredEarlierRelease: ITunesTrack | null = $state(null);
 let discoveredExistingCover: ExistingCover | null = $state(null);
-let searchResults: Track[] | undefined = $state(undefined);
+let searchResults: ITunesTrack[] | undefined = $state(undefined);
 
 const debounce = createDebouncer();
 
@@ -28,7 +36,7 @@ const {
   elements: { menu, input, option, label },
   states: { open, inputValue, touchedInput, selected },
   helpers: { isSelected, isHighlighted },
-} = createCombobox<Track>({
+} = createCombobox<ITunesTrack>({
   preventScroll: false,
   positioning: {
     placement: "bottom",
@@ -40,12 +48,19 @@ const {
       discoveredEarlierRelease = null;
       discoveredExistingCover = null;
       debounce(() => {
-        fetchForTrack<Track>("getEarliestRelease", next.value, (data) => {
+        const track = next.value;
+        whenCurrent(track, findEarliestRelease(track), (data) => {
           discoveredEarlierRelease = data;
         });
-        fetchForTrack<ExistingCover>("getCover", next.value, (data) => {
-          discoveredExistingCover = data;
-        });
+        whenCurrent(
+          track,
+          fetch(`/api/getCover?appleId=${track.trackId}`).then((response) =>
+            response.ok ? response.json() : null,
+          ),
+          (data: ExistingCover | null) => {
+            discoveredExistingCover = data;
+          },
+        );
       });
       value = next.value;
     }
@@ -55,15 +70,14 @@ const {
 
 selected.set(value ? { value } : undefined);
 
-const fetchForTrack = async <T>(
-  endpoint: string,
-  track: Track,
-  set: (data: T | null) => void,
+const whenCurrent = async <T>(
+  track: ITunesTrack,
+  request: Promise<T>,
+  set: (data: T) => void,
 ) => {
   try {
-    const response = await fetch(`/api/${endpoint}?id=${track.id}`);
-    const data: T | null = response.ok ? await response.json() : null;
-    if (value?.id === track.id) set(data);
+    const data = await request;
+    if (value?.trackId === track.trackId) set(data);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -71,40 +85,27 @@ const fetchForTrack = async <T>(
   }
 };
 
+let searchController: AbortController | undefined;
+
 const search = async (query: string | undefined) => {
-  if (!query || query === "") {
+  searchController?.abort();
+  if (!query?.trim()) {
     searchResults = undefined;
     return;
   }
 
-  if (query.trim().startsWith("https://open.spotify.com")) {
-    const trackId = query.split("/track/")[1].split("?")[0];
-
-    try {
-      const response = await fetch(`/api/getSpotifyTrack?id=${trackId}`, {
-        method: "GET",
-      });
-      const data = await response.json();
-
-      // Skip dropdown/user selection since there's only one result
-      selected.set({ value: data });
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+  try {
+    const appleId = parseAppleMusicUrl(query);
+    if (appleId) {
+      const [track] = await lookupTracks([appleId]);
+      if (track) selected.set({ value: track });
+    } else {
+      searchController = new AbortController();
+      searchResults = await searchTracks(query, 10, searchController.signal);
     }
-  } else {
-    try {
-      const encoded = encodeSearchQuery(query);
-      const response = await fetch(`/api/getSpotifyResults?q=${encoded}`, {
-        method: "GET",
-      });
-      const data = await response.json();
-      searchResults = data;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
+  } catch (error) {
+    if (error instanceof Error && error.name !== "AbortError") {
+      console.error(error.message);
     }
   }
 };
@@ -147,7 +148,7 @@ $effect(() => {
           use:melt={$input}
           class="searchInput"
           type="search"
-          placeholder="Search songs or paste Spotify URL"
+          placeholder="Search songs or paste Apple Music URL"
           aria-invalid={errors ? 'true' : undefined}
         />
       </label>
@@ -157,22 +158,27 @@ $effect(() => {
             <li
               use:melt={$option({
                 value: track,
-                label: track.name,
+                label: track.trackName,
                 disabled: false
               })}
               class="result"
               class:highlighted={$isHighlighted(track)}
               class:selected={$isSelected(track)}
             >
-              <img class="resultAlbum" src={track.album.images[0].url} alt={track.name} />
+              <img
+                class="resultAlbum"
+                src={artworkUrl(track.artwork, 64)}
+                srcset={artworkSrcset(track.artwork, 64)}
+                alt=""
+              />
               <div class="resultLabel">
-                <div class="resultName">{track.name}</div>
+                <div class="resultName">{track.trackName}</div>
                 <div class="resultLabelDetails">
                   <div class="resultArtist">
-                    {track.artists.map((artist) => artist.name).join(', ')}{' '}
+                    {track.artistName}{' '}
                     {' · '}
                     <span class="resultYear">
-                      {track.album.release_date.slice(0, 4)}
+                      {releaseYear(track)}
                     </span>
                   </div>
                 </div>

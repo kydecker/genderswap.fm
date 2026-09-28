@@ -22,7 +22,7 @@ let { data } = $props();
         href={row.tag ? `/${TAGS[row.tag].slug}` : "/latest"}
         covers={row.slugs.map((slug) => data.covers[slug])}
         totalCount={row.totalCount}
-        lazy={index > 0}
+        lazy={index > 2}
       />
     {/each}
   </div>

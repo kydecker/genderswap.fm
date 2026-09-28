@@ -34,7 +34,7 @@ let {
         original={cover.original}
         cover={cover.cover}
         slug={cover.slug}
-        lazy={index > 5}
+        lazy={index >= 30}
       />
     {/each}
   </div>

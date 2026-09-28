@@ -5,18 +5,13 @@ import CoverComparison from "./CoverComparison.svelte";
 
 const mockCover: Cover = {
   original: {
+    id: 1,
     created_at: "2023-10-22 00:40:29.317184+00",
-    id: "7rWgGyRK7RAqAAXy4bLft9",
     name: "Angeleyes",
     artists: ["ABBA"],
     album_name: "Voulez-Vous",
     album_year: 1979,
-    album_img: [
-      "https://i.scdn.co/image/ab67616d0000b273aa22899360d8ba6704732dec",
-      "https://i.scdn.co/image/ab67616d00001e02aa22899360d8ba6704732dec",
-      "https://i.scdn.co/image/ab67616d00004851aa22899360d8ba6704732dec",
-    ],
-    url: "https://open.spotify.com/track/7rWgGyRK7RAqAAXy4bLft9",
+    artwork: "spotify:aa22899360d8ba6704732dec",
     gender: ["female"],
     acousticness: 0.523,
     danceability: 0.719,
@@ -29,28 +24,25 @@ const mockCover: Cover = {
     mode: 1,
     speechiness: 0.0338,
     tempo: 133.113,
-    time_signature: 4,
     valence: 0.964,
     isrc: "SEAYD7901040",
     album_upc: null,
     album_color: null,
+    apple_id: "1440816458",
     apple_music_url:
       "https://music.apple.com/us/album/angel-eyes/1440816296?i=1440816458",
+    spotify_url: "https://open.spotify.com/track/7rWgGyRK7RAqAAXy4bLft9",
     tidal_url: null,
   },
   cover: {
+    id: 2,
     created_at: "2023-10-22 00:40:29.530622+00",
-    id: "7rWgGyRK7RAqAAXy4bLft9",
     name: "Angel Eyes",
     artists: ["The Czars"],
     album_name: "Best Of",
     album_year: 2014,
-    album_img: [
-      "https://i.scdn.co/image/ab67616d0000b27339fea69e3e036d36e1751279",
-      "https://i.scdn.co/image/ab67616d00001e0239fea69e3e036d36e1751279",
-      "https://i.scdn.co/image/ab67616d0000485139fea69e3e036d36e1751279",
-    ],
-    url: "https://open.spotify.com/track/4OeGiA4EexvQMwEbuHyFG7",
+    artwork:
+      "Music115/v4/9b/1c/1f/9b1c1f7e-8ee4-8a0e-1d3f-3a5f5b1c0b8e/5051083083546.jpg",
     gender: ["male"],
     acousticness: 0.84,
     danceability: 0.717,
@@ -63,12 +55,13 @@ const mockCover: Cover = {
     mode: 1,
     speechiness: 0.029,
     tempo: 98.083,
-    time_signature: 4,
     valence: 0.421,
     isrc: null,
     album_upc: null,
     album_color: null,
+    apple_id: null,
     apple_music_url: null,
+    spotify_url: null,
     tidal_url: null,
   },
   created_at: "2023-10-22 00:40:29.659396+00",
@@ -103,15 +96,25 @@ describe("CoverComparison", async () => {
     ].map((row) =>
       [...row.querySelectorAll("a")].map((a) => a.getAttribute("aria-label")),
     );
-    expect(coverLinks).toEqual([
-      "Listen to cover on Spotify",
-      "Find cover on YouTube",
-    ]);
+    expect(coverLinks).toEqual(["Find cover on YouTube"]);
     expect(originalLinks).toEqual([
       "Listen to original on Spotify",
       "Listen to original on Apple Music",
       "Find original on YouTube",
     ]);
+  });
+
+  it("should size album art for each artwork source", async ({ expect }) => {
+    const { container } = render(CoverComparison, {
+      props: { cover: mockCover },
+    });
+    const [coverArt, originalArt] = container.querySelectorAll(".album-art");
+    expect(coverArt.getAttribute("src")).toBe(
+      "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/9b/1c/1f/9b1c1f7e-8ee4-8a0e-1d3f-3a5f5b1c0b8e/5051083083546.jpg/320x320bb.webp",
+    );
+    expect(originalArt.getAttribute("src")).toBe(
+      "https://i.scdn.co/image/ab67616d0000b273aa22899360d8ba6704732dec",
+    );
   });
 
   it("should link artists to a filtered search", async ({ expect }) => {
