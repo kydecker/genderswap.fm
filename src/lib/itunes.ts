@@ -59,9 +59,6 @@ export const searchTracks = (term: string, limit = 10, signal?: AbortSignal) =>
 export const lookupTracks = (ids: (number | string)[]) =>
   fetchTracks("lookup", { id: ids.join(",") });
 
-export const lookupAlbumTracks = (upc: string) =>
-  fetchTracks("lookup", { upc, entity: "song" });
-
 export const parseAppleMusicUrl = (text: string) => {
   let url: URL;
   try {

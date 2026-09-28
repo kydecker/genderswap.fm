@@ -74,7 +74,7 @@ const closeSearch = () => {
       <SearchIcon aria-hidden="true" />
       <span>Search</span>
     </button>
-    <a class="tab" href="/random" data-sveltekit-preload-data="off">
+    <a class="tab" href="/random" data-sveltekit-reload>
       <ShuffleIcon aria-hidden="true" />
       <span>Random</span>
     </a>

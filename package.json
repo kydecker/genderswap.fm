@@ -28,8 +28,6 @@
     "db:migrate:local": "wrangler d1 migrations apply genderswap-fm --local",
     "db:migrate:remote": "wrangler d1 migrations apply genderswap-fm --remote",
     "db:seed:local": "wrangler d1 execute genderswap-fm --local --file tests/fixtures/seed.sql",
-    "db:backfill-apple:local": "node scripts/backfill-apple.ts",
-    "db:backfill-apple:remote": "node scripts/backfill-apple.ts --remote",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },

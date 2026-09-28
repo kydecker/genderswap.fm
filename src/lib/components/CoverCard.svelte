@@ -15,11 +15,13 @@ let {
   cover,
   slug,
   lazy,
+  priority,
 }: {
   original: Omit<Album, "artwork">;
   cover: Album;
   slug: string;
   lazy?: boolean;
+  priority?: boolean;
 } = $props();
 
 function formatArtists(artists: string[]) {
@@ -38,6 +40,7 @@ function formatArtists(artists: string[]) {
       srcset={artworkSrcset(cover.artwork, 300)}
       alt={`${cover.name} album art`}
       loading={lazy ? 'lazy' : 'eager'}
+      fetchpriority={priority ? 'high' : 'auto'}
     />
   </div>
   <div class="content">
