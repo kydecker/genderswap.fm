@@ -155,12 +155,11 @@ onMount(async () => {
 <style>
   .layout {
     display: grid;
-    grid-template-columns: minmax(0, 40rem);
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       'header'
       'comparison'
       'footer';
-    justify-content: center;
     align-items: start;
     padding-inline: var(--space-l);
 
@@ -170,7 +169,7 @@ onMount(async () => {
     }
 
     @media (min-width: 56rem) {
-      grid-template-columns: minmax(0, 26rem) minmax(0, 40rem);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 40rem);
       grid-template-rows: auto 1fr;
       grid-template-areas:
         'header comparison'
@@ -182,6 +181,7 @@ onMount(async () => {
 
   .comparison {
     grid-area: comparison;
+    max-width: 40rem;
   }
 
   .header {
@@ -190,7 +190,7 @@ onMount(async () => {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    text-wrap: balance;
+    text-wrap: pretty;
 
     :global(.tags) {
       justify-content: flex-start;
@@ -211,7 +211,7 @@ onMount(async () => {
     color: var(--color-text-muted);
     margin-block-start: var(--space-m);
     margin-block-end: var(--space-l);
-    text-wrap: balance;
+    text-wrap: pretty;
   }
 
   .artist {
