@@ -1,13 +1,31 @@
 import { z } from "zod";
 import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from "$lib/constants";
-import type { ITunesTrack } from "$lib/itunes";
+import { type ITunesTrack, parseAppleMusicUrl } from "$lib/itunes";
 import type { Enums } from "$lib/types/types";
 
-const track = (message: string) =>
-  z.custom<ITunesTrack>(
-    (value) => typeof (value as ITunesTrack | undefined)?.trackId === "number",
-    message,
+const itunesTrack = z
+  .object({
+    trackId: z.number().int().positive(),
+    trackName: z.string().min(1),
+    artistId: z.number().int(),
+    artistName: z.string().min(1),
+    collectionName: z.string().min(1),
+    releaseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}/),
+    artwork: z.string().regex(/^[\w.-]+(\/[\w.-]+)+$/),
+    trackTimeMillis: z.number().int().positive().optional(),
+    discNumber: z.number().int().optional(),
+    trackNumber: z.number().int().optional(),
+    trackViewUrl: z.string(),
+    previewUrl: z.url().optional(),
+  })
+  .refine(
+    (track) => parseAppleMusicUrl(track.trackViewUrl) === String(track.trackId),
   );
+
+export const isValidTrack = (value: unknown): value is ITunesTrack =>
+  itunesTrack.safeParse(value).success;
+
+const track = (message: string) => z.custom<ITunesTrack>(isValidTrack, message);
 
 export const newCoverSchema = z
   .object({

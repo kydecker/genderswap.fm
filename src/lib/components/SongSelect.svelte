@@ -12,6 +12,7 @@ import {
   releaseYear,
   searchTracks,
 } from "$lib/itunes";
+import LoaderIcon from "~icons/ri/loader-4-line";
 import SearchIcon from "~icons/ri/search-line";
 import type { ExistingCover } from "../../routes/api/getCover/+server";
 import ErrorMessage from "./ErrorMessage.svelte";
@@ -29,8 +30,19 @@ let {
 let discoveredEarlierRelease: ITunesTrack | null = $state(null);
 let discoveredExistingCover: ExistingCover | null = $state(null);
 let searchResults: ITunesTrack[] | undefined = $state(undefined);
+let resultsQuery = $state("");
+let searching = $state(false);
+let searchFailed = $state(false);
 
-const debounce = createDebouncer();
+const MIN_QUERY_LENGTH = 2;
+const debounceSearch = createDebouncer();
+const debounceChecks = createDebouncer();
+const cache = new Map<string, ITunesTrack[]>();
+let inputElement: HTMLInputElement | undefined = $state();
+
+const openIfFocused = () => {
+  if (document.activeElement === inputElement) open.set(true);
+};
 
 const {
   elements: { menu, input, option, label },
@@ -47,7 +59,7 @@ const {
     if (next) {
       discoveredEarlierRelease = null;
       discoveredExistingCover = null;
-      debounce(() => {
+      debounceChecks(() => {
         const track = next.value;
         whenCurrent(track, findEarliestRelease(track), (data) => {
           discoveredEarlierRelease = data;
@@ -87,27 +99,59 @@ const whenCurrent = async <T>(
 
 let searchController: AbortController | undefined;
 
-const search = async (query: string | undefined) => {
+const showResults = (query: string, results: ITunesTrack[]) => {
+  searchResults = results;
+  resultsQuery = query;
+  searching = false;
+  searchFailed = false;
+  openIfFocused();
+};
+
+const search = async (query: string) => {
   searchController?.abort();
-  if (!query?.trim()) {
-    searchResults = undefined;
-    return;
-  }
+  const controller = new AbortController();
+  searchController = controller;
 
   try {
     const appleId = parseAppleMusicUrl(query);
     if (appleId) {
       const [track] = await lookupTracks([appleId]);
       if (track) selected.set({ value: track });
-    } else {
-      searchController = new AbortController();
-      searchResults = await searchTracks(query, 10, searchController.signal);
+      else showResults(query, []);
+      searching = false;
+      return;
     }
+    const results = await searchTracks(query, 10, controller.signal);
+    cache.set(query.toLowerCase(), results);
+    if (searchController === controller) showResults(query, results);
   } catch (error) {
-    if (error instanceof Error && error.name !== "AbortError") {
-      console.error(error.message);
-    }
+    if (controller.signal.aborted) return;
+    searching = false;
+    searchFailed = true;
+    openIfFocused();
+    if (error instanceof Error) console.error(error.message);
   }
+};
+
+const onQueryChange = (query: string) => {
+  debounceSearch.cancel();
+  searchController?.abort();
+  searchFailed = false;
+
+  if (query.length < MIN_QUERY_LENGTH) {
+    searching = false;
+    searchResults = undefined;
+    return;
+  }
+
+  const cached = cache.get(query.toLowerCase());
+  if (cached) {
+    showResults(query, cached);
+    return;
+  }
+
+  searching = true;
+  debounceSearch(() => search(query));
 };
 
 const handleClearSelection = () => {
@@ -123,9 +167,8 @@ const handleUseEarlierRelease = async () => {
 };
 
 $effect(() => {
-  if ($touchedInput) {
-    debounce(() => search($inputValue));
-  }
+  const query = $inputValue.trim();
+  if ($touchedInput && !value) onQueryChange(query);
 });
 </script>
 
@@ -141,20 +184,36 @@ $effect(() => {
   {:else}
     <div class="searchWrapper" class:hidden={!!value}>
       <label use:melt={$label} aria-label="Search" class="inputWrapper">
-        <div class="searchIcon">
-          <SearchIcon />
+        <div class="searchIcon" class:spinning={searching}>
+          {#if searching}
+            <LoaderIcon />
+          {:else}
+            <SearchIcon />
+          {/if}
         </div>
         <input
           use:melt={$input}
+          bind:this={inputElement}
           class="searchInput"
           type="search"
           placeholder="Search songs or paste Apple Music URL"
           aria-invalid={errors ? 'true' : undefined}
+          aria-busy={searching}
         />
       </label>
-      {#if $open && searchResults}
-        <ul use:melt={$menu} class="searchResults" transition:scale={{ duration: 200, start: 0.9 }}>
-          {#each searchResults as track}
+      {#if $open && (searchResults || searching || searchFailed)}
+        <ul
+          use:melt={$menu}
+          class="searchResults"
+          class:stale={searching && searchResults}
+          transition:scale={{ duration: 200, start: 0.9 }}
+        >
+          {#if searchFailed}
+            <li class="status">Couldn’t reach Apple Music. Keep typing or try again in a moment.</li>
+          {:else if searching && !searchResults}
+            <li class="status">Searching…</li>
+          {/if}
+          {#each searchResults ?? [] as track (track.trackId)}
             <li
               use:melt={$option({
                 value: track,
@@ -185,7 +244,9 @@ $effect(() => {
               </div>
             </li>
           {:else}
-            <li class="empty">No results found</li>
+            {#if !searching && !searchFailed}
+              <li class="status">No songs found for “{resultsQuery}”</li>
+            {/if}
           {/each}
         </ul>
       {/if}
@@ -220,6 +281,17 @@ $effect(() => {
     transform: translateY(-50%);
     left: var(--space-m);
     fill: currentColor;
+    display: flex;
+
+    &.spinning :global(svg) {
+      animation: spin 0.7s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .searchInput {
@@ -251,6 +323,11 @@ $effect(() => {
     margin-block: var(--space-xs);
     z-index: 10;
     max-height: 45vh;
+    transition: opacity 0.15s ease;
+
+    &.stale {
+      opacity: 0.6;
+    }
   }
 
   .result {
@@ -270,9 +347,10 @@ $effect(() => {
     }
   }
 
-  .empty {
+  .status {
     color: var(--color-text-muted);
     padding-block: var(--space-l);
+    padding-inline: var(--space-m);
     text-align: center;
   }
 

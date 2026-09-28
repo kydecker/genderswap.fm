@@ -8,7 +8,6 @@ import { slugifyCover } from "$lib/helpers";
 import {
   albumName,
   type ITunesTrack,
-  lookupTracks,
   releaseYear,
   songName,
   trackIdentity,
@@ -89,19 +88,9 @@ export const actions = {
     const db = getDb(platform);
     const appleIds = [String(original.trackId), String(cover.trackId)];
 
-    const [tracks, existingSongs] = await Promise.all([
-      lookupTracks(appleIds).catch(() => []),
-      db.query.songs.findMany({ where: inArray(songs.apple_id, appleIds) }),
-    ]);
-
-    const originalTrack = tracks.find(
-      ({ trackId }) => trackId === original.trackId,
-    );
-    const coverTrack = tracks.find(({ trackId }) => trackId === cover.trackId);
-
-    if (!originalTrack || !coverTrack) {
-      return setError(form, "Couldn’t load these songs from Apple Music");
-    }
+    const existingSongs = await db.query.songs.findMany({
+      where: inArray(songs.apple_id, appleIds),
+    });
 
     const resolveSong = async (
       track: ITunesTrack,
@@ -169,8 +158,8 @@ export const actions = {
     };
 
     const [originalSong, coverSong] = await Promise.all([
-      resolveSong(originalTrack, originalGenders),
-      resolveSong(coverTrack, coverGenders),
+      resolveSong(original, originalGenders),
+      resolveSong(cover, coverGenders),
     ]);
 
     if (
@@ -180,7 +169,7 @@ export const actions = {
       return setError(form, "Cover and original songs can't be the same");
     }
 
-    const slug = slugifyCover(coverTrack.trackName, coverSong.song.artists[0]);
+    const slug = slugifyCover(cover.trackName, coverSong.song.artists[0]);
 
     const insertCover = db
       .insert(covers)

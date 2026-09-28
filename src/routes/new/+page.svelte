@@ -4,6 +4,9 @@ import autosize from "svelte-autosize";
 import { superForm } from "sveltekit-superforms";
 import { browser } from "$app/environment";
 import { page } from "$app/state";
+import { albumColorFromImage } from "$lib/albumColor";
+import { artworkUrl } from "$lib/artwork";
+import ColorSwirl from "$lib/components/ColorSwirl.svelte";
 import ErrorMessage from "$lib/components/ErrorMessage.svelte";
 import GenderSelect from "$lib/components/GenderSelect.svelte";
 import NewCoverIcon from "$lib/components/NewCoverIcon.svelte";
@@ -16,6 +19,7 @@ import {
   SITE_URL,
 } from "$lib/constants";
 import { getMaxCharacterHelpText } from "$lib/helpers";
+import { setPageColor } from "$lib/pageColor";
 import AlertIcon from "~icons/ri/alert-line";
 import LoaderIcon from "~icons/ri/loader-4-line";
 
@@ -31,6 +35,37 @@ const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
 $form.contributor = browser
   ? (window.localStorage.getItem("contributor") ?? "")
   : "";
+
+let originalColor: string | null = $state(null);
+let coverColor: string | null = $state(null);
+
+const originalArtwork = $derived($form.original?.artwork);
+const coverArtwork = $derived($form.cover?.artwork);
+
+const watchColor = (
+  artwork: string | undefined,
+  set: (color: string | null) => void,
+) => {
+  set(null);
+  if (!artwork) return;
+  let current = true;
+  albumColorFromImage(artworkUrl(artwork, 64, "jpg"))
+    .then((color) => current && set(color))
+    .catch(() => {});
+  return () => {
+    current = false;
+  };
+};
+
+$effect(() => watchColor(originalArtwork, (color) => (originalColor = color)));
+$effect(() => watchColor(coverArtwork, (color) => (coverColor = color)));
+$effect(() => setPageColor(coverColor ?? originalColor));
+
+const swirlColors = $derived.by((): [string, string] | null =>
+  coverColor && originalColor && coverColor !== originalColor
+    ? [coverColor, originalColor]
+    : null,
+);
 
 const handleDescriptionInput: FormEventHandler<HTMLTextAreaElement> = (e) => {
   $form.description = e.currentTarget.value;
@@ -55,6 +90,12 @@ const handleSubmit = () => {
   <meta name="description" content="Upload a fresh gender-swapped cover to the catalogue." />
   <link rel="canonical" href={`${SITE_URL}${page.url.pathname}`} />
 </svelte:head>
+
+{#if swirlColors}
+  {#key swirlColors.join()}
+    <ColorSwirl colors={swirlColors} />
+  {/key}
+{/if}
 
 <form class="submitForm" method="POST" use:enhance>
   <h1 class="header">Add a cover</h1>
@@ -145,6 +186,10 @@ const handleSubmit = () => {
 <!-- Missing toasts error handling -->
 
 <style>
+  .submitForm :global(:is(input, textarea):focus-visible) {
+    outline-offset: 0;
+  }
+
   .submitForm {
     inline-size: 100%;
     max-inline-size: 50ch;
