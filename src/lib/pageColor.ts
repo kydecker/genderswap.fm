@@ -63,22 +63,61 @@ const closest = <T extends Element>(
   return best;
 };
 
+const visibleFraction = (element: Element) => {
+  const { top, bottom, height } = element.getBoundingClientRect();
+  if (!height) return 0;
+  const visible = Math.min(bottom, window.innerHeight) - Math.max(top, 0);
+  return Math.max(0, visible) / height;
+};
+
+const nearestMostVisible = (fractions: number[], anchor: number) => {
+  const max = Math.max(...fractions);
+  let best = -1;
+  fractions.forEach((fraction, index) => {
+    if (
+      fraction === max &&
+      (best < 0 || Math.abs(index - anchor) < Math.abs(best - anchor))
+    ) {
+      best = index;
+    }
+  });
+  return best;
+};
+
 export const pageColorOnFocus = (node: HTMLElement) => {
   const touchOnly = matchMedia("(hover: none)");
   let frame = 0;
+  let track: HTMLElement | undefined;
+  let trackFraction = 0;
+  let scrolledTrack: HTMLElement | undefined;
   let focused: HTMLElement | undefined;
+
+  const pickTrack = () => {
+    if (scrolledTrack) {
+      track = scrolledTrack;
+      trackFraction = visibleFraction(track);
+      scrolledTrack = undefined;
+      return;
+    }
+    const tracks = [
+      ...node.querySelectorAll<HTMLElement>("[data-focus-track]"),
+    ];
+    const fractions = tracks.map(visibleFraction);
+    const index = track ? tracks.indexOf(track) : -1;
+    const fraction = fractions[index] ?? 0;
+    const leaving = fraction < trackFraction;
+    const outdone = fraction < Math.max(...fractions);
+    const next =
+      index < 0 || (leaving && outdone)
+        ? nearestMostVisible(fractions, Math.max(index, 0))
+        : index;
+    track = tracks[next];
+    trackFraction = fractions[next] ?? 0;
+  };
 
   const update = () => {
     frame = 0;
-    const maxScroll =
-      document.documentElement.scrollHeight - window.innerHeight;
-    const progress =
-      maxScroll > 0 ? Math.min(1, window.scrollY / maxScroll) : 0;
-    const focusY = window.innerHeight * (0.3 + 0.4 * progress);
-    const track = closest(
-      node.querySelectorAll<HTMLElement>("[data-focus-track]"),
-      (rect) => rect.top + rect.height / 2 - focusY,
-    );
+    pickTrack();
     if (!track) return;
     const start =
       track.getBoundingClientRect().left +
@@ -96,18 +135,31 @@ export const pageColorOnFocus = (node: HTMLElement) => {
     if (!frame) frame = requestAnimationFrame(update);
   };
 
+  const onScroll = (event: Event) => {
+    const { target } = event;
+    if (
+      target instanceof HTMLElement &&
+      target.matches("[data-focus-track]") &&
+      node.contains(target)
+    ) {
+      scrolledTrack = target;
+    }
+    schedule();
+  };
+
   const unlisten = () => {
     cancelAnimationFrame(frame);
     frame = 0;
-    window.removeEventListener("scroll", schedule, { capture: true });
+    window.removeEventListener("scroll", onScroll, { capture: true });
     window.removeEventListener("resize", schedule);
   };
 
   const onModeChange = () => {
     unlisten();
+    track = undefined;
     focused = undefined;
     if (touchOnly.matches) {
-      window.addEventListener("scroll", schedule, {
+      window.addEventListener("scroll", onScroll, {
         capture: true,
         passive: true,
       });

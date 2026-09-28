@@ -170,6 +170,7 @@ const coverSong = $derived(cover.cover);
       padding: var(--space-xs);
       color: var(--color-text-muted);
       background-color: var(--color-surface);
+      backdrop-filter: var(--backdrop-surface);
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {

@@ -61,15 +61,17 @@
   /* Colors */
   --color-bg: var(--color-page);
   --color-surface: oklch(
-    from var(--color-page) calc(l + 0.042) calc(c * 0.8) h
+    from var(--color-page) calc(l + 0.06) calc(c * 0.71) h /
+    0.7
   );
   --color-surface-hover: oklch(
-    from var(--color-page) calc(l + 0.084) calc(c * 0.6) h
+    from var(--color-page) calc(l + 0.12) calc(c * 0.43) h /
+    0.7
   );
   --color-surface-raised: oklch(from var(--color-page) 0.92 calc(c * 0.25) h);
   --color-border: oklch(from var(--color-page) calc(l - 0.083) c h);
-  --color-text: oklch(from var(--color-page) 0.18 calc(c * 0.4) h);
-  --color-text-muted: color-mix(var(--color-text), transparent 30%);
+  --color-text: oklch(from var(--color-page) 0.14 calc(c * 0.4) h);
+  --color-text-muted: color-mix(var(--color-text), transparent 20%);
   --color-text-subtle: color-mix(var(--color-text), transparent 40%);
   --color-focus-ring: var(--color-text);
 
@@ -127,6 +129,8 @@
   --focus-ring-width: 3px;
   --focus-ring: var(--focus-ring-width) solid var(--color-focus-ring);
   --focus-ring-offset: 3px;
+
+  --backdrop-surface: blur(16px);
 
   --shadow-popover:
     0px 10px 38px -10px rgba(0, 0, 0, 0.35),

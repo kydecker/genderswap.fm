@@ -31,6 +31,7 @@ let {
     gap: var(--space-xs);
     align-items: baseline;
     background: var(--color-surface);
+    backdrop-filter: var(--backdrop-surface);
     color: var(--color-text-muted);
     padding-block: var(--space-xs) var(--space-xs);
     padding-inline: var(--space-s);
@@ -48,6 +49,7 @@ let {
 
   a.tag:hover:not(.active) {
     background: var(--color-surface-hover);
+    color: var(--color-text);
     cursor: pointer;
   }
 
