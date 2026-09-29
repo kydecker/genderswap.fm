@@ -3,6 +3,7 @@ import {
   check,
   index,
   integer,
+  primaryKey,
   real,
   sqliteTable,
   text,
@@ -92,6 +93,19 @@ export const coversRelations = relations(covers, ({ one }) => ({
     references: [songs.id],
   }),
 }));
+
+export const coverTags = sqliteTable(
+  "cover_tags",
+  {
+    tag: text("tag").notNull(),
+    created_at: text("created_at").notNull(),
+    cover_id: integer("cover_id").notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.tag, table.created_at, table.cover_id] }),
+    index("cover_tags_cover_id_idx").on(table.cover_id),
+  ],
+);
 
 export const tagCounts = sqliteTable("tag_counts", {
   tag: text("tag").primaryKey(),
