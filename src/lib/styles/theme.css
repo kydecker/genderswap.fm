@@ -99,6 +99,7 @@
   --space-xl: clamp(1.5rem, 1.2391rem + 1.3043vw, 2.25rem);
   --space-2xl: clamp(2rem, 1.6522rem + 1.7391vw, 3rem);
   --space-3xl: clamp(3rem, 2.4783rem + 2.6087vw, 4.5rem);
+  --space-gutter: var(--space-l);
 
   /* Line heights */
   --line-height-h1: 1;
@@ -152,4 +153,10 @@
     inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
 
   color-scheme: light;
+}
+
+@media (min-width: 56rem) {
+  :root {
+    --space-gutter: var(--space-2xl);
+  }
 }

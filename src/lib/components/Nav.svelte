@@ -65,12 +65,30 @@ const closeSearch = () => {
 </script>
 
 <nav class="nav" class:searching aria-label="Site">
-  <div class="tabs" inert={searching}>
+  <form class="search" role="search" onsubmit={(e) => e.preventDefault()}>
+    <button type="button" class="close bubble" aria-label="Close search" onclick={closeSearch}>
+      <BackIcon aria-hidden="true" />
+    </button>
+    <div class="field bubble">
+      <SearchIcon aria-hidden="true" />
+      <input
+        bind:this={input}
+        bind:value={query}
+        id="search"
+        type="search"
+        aria-label="Search covers"
+        {placeholder}
+        oninput={search}
+        onkeydown={(e) => e.key === "Escape" && closeSearch()}
+      />
+    </div>
+  </form>
+  <div class="tabs">
     <a class="tab" href="/" aria-current={current("/") ?? (browsing || undefined)}>
       {#if browsing}<HomeFillIcon aria-hidden="true" />{:else}<HomeIcon aria-hidden="true" />{/if}
       <span>Browse</span>
     </a>
-    <button type="button" class="tab" data-search-toggle onclick={openSearch}>
+    <button type="button" class="tab toggle" data-search-toggle onclick={openSearch}>
       <SearchIcon aria-hidden="true" />
       <span>Search</span>
     </button>
@@ -84,55 +102,12 @@ const closeSearch = () => {
     </a>
     <a class="add" href="/new" aria-label="Add a cover" aria-current={current("/new")}>
       <AddIcon aria-hidden="true" />
+      <span>Add a cover</span>
     </a>
   </div>
-  {#if searching}
-    <form class="search" role="search" onsubmit={(e) => e.preventDefault()}>
-      <button type="button" class="close bubble" aria-label="Close search" onclick={closeSearch}>
-        <BackIcon aria-hidden="true" />
-      </button>
-      <div class="field bubble">
-        <SearchIcon aria-hidden="true" />
-        <input
-          bind:this={input}
-          bind:value={query}
-          id="search"
-          type="search"
-          aria-label="Search covers"
-          {placeholder}
-          oninput={search}
-          onkeydown={(e) => e.key === "Escape" && closeSearch()}
-        />
-      </div>
-    </form>
-  {/if}
 </nav>
 
 <style>
-  .nav {
-    --icon-size: min(var(--step-2), 1.375rem);
-    --nav-padding: var(--space-2xs);
-
-    position: relative;
-    width: 24rem;
-    padding: var(--nav-padding);
-
-    &.searching {
-      background: none;
-      box-shadow: none;
-      backdrop-filter: none;
-    }
-
-    @media (max-width: 599.98px) {
-      position: fixed;
-      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
-      inset-inline-start: 50%;
-      translate: -50% 0;
-      z-index: 100;
-      width: min(24rem, calc(100% - 2 * var(--space-s)));
-    }
-  }
-
   .nav,
   .bubble {
     border: 1px solid transparent;
@@ -142,13 +117,51 @@ const closeSearch = () => {
     box-shadow: var(--shadow-bar);
   }
 
+  .nav {
+    --icon-size: min(var(--step-2), 1.375rem);
+    --nav-padding: var(--space-2xs);
+
+    @media (max-width: 55.99rem) {
+      position: fixed;
+      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      z-index: 100;
+      width: min(24rem, calc(100% - 2 * var(--space-s)));
+      padding: var(--nav-padding);
+
+      &.searching {
+        background: none;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+    }
+
+    @media (min-width: 56rem) {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-l);
+      border: none;
+      background: none;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+  }
+
   .tabs {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-auto-rows: 2.75rem;
 
-    .searching & {
-      visibility: hidden;
+    @media (max-width: 55.99rem) {
+      .searching & {
+        visibility: hidden;
+      }
+    }
+
+    @media (min-width: 56rem) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: calc(var(--space-2xs) / 2);
     }
   }
 
@@ -184,6 +197,26 @@ const closeSearch = () => {
       outline: var(--focus-ring);
       outline-offset: 0;
     }
+
+    @media (min-width: 56rem) {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: var(--space-s);
+      padding-inline: var(--space-m);
+      font-size: var(--step-0);
+
+      :global(svg) {
+        margin-block-start: 0;
+      }
+
+      &[aria-current] {
+        background: var(--color-surface);
+      }
+
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+    }
   }
 
   .add {
@@ -198,17 +231,59 @@ const closeSearch = () => {
     &:focus-visible {
       background: var(--color-text-muted);
     }
+
+    span {
+      display: none;
+    }
+
+    @media (min-width: 56rem) {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding-inline: var(--space-m);
+      font-size: var(--step-0);
+      font-weight: var(--font-weight-bold);
+      font-feature-settings: var(--font-unstable);
+      line-height: 1;
+      text-decoration: none;
+
+      :global(svg) {
+        font-size: var(--icon-size);
+      }
+
+      span {
+        display: inline;
+      }
+    }
+  }
+
+  .toggle {
+    @media (min-width: 56rem) {
+      display: none;
+    }
   }
 
   .search {
-    position: absolute;
-    inset: -1px;
-    display: grid;
-    grid-template-columns:
-      calc((100% - 2 * var(--nav-padding) - 2px) / 5 + 2 * var(--nav-padding) + 2px)
-      minmax(0, 1fr);
-    gap: var(--nav-padding);
     color: var(--color-text-muted);
+
+    @media (max-width: 55.99rem) {
+      position: absolute;
+      inset: -1px;
+      display: grid;
+      grid-template-columns:
+        calc(2.75rem + 2 * var(--nav-padding) + 2px)
+        minmax(0, 1fr);
+      gap: var(--nav-padding);
+
+      .nav:not(.searching) & {
+        display: none;
+      }
+    }
+
+    @media (min-width: 56rem) {
+      display: flex;
+      block-size: 2.75rem;
+    }
   }
 
   .field {
@@ -216,6 +291,12 @@ const closeSearch = () => {
     align-items: center;
     gap: var(--space-xs);
     padding-inline: var(--space-m);
+
+    @media (min-width: 56rem) {
+      flex: 1;
+      min-width: 0;
+      box-shadow: none;
+    }
 
     @media (hover:hover) {
       &:hover {
@@ -273,6 +354,10 @@ const closeSearch = () => {
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: 0;
+    }
+
+    @media (min-width: 56rem) {
+      display: none;
     }
   }
 </style>

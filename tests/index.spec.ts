@@ -89,20 +89,18 @@ test.describe("should display and toggle tags", () => {
 });
 
 test.describe("should display and submit search queries", () => {
-  test("should open search from the nav with no query by default", async ({
+  test("should show search inline with no query by default", async ({
     page,
   }) => {
-    await page.locator("[data-search-toggle]").click();
+    await expect(page.locator("[data-search-toggle]")).not.toBeVisible();
 
     const searchInput = page.locator("input#search");
-    await expect(searchInput).toBeFocused();
+    await expect(searchInput).toBeVisible();
     await expect(searchInput).toHaveValue("");
     await expect(searchInput).toHaveAttribute("placeholder", "Search covers…");
   });
 
   test("should display the search query in the input", async ({ page }) => {
-    await page.locator("[data-search-toggle]").click();
-
     const searchInput = page.locator("input#search");
     await searchInput.fill("crazy in love");
 
@@ -110,11 +108,10 @@ test.describe("should display and submit search queries", () => {
     await expect(page).toHaveURL("/?q=crazy+in+love");
   });
 
-  test("should search within a category and clear on close", async ({
+  test("should search within a category and clear on escape", async ({
     page,
   }) => {
     await page.goto("/mtf");
-    await page.locator("[data-search-toggle]").click();
 
     const searchInput = page.locator("input#search");
     await expect(searchInput).toHaveAttribute("placeholder", "Search MTF…");
@@ -122,9 +119,9 @@ test.describe("should display and submit search queries", () => {
 
     await expect(page).toHaveURL("/mtf?q=crazy+in+love");
 
-    await page.getByRole("button", { name: "Close search" }).click();
+    await searchInput.press("Escape");
 
-    await expect(searchInput).not.toBeVisible();
+    await expect(searchInput).toHaveValue("");
     await expect(page).toHaveURL("/mtf");
   });
 
@@ -132,7 +129,6 @@ test.describe("should display and submit search queries", () => {
     page,
   }) => {
     await page.goto("/about");
-    await page.locator("[data-search-toggle]").click();
     await page.locator("input#search").fill("abba");
 
     await expect(page).toHaveURL("/?q=abba");
@@ -145,6 +141,38 @@ test.describe("should display and submit search queries", () => {
 
     const searchInput = page.locator("input#search");
     await expect(searchInput).toHaveValue("crazy in love");
+  });
+
+  test.describe("on mobile", () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("should open search from the nav toggle", async ({ page }) => {
+      const searchInput = page.locator("input#search");
+      await expect(searchInput).not.toBeVisible();
+
+      await page.locator("[data-search-toggle]").click();
+
+      await expect(searchInput).toBeFocused();
+      await expect(searchInput).toHaveValue("");
+    });
+
+    test("should search within a category and clear on close", async ({
+      page,
+    }) => {
+      await page.goto("/mtf");
+      await page.locator("[data-search-toggle]").click();
+
+      const searchInput = page.locator("input#search");
+      await expect(searchInput).toHaveAttribute("placeholder", "Search MTF…");
+      await searchInput.fill("crazy in love");
+
+      await expect(page).toHaveURL("/mtf?q=crazy+in+love");
+
+      await page.getByRole("button", { name: "Close search" }).click();
+
+      await expect(searchInput).not.toBeVisible();
+      await expect(page).toHaveURL("/mtf");
+    });
   });
 });
 

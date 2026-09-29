@@ -98,24 +98,24 @@ $effect(() => {
 
 <style>
   .row {
-    --gutter: max(var(--space-l), env(safe-area-inset-left));
+    --gutter: max(var(--space-gutter), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
 
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * 2);
   }
 
   .heading {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
     padding-inline: var(--gutter);
   }
 
   .title {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
+    margin-block: calc(var(--space-2xs) / -2) calc(var(--space-2xs) / 2);
 
     a {
       display: inline-flex;
@@ -158,6 +158,10 @@ $effect(() => {
 
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    @media (min-width: 56rem) {
+      mask-image: linear-gradient(to right, transparent, #000 calc(var(--gutter) * 0.75));
     }
   }
 

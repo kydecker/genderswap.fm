@@ -19,7 +19,7 @@ let { covers }: { covers: Cover[] } = $props();
           <div class="item">
             <CoverCard
               {...cover}
-              sizes="(min-width: 56rem) 11rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
+              sizes="(min-width: 71rem) 11rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
               lazy={index >= 4}
               tintOnHover={false}
             />
@@ -32,9 +32,8 @@ let { covers }: { covers: Cover[] } = $props();
 
 <style>
   .related {
-    --gutter: max(var(--space-l), env(safe-area-inset-left));
+    --gutter: max(var(--space-gutter), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
-    --header-offset: 6rem;
     --ring-space: calc(var(--space-2xs) + var(--focus-ring-width));
 
     display: flex;
@@ -42,12 +41,12 @@ let { covers }: { covers: Cover[] } = $props();
     gap: var(--space-2xs);
     min-width: 0;
 
-    @media (min-width: 56rem) {
+    @container main (min-width: 54rem) {
       position: sticky;
       top: 0;
       max-height: 100dvh;
-      margin-block: calc(-1 * var(--header-offset)) -100dvh;
-      padding-block-start: calc(var(--header-offset) + var(--space-xl));
+      margin-block-end: -100dvh;
+      padding-block-start: var(--space-xl);
       padding-inline: var(--ring-space);
       margin-inline: calc(-1 * var(--ring-space));
       gap: var(--space-s);
@@ -66,7 +65,7 @@ let { covers }: { covers: Cover[] } = $props();
     font-feature-settings: var(--font-stable);
     padding-inline: var(--gutter);
 
-    @media (min-width: 56rem) {
+    @container main (min-width: 54rem) {
       padding-inline: 0;
     }
   }
@@ -86,7 +85,12 @@ let { covers }: { covers: Cover[] } = $props();
     }
 
     @media (min-width: 56rem) {
+      mask-image: linear-gradient(to right, transparent, #000 calc(var(--gutter) * 0.75));
+    }
+
+    @container main (min-width: 54rem) {
       display: grid;
+      mask-image: none;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
       gap: var(--space-l) var(--space-m);
@@ -102,7 +106,7 @@ let { covers }: { covers: Cover[] } = $props();
     align-self: flex-start;
     scroll-snap-align: start;
 
-    @media (min-width: 56rem) {
+    @container main (min-width: 54rem) {
       flex: initial;
     }
   }

@@ -162,24 +162,27 @@ onMount(async () => {
     grid-template-columns: minmax(0, 1fr);
     align-items: start;
 
-    @media (min-width: 56rem) {
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    @container main (min-width: 54rem) {
+      grid-template-columns: minmax(26rem, 1fr) minmax(18rem, 24rem);
       column-gap: var(--space-2xl);
-      padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-      padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+      padding-inline-start: max(var(--space-gutter), env(safe-area-inset-left));
+      padding-inline-end: max(var(--space-gutter), env(safe-area-inset-right));
     }
   }
 
   .main {
     min-width: 0;
-    padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+    padding-inline-start: max(var(--space-gutter), env(safe-area-inset-left));
+    padding-inline-end: max(var(--space-gutter), env(safe-area-inset-right));
 
     @media (min-width: 56rem) {
+      padding-block-start: var(--space-xl);
+    }
+
+    @container main (min-width: 54rem) {
       width: 100%;
       max-width: 40rem;
       justify-self: center;
-      padding-block-start: var(--space-xl);
       padding-inline: 0;
     }
   }
@@ -192,24 +195,32 @@ onMount(async () => {
     padding-block: var(--space-xl);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
     text-wrap: pretty;
 
     :global(.tags) {
-      justify-content: flex-start;
+      justify-content: center;
     }
 
     @media (min-width: 56rem) {
+      align-items: flex-start;
+      text-align: start;
       padding-block-start: 0;
+
+      :global(.tags) {
+        justify-content: flex-start;
+      }
     }
   }
 
   .title {
     position: relative;
+    font-size: var(--step-4);
   }
 
   .subtitle {
-    font-size: var(--step-2);
+    font-size: var(--step-1);
     line-height: var(--line-height-h3);
     color: var(--color-text-muted);
     margin-block-start: var(--space-m);

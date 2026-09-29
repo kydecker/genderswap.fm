@@ -28,6 +28,10 @@ afterNavigate(resetPageColor);
 <header class="siteHeader">
   <Logo />
   <Nav />
+  <footer class="credits">
+    <p>By <a href="https://ky.fyi">Ky Decker</a></p>
+    <p><a href="https://github.com/kydecker/genderswap.fm">GitHub</a></p>
+  </footer>
 </header>
 <main class="main">
   {@render children?.()}
@@ -36,22 +40,50 @@ afterNavigate(resetPageColor);
 <style>
   .siteHeader {
     width: 100%;
-    padding-block: var(--space-l) var(--space-s);
+    padding-block: max(var(--space-2xl), env(safe-area-inset-top)) var(--space-s);
+    text-align: center;
     padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
     padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
-    gap: var(--space-l);
 
-    @media (min-width: 600px) {
-      display: flex;
+    @media (min-width: 56rem) {
       position: sticky;
       top: 0;
       z-index: 100;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: calc(1.625rem + var(--space-xl) - var(--space-l));
+      flex: none;
+      width: 17rem;
+      height: 100dvh;
+      padding-block: var(--space-l) var(--space-xl);
+      padding-inline-end: var(--space-xs);
+      text-align: start;
+      overflow-y: auto;
+    }
+  }
 
-      > :global(*) {
-        pointer-events: auto;
+  .credits {
+    display: none;
+
+    @media (min-width: 56rem) {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2xs) var(--space-m);
+      margin-block-start: auto;
+      padding-inline-start: var(--space-m);
+      color: var(--color-text-muted);
+      font-size: var(--step--1);
+      line-height: var(--line-height-small);
+
+      a {
+        color: var(--color-text);
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+        border-radius: var(--radius-2xs);
+
+        &:hover {
+          color: var(--color-text-muted);
+        }
       }
     }
   }
@@ -61,10 +93,20 @@ afterNavigate(resetPageColor);
     width: 100%;
     display: flex;
     flex-direction: column;
+    container: main / inline-size;
     padding-block-end: calc(var(--space-3xl) * 2);
 
-    @media (min-width: 600px) {
+    @media (min-width: 56rem) {
+      width: auto;
+      min-width: 0;
+      align-self: stretch;
       padding-block-end: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 56rem) {
+    :global(body) {
+      flex-direction: row;
     }
   }
 </style>

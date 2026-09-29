@@ -10,6 +10,7 @@ Genderswap.fm is a repository of song covers with performing artists of differen
 pnpm install
 pnpm db:migrate:local
 pnpm db:seed:local # optional synthetic data
+pnpm db:pull # optional: replace local songs and covers with production data
 pnpm dev
 ```
 

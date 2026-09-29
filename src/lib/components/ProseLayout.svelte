@@ -43,18 +43,20 @@ const formattedModifiedDate = $derived(
   .prose {
     box-sizing: content-box;
     max-inline-size: 54ch;
-    margin-inline: auto;
-    padding-inline: var(--space-xl);
+    padding-inline: var(--space-gutter);
     padding-block-end: var(--space-3xl);
   }
 
   .prose-header {
     box-sizing: content-box;
     max-inline-size: 54ch;
-    margin-inline: auto;
-    padding-inline: var(--space-xl);
+    padding-inline: var(--space-gutter);
     padding-block-start: var(--space-xl);
     padding-block-end: var(--space-3xl);
+
+    @media (min-width: 56rem) {
+      padding-block-start: calc(var(--space-l) + (var(--space-2xl) - var(--step-5)) / 2);
+    }
   }
 
   .prose-dates {
@@ -150,6 +152,5 @@ const formattedModifiedDate = $derived(
     width: 585px;
     max-width: 100%;
     border-radius: var(--radius-s);
-    margin-inline: auto;
   }
 </style>
