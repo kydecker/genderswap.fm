@@ -34,7 +34,7 @@ let { covers }: { covers: Cover[] } = $props();
   .related {
     --gutter: max(var(--space-l), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
-    --sticky-top: 6rem;
+    --header-offset: 6rem;
     --ring-space: calc(var(--space-2xs) + var(--focus-ring-width));
 
     display: flex;
@@ -44,22 +44,20 @@ let { covers }: { covers: Cover[] } = $props();
 
     @media (min-width: 56rem) {
       position: sticky;
-      top: var(--sticky-top);
-      max-height: calc(100dvh - var(--sticky-top) - var(--space-xl));
-      padding-block-start: var(--space-xl);
+      top: 0;
+      max-height: 100dvh;
+      margin-block: calc(-1 * var(--header-offset)) -100dvh;
+      padding-block-start: calc(var(--header-offset) + var(--space-xl));
       padding-inline: var(--ring-space);
       margin-inline: calc(-1 * var(--ring-space));
       gap: var(--space-s);
       overflow-y: auto;
       overscroll-behavior: contain;
-      scrollbar-width: thin;
-      mask-image: linear-gradient(
-        to bottom,
-        transparent,
-        #000 var(--space-m),
-        #000 calc(100% - var(--space-xl)),
-        transparent
-      );
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 
