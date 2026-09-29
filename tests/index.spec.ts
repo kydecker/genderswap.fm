@@ -188,10 +188,7 @@ test.describe("should display related covers on the detail page", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   test.beforeEach(async ({ page }) => {
-    await page
-      .locator('.row .coverCard a:not([href^="/cover/e2e-"])')
-      .first()
-      .click();
+    await page.locator(".row .coverCard a").first().click();
     await expect(page).toHaveURL(/\/cover\//);
   });
 
