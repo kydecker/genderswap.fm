@@ -119,7 +119,10 @@ export const actions = {
       const existing = existingSongs.find((song) => song.apple_id === appleId);
       if (existing) return known(existing);
 
-      const match = await findDeezerMatch(track).catch(() => null);
+      const match = await findDeezerMatch(track).catch((error: Error) => {
+        console.error(`Deezer ${appleId}: ${error.message}`);
+        return null;
+      });
       const found = await findKnownSong(db, track, match?.isrc ?? null);
       if (found) return known(found);
 
@@ -130,7 +133,10 @@ export const actions = {
 
       const [features, tidal_url, album_color] = await Promise.all([
         isrc
-          ? getAudioFeatures(isrc).catch(() => NO_AUDIO_FEATURES)
+          ? getAudioFeatures(isrc).catch((error: Error) => {
+              console.error(`ReccoBeats ${isrc}: ${error.message}`);
+              return NO_AUDIO_FEATURES;
+            })
           : NO_AUDIO_FEATURES,
         findTidalLink(
           {

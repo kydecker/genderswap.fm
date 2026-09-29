@@ -46,12 +46,21 @@ export const NO_AUDIO_FEATURES = {
   ...Object.fromEntries(AUDIO_FEATURES.map((key) => [key, null])),
 } as AudioFeatures;
 
+const ATTEMPTS = 3;
+
 const getJson = async <T>(url: string): Promise<T> => {
-  const body = await fetchJson<T | { error: unknown }>(url);
-  if (body && typeof body === "object" && "error" in body) {
-    throw new Error(`${JSON.stringify(body.error)}: ${url}`);
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const body = await fetchJson<T | { error: unknown }>(url);
+      if (body && typeof body === "object" && "error" in body) {
+        throw new Error(`${JSON.stringify(body.error)}: ${url}`);
+      }
+      return body as T;
+    } catch (error) {
+      if (attempt === ATTEMPTS) throw error;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+    }
   }
-  return body as T;
 };
 
 const DEEZER = "https://api.deezer.com";

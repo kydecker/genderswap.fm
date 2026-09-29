@@ -4,13 +4,29 @@ import { findDeezerMatch, getAudioFeatures, NO_AUDIO_FEATURES } from "./enrich";
 
 const mockFetch = (...bodies: unknown[]) => {
   const fetch = vi.fn();
-  for (const body of bodies) fetch.mockResolvedValueOnce(Response.json(body));
+  for (const body of bodies) {
+    fetch.mockResolvedValueOnce(
+      body instanceof Response ? body : Response.json(body),
+    );
+  }
   vi.stubGlobal("fetch", fetch);
   return fetch;
 };
 
+const settle = async <T>(
+  promise: Promise<T>,
+): Promise<{ value?: T; error?: Error }> => {
+  const settled = promise.then(
+    (value) => ({ value }),
+    (error: Error) => ({ error }),
+  );
+  await vi.runAllTimersAsync();
+  return settled;
+};
+
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 const track = {
@@ -103,9 +119,14 @@ describe("findDeezerMatch", () => {
     expect(await findDeezerMatch(track)).toBeNull();
   });
 
-  it("should reject Deezer error bodies", async () => {
-    mockFetch({ error: { message: "Quota limit exceeded" } });
-    await expect(findDeezerMatch(track)).rejects.toThrow("Quota");
+  it("should reject Deezer error bodies after retrying", async () => {
+    vi.useFakeTimers();
+    const error = { error: { message: "Quota limit exceeded" } };
+    const fetch = mockFetch(error, error, error);
+
+    const { error: thrown } = await settle(findDeezerMatch(track));
+    expect(thrown?.message).toContain("Quota");
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 });
 
@@ -126,6 +147,31 @@ describe("getAudioFeatures", () => {
       energy: 0.357,
       tempo: 139.884,
     });
+  });
+
+  it("should retry failed requests", async () => {
+    vi.useFakeTimers();
+    const fetch = mockFetch(new Response(null, { status: 503 }), {
+      content: [
+        { href: "https://open.spotify.com/track/0Jlcvv8IykzHaSmj49uNW8" },
+      ],
+    });
+
+    const { value } = await settle(getAudioFeatures("USUG12002835"));
+    expect(value).toMatchObject({
+      spotify_url: "https://open.spotify.com/track/0Jlcvv8IykzHaSmj49uNW8",
+    });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("should throw after repeated failures", async () => {
+    vi.useFakeTimers();
+    const failure = () => new Response(null, { status: 429 });
+    const fetch = mockFetch(failure(), failure(), failure());
+
+    const { error } = await settle(getAudioFeatures("USUG12002835"));
+    expect(error?.message).toContain("429");
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it("should return empty features when the ISRC is unknown", async () => {
