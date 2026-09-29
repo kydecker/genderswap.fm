@@ -45,11 +45,28 @@ const findCovers = (
     offset,
   });
 
-const rankedByTag = sql`
-  select covers.id, covers.slug, tag.value as tag, row_number() over (
-    partition by tag.value order by covers.created_at desc, covers.id desc
-  ) as rank
-  from covers, json_each(covers.tags) as tag`;
+const MAX_COMPOUND_TERMS = 5;
+
+const unionAll = (queries: SQL[]): SQL => {
+  if (queries.length <= MAX_COMPOUND_TERMS) {
+    return sql.join(queries, sql` union all `);
+  }
+  const groupSize = Math.ceil(queries.length / MAX_COMPOUND_TERMS);
+  return unionAll(
+    Array.from(
+      { length: Math.ceil(queries.length / groupSize) },
+      (_, i) =>
+        sql`select cover_id from (${unionAll(queries.slice(i * groupSize, (i + 1) * groupSize))})`,
+    ),
+  );
+};
+
+const latestByTag = unionAll(
+  ORDERED_TAGS.map(
+    (tag) =>
+      sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${ROW_SIZE})`,
+  ),
+);
 
 export async function loadRows(db: Db) {
   const [counts, latest, tagged] = await db.batch([
@@ -61,7 +78,7 @@ export async function loadRows(db: Db) {
         original: { columns: originalColumns },
         cover: { columns: coverColumns },
       },
-      where: sql`${covers.id} in (select id from (${rankedByTag}) where rank <= ${ROW_SIZE})`,
+      where: sql`${covers.id} in (${latestByTag})`,
       orderBy: [desc(covers.created_at), desc(covers.id)],
     }),
   ]);
