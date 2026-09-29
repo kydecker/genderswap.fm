@@ -6,6 +6,7 @@ import { onMount } from "svelte";
 import { page } from "$app/state";
 import ColorSwirl from "$lib/components/ColorSwirl.svelte";
 import CoverComparison from "$lib/components/CoverComparison.svelte";
+import RelatedCovers from "$lib/components/RelatedCovers.svelte";
 import Sparkle from "$lib/components/Sparkle.svelte";
 import Tag from "$lib/components/Tag.svelte";
 import TagCloud from "$lib/components/TagCloud.svelte";
@@ -121,71 +122,73 @@ onMount(async () => {
 {/if}
 
 <div class="layout">
-  <header class="header">
-    <h1 class="title">
-      {data.pageTitle}{#if isNew}<Sparkle />{/if}
-    </h1>
-    <div class="subtitle">
-      <a class="artist" href={getArtistLink(data.cover.artists[0])}>{data.cover.artists[0]}</a>
-      covering{' '}
-      <a class="artist" href={getArtistLink(data.original.artists[0])}>{data.original.artists[0]}</a>
+  <div class="main">
+    <header class="header">
+      <h1 class="title">
+        {data.pageTitle}{#if isNew}<Sparkle />{/if}
+      </h1>
+      <div class="subtitle">
+        <a class="artist" href={getArtistLink(data.cover.artists[0])}>{data.cover.artists[0]}</a>
+        covering{' '}
+        <a class="artist" href={getArtistLink(data.original.artists[0])}>{data.original.artists[0]}</a>
+      </div>
+      {#if data.tags}
+        <TagCloud>
+          {#each getSortedTags(data.tags) as tag}
+            <Tag text={TAGS[tag].label} url={`/${TAGS[tag].slug}`} />
+          {/each}
+        </TagCloud>
+      {/if}
+    </header>
+    <div class="comparison">
+      <CoverComparison cover={data} />
     </div>
-    {#if data.tags}
-      <TagCloud>
-        {#each getSortedTags(data.tags) as tag}
-          <Tag text={TAGS[tag].label} url={`/${TAGS[tag].slug}`} />
-        {/each}
-      </TagCloud>
-    {/if}
-  </header>
-  <div class="comparison">
-    <CoverComparison cover={data} />
+    <footer class="footer">
+      {#if data.description}
+        <p class="description">{data.description}</p>
+      {/if}
+      <span
+        >Added {data.contributor ? `by ${data.contributor}` : 'anonymously'}
+        <time datetime={data.created_at}>{formattedDate}</time></span
+      >
+    </footer>
   </div>
-  <footer class="footer">
-    {#if data.description}
-      <p class="description">{data.description}</p>
-    {/if}
-    <span
-      >Added {data.contributor ? `by ${data.contributor}` : 'anonymously'}
-      <time datetime={data.created_at}>{formattedDate}</time></span
-    >
-  </footer>
+  <RelatedCovers covers={data.related} />
 </div>
 
 <style>
   .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      'header'
-      'comparison'
-      'footer';
     align-items: start;
-    padding-inline: var(--space-l);
 
-    @supports (padding: max(0px)) {
+    @media (min-width: 56rem) {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+      column-gap: var(--space-2xl);
       padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
       padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
     }
+  }
+
+  .main {
+    min-width: 0;
+    padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
+    padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
 
     @media (min-width: 56rem) {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 40rem);
-      grid-template-rows: auto 1fr;
-      grid-template-areas:
-        'header comparison'
-        'footer comparison';
-      column-gap: var(--space-2xl);
-      padding-block: var(--space-xl);
+      width: 100%;
+      max-width: 40rem;
+      justify-self: center;
+      padding-block-start: var(--space-xl);
+      padding-inline: 0;
     }
   }
 
   .comparison {
-    grid-area: comparison;
     max-width: 40rem;
   }
 
   .header {
-    grid-area: header;
     padding-block: var(--space-xl);
     display: flex;
     flex-direction: column;
@@ -197,7 +200,7 @@ onMount(async () => {
     }
 
     @media (min-width: 56rem) {
-      padding-block: 0;
+      padding-block-start: 0;
     }
   }
 
@@ -235,7 +238,6 @@ onMount(async () => {
   }
 
   .footer {
-    grid-area: footer;
     padding-block: var(--space-xl);
     font-size: var(--step--1);
     display: flex;

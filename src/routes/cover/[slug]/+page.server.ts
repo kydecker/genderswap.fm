@@ -2,6 +2,7 @@ import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { artworkFaviconUrl } from "$lib/artwork";
 import { getReadableTitle, smartquotes } from "$lib/helpers";
+import { loadRelated } from "$lib/server/browse";
 import { getDb } from "$lib/server/db";
 import { covers } from "$lib/server/db/schema";
 import type { Enums, Tables } from "$lib/types/types";
@@ -38,6 +39,7 @@ export async function load({ params: { slug }, platform, setHeaders }) {
 
   const data = await db.query.covers.findFirst({
     columns: {
+      id: true,
       created_at: true,
       description: true,
       contributor: true,
@@ -58,8 +60,15 @@ export async function load({ params: { slug }, platform, setHeaders }) {
 
   setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
 
+  const { id, ...rest } = data;
   const { original, cover, created_at, description, contributor, tags } =
-    data as Cover;
+    rest as Cover;
+
+  const related = await loadRelated(db, {
+    id,
+    tags: tags ?? [],
+    artists: [...cover.artists, ...original.artists],
+  });
 
   const title = getReadableTitle({
     originalName: original.name,
@@ -76,6 +85,7 @@ export async function load({ params: { slug }, platform, setHeaders }) {
     created_at,
     contributor,
     tags,
+    related,
     favicon: artworkFaviconUrl(cover.artwork),
   };
 }
