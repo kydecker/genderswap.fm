@@ -75,7 +75,7 @@ let {
     align-items: flex-start;
     gap: var(--space-2xs);
     padding-block-start: var(--space-xl);
-    padding-inline: max(var(--space-gutter), env(safe-area-inset-left));
+    padding-inline: var(--gutter-start);
   }
 
   .backLink {
@@ -106,8 +106,8 @@ let {
     align-items: start;
     gap: var(--space-l) var(--space-m);
     padding-block: var(--space-xl);
-    padding-inline-start: max(var(--space-gutter), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-gutter), env(safe-area-inset-right));
+    padding-inline-start: var(--gutter-start);
+    padding-inline-end: var(--gutter-end);
   }
 
   .empty {

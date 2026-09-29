@@ -178,7 +178,9 @@ test.describe("should display and submit search queries", () => {
 
 test.describe("should navigate to other pages successfully", () => {
   test("should navigate to /new on button click", async ({ page }) => {
-    const addCoverButton = page.locator('a[href="/new"]');
+    const addCoverButton = page
+      .getByRole("navigation", { name: "Site" })
+      .locator('a[href="/new"]');
     await addCoverButton.click();
     await expect(page).toHaveURL("/new");
 
@@ -187,7 +189,9 @@ test.describe("should navigate to other pages successfully", () => {
   });
 
   test("should navigate to /about on link click", async ({ page }) => {
-    const aboutLink = page.locator('a[href="/about"]');
+    const aboutLink = page
+      .getByRole("navigation", { name: "Site" })
+      .locator('a[href="/about"]');
     await aboutLink.click();
     await expect(page).toHaveURL("/about");
 

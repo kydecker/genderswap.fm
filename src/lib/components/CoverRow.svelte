@@ -98,7 +98,6 @@ $effect(() => {
 
 <style>
   .row {
-    --gutter: max(var(--space-gutter), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
 
     display: flex;
@@ -109,13 +108,14 @@ $effect(() => {
   .heading {
     display: flex;
     flex-direction: column;
-    padding-inline: var(--gutter);
+    padding-inline: var(--gutter-start);
   }
 
   .title {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
-    margin-block: calc(var(--space-2xs) / -2) calc(var(--space-2xs) / 2);
+    margin-block-end: calc(var(--space-2xs) / 2);
+    text-box: trim-start cap alphabetic;
 
     a {
       display: inline-flex;
@@ -151,8 +151,8 @@ $effect(() => {
     overflow-x: auto;
     scroll-snap-type: x proximity;
     gap: var(--space-m);
-    scroll-padding-inline: var(--gutter);
-    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter-start);
+    padding-inline: var(--gutter-start);
     padding-block: var(--space-s);
     scrollbar-width: none;
 
@@ -160,8 +160,8 @@ $effect(() => {
       display: none;
     }
 
-    @media (min-width: 56rem) {
-      mask-image: linear-gradient(to right, transparent, #000 calc(var(--gutter) * 0.75));
+    @media (width >= 56rem) {
+      mask-image: var(--mask-fade-start);
     }
   }
 

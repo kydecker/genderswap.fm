@@ -14,6 +14,13 @@ let { data } = $props();
 />
 
 {#if data.view === "rows"}
+  <section class="intro" aria-label="About Genderswap.fm">
+    <p>
+      Genderswap.fm is a catalogue of song covers performed by artists of different genders. Search, listen, and <a href="/new">add your own</a>. By
+      <a href="https://ky.fyi">Ky Decker</a>, open source on
+      <a href="https://github.com/kydecker/genderswap.fm">GitHub</a>.
+    </p>
+  </section>
   <div class="rows" {@attach pageColorOnFocus}>
     {#each data.rows as row, index (row.tag)}
       <CoverRow
@@ -36,7 +43,34 @@ let { data } = $props();
     display: flex;
     flex-direction: column;
     gap: var(--space-m);
-    padding-block: var(--space-l);
+    padding-block: var(--space-xl) var(--space-l);
   }
 
+  .intro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-block-start: var(--space-l);
+    padding-inline: var(--gutter-start) var(--gutter-end);
+    color: var(--color-text-muted);
+    text-align: center;
+    text-wrap: pretty;
+
+    @media (width >= 56rem) {
+      justify-content: start;
+      block-size: var(--space-2xl);
+      text-align: start;
+    }
+
+    p {
+      max-inline-size: 80ch;
+    }
+
+    a {
+      color: var(--color-text);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+      border-radius: var(--radius-2xs);
+    }
+  }
 </style>

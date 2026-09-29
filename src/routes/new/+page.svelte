@@ -193,7 +193,7 @@ const handleSubmit = () => {
   .submitForm {
     inline-size: 100%;
     max-inline-size: 50ch;
-    padding-inline: var(--space-gutter);
+    padding-inline: var(--gutter-start) var(--gutter-end);
     padding-block-end: var(--space-2xl);
   }
 
@@ -202,7 +202,7 @@ const handleSubmit = () => {
     padding-block: var(--space-m) var(--space-xl);
 
     @media (min-width: 56rem) {
-      padding-block-start: calc(var(--space-l) + (var(--space-2xl) - var(--step-4)) / 2);
+      padding-block-start: var(--space-xl);
     }
   }
 

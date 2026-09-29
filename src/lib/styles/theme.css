@@ -100,6 +100,13 @@
   --space-2xl: clamp(2rem, 1.6522rem + 1.7391vw, 3rem);
   --space-3xl: clamp(3rem, 2.4783rem + 2.6087vw, 4.5rem);
   --space-gutter: var(--space-l);
+  --gutter-start: max(var(--space-gutter), env(safe-area-inset-left));
+  --gutter-end: max(var(--space-gutter), env(safe-area-inset-right));
+  --mask-fade-start: linear-gradient(
+    to right,
+    transparent,
+    #000 calc(var(--gutter-start) * 0.75)
+  );
 
   /* Line heights */
   --line-height-h1: 1;

@@ -108,7 +108,12 @@ const closeSearch = () => {
 </nav>
 
 <style>
-  .nav,
+  .nav {
+    --icon-size: min(var(--step-2), 1.375rem);
+    --nav-padding: var(--space-2xs);
+    --nav-item-size: 2.75rem;
+  }
+
   .bubble {
     border: 1px solid transparent;
     border-radius: var(--radius-full);
@@ -117,52 +122,9 @@ const closeSearch = () => {
     box-shadow: var(--shadow-bar);
   }
 
-  .nav {
-    --icon-size: min(var(--step-2), 1.375rem);
-    --nav-padding: var(--space-2xs);
-
-    @media (max-width: 55.99rem) {
-      position: fixed;
-      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
-      inset-inline-start: 50%;
-      translate: -50% 0;
-      z-index: 100;
-      width: min(24rem, calc(100% - 2 * var(--space-s)));
-      padding: var(--nav-padding);
-
-      &.searching {
-        background: none;
-        box-shadow: none;
-        backdrop-filter: none;
-      }
-    }
-
-    @media (min-width: 56rem) {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-l);
-      border: none;
-      background: none;
-      box-shadow: none;
-      backdrop-filter: none;
-    }
-  }
-
   .tabs {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-auto-rows: 2.75rem;
-
-    @media (max-width: 55.99rem) {
-      .searching & {
-        visibility: hidden;
-      }
-    }
-
-    @media (min-width: 56rem) {
-      grid-template-columns: minmax(0, 1fr);
-      gap: calc(var(--space-2xs) / 2);
-    }
+    grid-auto-rows: var(--nav-item-size);
   }
 
   .tab {
@@ -197,31 +159,9 @@ const closeSearch = () => {
       outline: var(--focus-ring);
       outline-offset: 0;
     }
-
-    @media (min-width: 56rem) {
-      flex-direction: row;
-      justify-content: flex-start;
-      gap: var(--space-s);
-      padding-inline: var(--space-m);
-      font-size: var(--step-0);
-
-      :global(svg) {
-        margin-block-start: 0;
-      }
-
-      &[aria-current] {
-        background: var(--color-surface);
-      }
-
-      &:hover {
-        background: var(--color-surface-hover);
-      }
-    }
   }
 
   .add {
-    display: grid;
-    place-items: center;
     border-radius: var(--radius-full);
     background: var(--color-text);
     color: var(--color-bg);
@@ -231,59 +171,10 @@ const closeSearch = () => {
     &:focus-visible {
       background: var(--color-text-muted);
     }
-
-    span {
-      display: none;
-    }
-
-    @media (min-width: 56rem) {
-      display: flex;
-      align-items: center;
-      gap: var(--space-s);
-      padding-inline: var(--space-m);
-      font-size: var(--step-0);
-      font-weight: var(--font-weight-bold);
-      font-feature-settings: var(--font-unstable);
-      line-height: 1;
-      text-decoration: none;
-
-      :global(svg) {
-        font-size: var(--icon-size);
-      }
-
-      span {
-        display: inline;
-      }
-    }
-  }
-
-  .toggle {
-    @media (min-width: 56rem) {
-      display: none;
-    }
   }
 
   .search {
     color: var(--color-text-muted);
-
-    @media (max-width: 55.99rem) {
-      position: absolute;
-      inset: -1px;
-      display: grid;
-      grid-template-columns:
-        calc(2.75rem + 2 * var(--nav-padding) + 2px)
-        minmax(0, 1fr);
-      gap: var(--nav-padding);
-
-      .nav:not(.searching) & {
-        display: none;
-      }
-    }
-
-    @media (min-width: 56rem) {
-      display: flex;
-      block-size: 2.75rem;
-    }
   }
 
   .field {
@@ -291,12 +182,6 @@ const closeSearch = () => {
     align-items: center;
     gap: var(--space-xs);
     padding-inline: var(--space-m);
-
-    @media (min-width: 56rem) {
-      flex: 1;
-      min-width: 0;
-      box-shadow: none;
-    }
 
     @media (hover:hover) {
       &:hover {
@@ -355,8 +240,115 @@ const closeSearch = () => {
       outline: var(--focus-ring);
       outline-offset: 0;
     }
+  }
 
-    @media (min-width: 56rem) {
+  @media (width < 56rem) {
+    .nav {
+      position: fixed;
+      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      z-index: 100;
+      width: min(24rem, calc(100% - 2 * var(--space-s)));
+      padding: var(--nav-padding);
+      border: 1px solid transparent;
+      border-radius: var(--radius-full);
+
+      &:not(.searching) {
+        background: var(--color-surface);
+        backdrop-filter: var(--backdrop-surface);
+        box-shadow: var(--shadow-bar);
+      }
+    }
+
+    .tabs {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+      .searching & {
+        visibility: hidden;
+      }
+    }
+
+    .add {
+      display: grid;
+      place-items: center;
+
+      span {
+        display: none;
+      }
+    }
+
+    .search {
+      position: absolute;
+      inset: -1px;
+      display: grid;
+      grid-template-columns:
+        calc(var(--nav-item-size) + 2 * var(--nav-padding) + 2px)
+        minmax(0, 1fr);
+      gap: var(--nav-padding);
+
+      .nav:not(.searching) & {
+        display: none;
+      }
+    }
+  }
+
+  @media (width >= 56rem) {
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-l);
+    }
+
+    .tabs {
+      gap: calc(var(--space-2xs) / 2);
+    }
+
+    .tab,
+    .add {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding-inline: var(--space-m);
+      font-size: var(--step-0);
+    }
+
+    .tab {
+      flex-direction: row;
+      justify-content: flex-start;
+
+      :global(svg) {
+        margin-block-start: 0;
+      }
+
+      &[aria-current] {
+        background: var(--color-surface);
+      }
+
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+    }
+
+    .add {
+      font-weight: var(--font-weight-bold);
+      font-feature-settings: var(--font-unstable);
+      line-height: 1;
+      text-decoration: none;
+
+      :global(svg) {
+        font-size: var(--icon-size);
+      }
+    }
+
+    .field {
+      block-size: var(--nav-item-size);
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .toggle,
+    .close {
       display: none;
     }
   }

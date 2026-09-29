@@ -163,32 +163,38 @@ onMount(async () => {
     align-items: start;
 
     @container main (min-width: 54rem) {
-      grid-template-columns: minmax(26rem, 1fr) minmax(18rem, 24rem);
+      display: flex;
       column-gap: var(--space-2xl);
-      padding-inline-start: max(var(--space-gutter), env(safe-area-inset-left));
-      padding-inline-end: max(var(--space-gutter), env(safe-area-inset-right));
+      padding-inline-start: var(--gutter-start);
+      padding-inline-end: var(--gutter-end);
     }
   }
 
   .main {
     min-width: 0;
-    padding-inline-start: max(var(--space-gutter), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-gutter), env(safe-area-inset-right));
+    padding-inline-start: var(--gutter-start);
+    padding-inline-end: var(--gutter-end);
 
     @media (min-width: 56rem) {
       padding-block-start: var(--space-xl);
     }
 
     @container main (min-width: 54rem) {
-      width: 100%;
+      flex: 1 1 40rem;
+      min-width: 26rem;
       max-width: 40rem;
-      justify-self: center;
+      margin-inline: auto;
       padding-inline: 0;
     }
   }
 
   .comparison {
     max-width: 40rem;
+    margin-inline: auto;
+
+    @media (width >= 56rem) {
+      margin-inline: 0;
+    }
   }
 
   .header {
@@ -253,6 +259,12 @@ onMount(async () => {
     font-size: var(--step--1);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+
+    @media (width >= 56rem) {
+      align-items: flex-start;
+      text-align: start;
+    }
   }
 </style>

@@ -19,7 +19,7 @@ let { covers }: { covers: Cover[] } = $props();
           <div class="item">
             <CoverCard
               {...cover}
-              sizes="(min-width: 71rem) 11rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
+              sizes="(min-width: 81rem) 11rem, (min-width: 71rem) 15rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
               lazy={index >= 4}
               tintOnHover={false}
             />
@@ -32,7 +32,6 @@ let { covers }: { covers: Cover[] } = $props();
 
 <style>
   .related {
-    --gutter: max(var(--space-gutter), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
     --ring-space: calc(var(--space-2xs) + var(--focus-ring-width));
 
@@ -40,8 +39,11 @@ let { covers }: { covers: Cover[] } = $props();
     flex-direction: column;
     gap: var(--space-2xs);
     min-width: 0;
+    container: related / inline-size;
 
     @container main (min-width: 54rem) {
+      flex: 0 100 24rem;
+      min-width: 14rem;
       position: sticky;
       top: 0;
       max-height: 100dvh;
@@ -63,7 +65,7 @@ let { covers }: { covers: Cover[] } = $props();
   .title {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
-    padding-inline: var(--gutter);
+    padding-inline: var(--gutter-start);
 
     @container main (min-width: 54rem) {
       padding-inline: 0;
@@ -75,8 +77,8 @@ let { covers }: { covers: Cover[] } = $props();
     overflow-x: auto;
     scroll-snap-type: x proximity;
     gap: var(--space-m);
-    scroll-padding-inline: var(--gutter);
-    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter-start);
+    padding-inline: var(--gutter-start);
     padding-block: var(--space-s);
     scrollbar-width: none;
 
@@ -84,20 +86,24 @@ let { covers }: { covers: Cover[] } = $props();
       display: none;
     }
 
-    @media (min-width: 56rem) {
-      mask-image: linear-gradient(to right, transparent, #000 calc(var(--gutter) * 0.75));
+    @media (width >= 56rem) {
+      @container main (width < 54rem) {
+        mask-image: var(--mask-fade-start);
+      }
     }
 
     @container main (min-width: 54rem) {
       display: grid;
-      mask-image: none;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
       gap: var(--space-l) var(--space-m);
       overflow: visible;
       scroll-snap-type: none;
       padding-inline: 0;
       padding-block: var(--space-2xs) var(--space-xl);
+
+      @container related (width >= 15rem) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
   }
 
