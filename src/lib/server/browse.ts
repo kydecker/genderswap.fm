@@ -9,6 +9,7 @@ type Db = ReturnType<typeof getDb>;
 const PAGE_SIZE = 48;
 const ROW_SIZE = 10;
 const RELATED_SIZE = 20;
+const RELATED_BY_ARTIST = 24;
 const RELATED_PER_TAG = 12;
 
 const originalColumns = { name: true, artists: true } as const;
@@ -16,6 +17,10 @@ const coverColumns = {
   ...originalColumns,
   artwork: true,
   album_color: true,
+} as const;
+const withSongs = {
+  original: { columns: originalColumns },
+  cover: { columns: coverColumns },
 } as const;
 
 const hasTag = (tag: string) =>
@@ -37,10 +42,7 @@ const findCovers = (
 ) =>
   db.query.covers.findMany({
     columns: { slug: true },
-    with: {
-      original: { columns: originalColumns },
-      cover: { columns: coverColumns },
-    },
+    with: withSongs,
     where,
     orderBy: desc(covers.created_at),
     limit,
@@ -73,12 +75,15 @@ const unionAll = (queries: SQL[]): SQL => {
   );
 };
 
-const latestByTag = unionAll(
-  ORDERED_TAGS.map(
-    (tag) =>
-      sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${ROW_SIZE})`,
-  ),
-);
+const latestIdsByTag = (tags: Enums<"tags">[], limit: number) =>
+  unionAll(
+    tags.map(
+      (tag) =>
+        sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${limit})`,
+    ),
+  );
+
+const latestByTag = latestIdsByTag(ORDERED_TAGS, ROW_SIZE);
 
 export async function loadRows(db: Db) {
   const [counts, latest, tagged] = await db.batch([
@@ -86,10 +91,7 @@ export async function loadRows(db: Db) {
     findCovers(db, isVisible, ROW_SIZE),
     db.query.covers.findMany({
       columns: { slug: true, tags: true },
-      with: {
-        original: { columns: originalColumns },
-        cover: { columns: coverColumns },
-      },
+      with: withSongs,
       where: sql`${covers.id} in (${latestByTag})`,
       orderBy: [desc(covers.created_at), desc(covers.id)],
     }),
@@ -186,12 +188,6 @@ export async function loadRelated(
   const phrases = [...artistKeys].flatMap(
     (artist) => ftsPhrase(artist)?.replaceAll(" ", " + ") ?? [],
   );
-  const tagIds = unionAll(
-    tags.map(
-      (tag) =>
-        sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${RELATED_PER_TAG})`,
-    ),
-  );
 
   const [byArtist, byTag] = await db.batch([
     findCovers(
@@ -199,17 +195,18 @@ export async function loadRelated(
       phrases.length
         ? and(ne(covers.id, id), inFts(`artists : (${phrases.join(" OR ")})`))
         : sql`0`,
-      24,
+      RELATED_BY_ARTIST,
     ),
     db.query.covers.findMany({
-      columns: { slug: true, tags: true, created_at: true },
-      with: {
-        original: { columns: originalColumns },
-        cover: { columns: coverColumns },
-      },
+      columns: { slug: true, tags: true },
+      with: withSongs,
       where: tags.length
-        ? and(ne(covers.id, id), sql`${covers.id} in (${tagIds})`)
+        ? and(
+            ne(covers.id, id),
+            sql`${covers.id} in (${latestIdsByTag(tags, RELATED_PER_TAG)})`,
+          )
         : sql`0`,
+      orderBy: desc(covers.created_at),
     }),
   ]);
 
@@ -217,25 +214,20 @@ export async function loadRelated(
   const sharedTags = (candidateTags: Enums<"tags">[] | null) =>
     (candidateTags ?? []).filter((tag) => tagSet.has(tag)).length;
 
-  const ranked = [
+  const related = [
     ...byArtist.filter(({ original, cover }) =>
       [...original.artists, ...cover.artists].some((artist) =>
         artistKeys.has(artist.toLowerCase()),
       ),
     ),
     ...byTag
-      .sort(
-        (a, b) =>
-          sharedTags(b.tags) - sharedTags(a.tags) ||
-          b.created_at.localeCompare(a.created_at),
-      )
-      .map(({ slug, original, cover }) => ({ slug, original, cover })),
+      .sort((a, b) => sharedTags(b.tags) - sharedTags(a.tags))
+      .map(({ tags, ...cover }) => cover),
   ];
 
-  const seen = new Set<string>();
-  return ranked
-    .filter(({ slug }) => !seen.has(slug) && seen.add(slug))
-    .slice(0, RELATED_SIZE);
+  return [
+    ...new Map(related.map((cover) => [cover.slug, cover])).values(),
+  ].slice(0, RELATED_SIZE);
 }
 
 export type GridData = Awaited<ReturnType<typeof loadGrid>>;

@@ -10,31 +10,32 @@ type Cover = Pick<
 let { covers }: { covers: Cover[] } = $props();
 </script>
 
-{#if covers.length}
-  <aside class="related" aria-labelledby="related-title">
-    <h2 id="related-title" class="title">Related</h2>
-    <div class="list">
-      {#each covers as cover, index (cover.slug)}
-        <div class="item">
-          <CoverCard
-            original={cover.original}
-            cover={cover.cover}
-            slug={cover.slug}
-            sizes="(min-width: 56rem) 11rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
-            lazy={index >= 4}
-            tintOnHover={false}
-          />
-        </div>
-      {/each}
-    </div>
-  </aside>
-{/if}
+{#key covers}
+  {#if covers.length}
+    <aside class="related" aria-labelledby="related-title">
+      <h2 id="related-title" class="title">Related</h2>
+      <div class="list">
+        {#each covers as cover, index (cover.slug)}
+          <div class="item">
+            <CoverCard
+              {...cover}
+              sizes="(min-width: 56rem) 11rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
+              lazy={index >= 4}
+              tintOnHover={false}
+            />
+          </div>
+        {/each}
+      </div>
+    </aside>
+  {/if}
+{/key}
 
 <style>
   .related {
     --gutter: max(var(--space-l), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
     --sticky-top: 6rem;
+    --ring-space: calc(var(--space-2xs) + var(--focus-ring-width));
 
     display: flex;
     flex-direction: column;
@@ -46,7 +47,19 @@ let { covers }: { covers: Cover[] } = $props();
       top: var(--sticky-top);
       max-height: calc(100dvh - var(--sticky-top) - var(--space-xl));
       padding-block-start: var(--space-xl);
+      padding-inline: var(--ring-space);
+      margin-inline: calc(-1 * var(--ring-space));
       gap: var(--space-s);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        #000 var(--space-m),
+        #000 calc(100% - var(--space-xl)),
+        transparent
+      );
     }
   }
 
@@ -79,19 +92,10 @@ let { covers }: { covers: Cover[] } = $props();
       grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
       gap: var(--space-l) var(--space-m);
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
+      overflow: visible;
       scroll-snap-type: none;
-      padding-inline: var(--space-2xs);
-      margin-inline: calc(-1 * var(--space-2xs));
+      padding-inline: 0;
       padding-block: var(--space-2xs) var(--space-xl);
-      scrollbar-width: thin;
-      mask-image: linear-gradient(to bottom, #000 calc(100% - var(--space-xl)), transparent);
-
-      &::-webkit-scrollbar {
-        display: initial;
-      }
     }
   }
 

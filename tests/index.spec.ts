@@ -185,18 +185,20 @@ test.describe("should navigate to other pages successfully", () => {
 });
 
 test.describe("should display related covers on the detail page", () => {
-  test("should list other covers under Related", async ({ page }) => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test.beforeEach(async ({ page }) => {
     await page
       .locator('.row .coverCard a:not([href^="/cover/e2e-"])')
       .first()
       .click();
     await expect(page).toHaveURL(/\/cover\//);
+  });
 
+  test("should list other covers under Related", async ({ page }) => {
     const related = page.getByRole("complementary", { name: "Related" });
-    await expect(related).toBeVisible();
+    await expect(related.locator('a[href^="/cover/"]').first()).toBeVisible();
 
-    const links = related.locator('a[href^="/cover/"]');
-    expect(await links.count()).toBeGreaterThan(0);
     const { pathname } = new URL(page.url());
     await expect(related.locator(`a[href="${pathname}"]`)).toHaveCount(0);
   });
@@ -204,13 +206,6 @@ test.describe("should display related covers on the detail page", () => {
   test("should not change the page color when hovering related covers", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page
-      .locator('.row .coverCard a:not([href^="/cover/e2e-"])')
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/cover\//);
-
     const pageColor = () =>
       page.evaluate(() =>
         document.documentElement.style.getPropertyValue("--color-page"),

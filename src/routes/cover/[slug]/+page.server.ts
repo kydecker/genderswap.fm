@@ -60,9 +60,8 @@ export async function load({ params: { slug }, platform, setHeaders }) {
 
   setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
 
-  const { id, ...rest } = data;
-  const { original, cover, created_at, description, contributor, tags } =
-    rest as Cover;
+  const { id, original, cover, created_at, description, contributor, tags } =
+    data as Cover & { id: number };
 
   const related = await loadRelated(db, {
     id,
