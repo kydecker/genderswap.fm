@@ -8,6 +8,10 @@ const config: PlaywrightTestConfig = {
   },
   testDir: "tests",
   testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+  projects: [
+    { name: "read", testIgnore: /new\.spec\.ts/ },
+    { name: "write", testMatch: /new\.spec\.ts/, dependencies: ["read"] },
+  ],
   use: {
     baseURL: "http://localhost:4173",
   },

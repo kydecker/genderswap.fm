@@ -45,15 +45,17 @@ const coverSong = $derived(cover.cover);
     itemtype="https://schema.org/MusicRecording"
   >
     <div class="album">
-      <img
-        class="album-art"
-        src={artworkUrl(song.artwork, 384)}
-        srcset={artworkSrcset(song.artwork)}
-        sizes="min(48.7vw - 1.24rem, 19.25rem)"
-        fetchpriority="high"
-        alt={`${song.album_name} album art`}
-        itemprop="image"
-      />
+      {#key song.artwork}
+        <img
+          class="album-art"
+          src={artworkUrl(song.artwork, 384)}
+          srcset={artworkSrcset(song.artwork)}
+          sizes="min(48.7vw - 1.24rem, 19.25rem)"
+          fetchpriority="high"
+          alt={`${song.album_name} album art`}
+          itemprop="image"
+        />
+      {/key}
     </div>
     {@render listenLinks(song, label)}
     <div class="info">

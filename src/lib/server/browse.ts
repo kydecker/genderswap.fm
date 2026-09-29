@@ -1,4 +1,4 @@
-import { and, count, desc, inArray, type SQL, sql } from "drizzle-orm";
+import { and, count, desc, inArray, ne, type SQL, sql } from "drizzle-orm";
 import { HIDDEN_TAGS, ORDERED_TAGS } from "$lib/constants";
 import type { getDb } from "$lib/server/db";
 import { covers, tagCounts } from "$lib/server/db/schema";
@@ -8,12 +8,19 @@ type Db = ReturnType<typeof getDb>;
 
 const PAGE_SIZE = 48;
 const ROW_SIZE = 10;
+const RELATED_SIZE = 20;
+const RELATED_BY_ARTIST = 24;
+const RELATED_PER_TAG = 12;
 
 const originalColumns = { name: true, artists: true } as const;
 const coverColumns = {
   ...originalColumns,
   artwork: true,
   album_color: true,
+} as const;
+const withSongs = {
+  original: { columns: originalColumns },
+  cover: { columns: coverColumns },
 } as const;
 
 const hasTag = (tag: string) =>
@@ -35,15 +42,22 @@ const findCovers = (
 ) =>
   db.query.covers.findMany({
     columns: { slug: true },
-    with: {
-      original: { columns: originalColumns },
-      cover: { columns: coverColumns },
-    },
+    with: withSongs,
     where,
     orderBy: desc(covers.created_at),
     limit,
     offset,
   });
+
+// Quote each word so input can't break FTS5 query syntax
+const ftsPhrase = (text: string) =>
+  text
+    .match(/[\p{L}\p{N}]+/gu)
+    ?.map((word) => `"${word}"`)
+    .join(" ");
+
+const inFts = (match: string) =>
+  sql`${covers.id} in (select rowid from covers_fts where covers_fts match ${match})`;
 
 const MAX_COMPOUND_TERMS = 5;
 
@@ -61,12 +75,15 @@ const unionAll = (queries: SQL[]): SQL => {
   );
 };
 
-const latestByTag = unionAll(
-  ORDERED_TAGS.map(
-    (tag) =>
-      sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${ROW_SIZE})`,
-  ),
-);
+const latestIdsByTag = (tags: Enums<"tags">[], limit: number) =>
+  unionAll(
+    tags.map(
+      (tag) =>
+        sql`select cover_id from (select cover_id from cover_tags where tag = ${tag} order by created_at desc, cover_id desc limit ${limit})`,
+    ),
+  );
+
+const latestByTag = latestIdsByTag(ORDERED_TAGS, ROW_SIZE);
 
 export async function loadRows(db: Db) {
   const [counts, latest, tagged] = await db.batch([
@@ -74,10 +91,7 @@ export async function loadRows(db: Db) {
     findCovers(db, isVisible, ROW_SIZE),
     db.query.covers.findMany({
       columns: { slug: true, tags: true },
-      with: {
-        original: { columns: originalColumns },
-        cover: { columns: coverColumns },
-      },
+      with: withSongs,
       where: sql`${covers.id} in (${latestByTag})`,
       orderBy: [desc(covers.created_at), desc(covers.id)],
     }),
@@ -120,20 +134,12 @@ export async function loadGrid(db: Db, url: URL, tag: Enums<"tags"> | null) {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  // Quote each word so input can't break FTS5 query syntax
-  const match = searchQuery
-    ?.match(/[\p{L}\p{N}]+/gu)
-    ?.map((word) => `"${word}"`)
-    .join(" ");
+  const match = searchQuery ? ftsPhrase(searchQuery) : undefined;
 
   const where = and(
     tag ? hasTag(tag) : undefined,
     !tag && !searchQuery ? isVisible : undefined,
-    searchQuery
-      ? match
-        ? sql`${covers.id} in (select rowid from covers_fts where covers_fts match ${match})`
-        : sql`0`
-      : undefined,
+    searchQuery ? (match ? inFts(match) : sql`0`) : undefined,
   );
 
   const [data, counts] = await db.batch([
@@ -168,6 +174,60 @@ export async function loadGrid(db: Db, url: URL, tag: Enums<"tags"> | null) {
     isFirst: page === 1,
     isLast: data.length < PAGE_SIZE,
   };
+}
+
+export async function loadRelated(
+  db: Db,
+  {
+    id,
+    tags,
+    artists,
+  }: { id: number; tags: Enums<"tags">[]; artists: string[] },
+) {
+  const artistKeys = new Set(artists.map((artist) => artist.toLowerCase()));
+  const phrases = [...artistKeys].flatMap(
+    (artist) => ftsPhrase(artist)?.replaceAll(" ", " + ") ?? [],
+  );
+
+  const [byArtist, byTag] = await db.batch([
+    findCovers(
+      db,
+      phrases.length
+        ? and(ne(covers.id, id), inFts(`artists : (${phrases.join(" OR ")})`))
+        : sql`0`,
+      RELATED_BY_ARTIST,
+    ),
+    db.query.covers.findMany({
+      columns: { slug: true, tags: true },
+      with: withSongs,
+      where: tags.length
+        ? and(
+            ne(covers.id, id),
+            sql`${covers.id} in (${latestIdsByTag(tags, RELATED_PER_TAG)})`,
+          )
+        : sql`0`,
+      orderBy: desc(covers.created_at),
+    }),
+  ]);
+
+  const tagSet = new Set(tags);
+  const sharedTags = (candidateTags: Enums<"tags">[] | null) =>
+    (candidateTags ?? []).filter((tag) => tagSet.has(tag)).length;
+
+  const related = [
+    ...byArtist.filter(({ original, cover }) =>
+      [...original.artists, ...cover.artists].some((artist) =>
+        artistKeys.has(artist.toLowerCase()),
+      ),
+    ),
+    ...byTag
+      .sort((a, b) => sharedTags(b.tags) - sharedTags(a.tags))
+      .map(({ tags, ...cover }) => cover),
+  ];
+
+  return [
+    ...new Map(related.map((cover) => [cover.slug, cover])).values(),
+  ].slice(0, RELATED_SIZE);
 }
 
 export type GridData = Awaited<ReturnType<typeof loadGrid>>;

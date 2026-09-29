@@ -17,6 +17,7 @@ let {
   sizes,
   lazy,
   priority,
+  tintOnHover = true,
 }: {
   original: Omit<Album, "artwork">;
   cover: Album;
@@ -24,6 +25,7 @@ let {
   sizes: string;
   lazy?: boolean;
   priority?: boolean;
+  tintOnHover?: boolean;
 } = $props();
 
 function formatArtists(artists: string[]) {
@@ -35,16 +37,18 @@ function formatArtists(artists: string[]) {
 }
 </script>
 
-<div class="coverCard" {@attach pageColorOnHover(cover.album_color)}>
+<div class="coverCard" {@attach tintOnHover && pageColorOnHover(cover.album_color)}>
   <div class="album">
-    <img
-      src={artworkUrl(cover.artwork, 384)}
-      srcset={artworkSrcset(cover.artwork)}
-      {sizes}
-      alt={`${cover.name} album art`}
-      loading={lazy ? 'lazy' : 'eager'}
-      fetchpriority={priority ? 'high' : 'auto'}
-    />
+    {#key cover.artwork}
+      <img
+        src={artworkUrl(cover.artwork, 384)}
+        srcset={artworkSrcset(cover.artwork)}
+        {sizes}
+        alt={`${cover.name} album art`}
+        loading={lazy ? 'lazy' : 'eager'}
+        fetchpriority={priority ? 'high' : 'auto'}
+      />
+    {/key}
   </div>
   <div class="content">
     <h2 class="title">{smartquotes(original.name)}</h2>

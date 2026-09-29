@@ -183,3 +183,36 @@ test.describe("should navigate to other pages successfully", () => {
     await expect(page).toHaveURL("/latest");
   });
 });
+
+test.describe("should display related covers on the detail page", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.locator(".row .coverCard a").first().click();
+    await expect(page).toHaveURL(/\/cover\//);
+  });
+
+  test("should list other covers under Related", async ({ page }) => {
+    const related = page.getByRole("complementary", { name: "Related" });
+    await expect(related.locator('a[href^="/cover/"]').first()).toBeVisible();
+
+    const { pathname } = new URL(page.url());
+    await expect(related.locator(`a[href="${pathname}"]`)).toHaveCount(0);
+  });
+
+  test("should not change the page color when hovering related covers", async ({
+    page,
+  }) => {
+    const pageColor = () =>
+      page.evaluate(() =>
+        document.documentElement.style.getPropertyValue("--color-page"),
+      );
+    const before = await pageColor();
+    await page
+      .getByRole("complementary", { name: "Related" })
+      .locator(".coverCard")
+      .first()
+      .hover();
+    expect(await pageColor()).toBe(before);
+  });
+});
