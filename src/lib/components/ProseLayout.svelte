@@ -43,28 +43,41 @@ const formattedModifiedDate = $derived(
   .prose {
     box-sizing: content-box;
     max-inline-size: 54ch;
-    margin-inline: auto;
-    padding-inline: var(--space-xl);
+    padding-inline: var(--gutter-start) var(--gutter-end);
     padding-block-end: var(--space-3xl);
   }
 
   .prose-header {
     box-sizing: content-box;
     max-inline-size: 54ch;
-    margin-inline: auto;
-    padding-inline: var(--space-xl);
+    padding-inline: var(--gutter-start) var(--gutter-end);
     padding-block-start: var(--space-xl);
     padding-block-end: var(--space-3xl);
+    text-align: center;
+
+    @media (width >= 56rem) {
+      text-align: start;
+    }
+  }
+
+  .prose-title {
+    font-size: var(--step-4);
   }
 
   .prose-dates {
     font-size: var(--step-1);
+    line-height: var(--line-height-h3);
     color: var(--color-text-muted);
     margin-block-start: var(--space-m);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     column-gap: var(--space-l);
+
+    @media (width >= 56rem) {
+      justify-content: start;
+    }
   }
 
   .prose a {
@@ -99,7 +112,7 @@ const formattedModifiedDate = $derived(
 
   .prose h2 {
     font-size: var(--step-3);
-    margin-top: var(--space-3xl);
+    margin-top: var(--space-2xl);
   }
 
   .prose h2:first-child {
@@ -150,6 +163,5 @@ const formattedModifiedDate = $derived(
     width: 585px;
     max-width: 100%;
     border-radius: var(--radius-s);
-    margin-inline: auto;
   }
 </style>

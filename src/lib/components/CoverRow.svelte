@@ -67,7 +67,6 @@ $effect(() => {
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
-            sizes="clamp(8.75rem, 7.5rem + 3vw, 12rem)"
             {lazy}
             priority={priority && index < 3}
           />
@@ -98,24 +97,24 @@ $effect(() => {
 
 <style>
   .row {
-    --gutter: max(var(--space-l), env(safe-area-inset-left));
     --item-width: clamp(8.75rem, 7.5rem + 3vw, 12rem);
 
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * 2);
   }
 
   .heading {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
-    padding-inline: var(--gutter);
+    padding-inline: var(--gutter-start);
   }
 
   .title {
     font-size: var(--step-2);
     font-feature-settings: var(--font-stable);
+    margin-block-end: calc(var(--space-2xs) / 2);
+    text-box: trim-start cap alphabetic;
 
     a {
       display: inline-flex;
@@ -151,13 +150,17 @@ $effect(() => {
     overflow-x: auto;
     scroll-snap-type: x proximity;
     gap: var(--space-m);
-    scroll-padding-inline: var(--gutter);
-    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter-start);
+    padding-inline: var(--gutter-start);
     padding-block: var(--space-s);
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
       display: none;
+    }
+
+    @media (width >= 56rem) {
+      mask-image: var(--mask-fade-start);
     }
   }
 

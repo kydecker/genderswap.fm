@@ -162,54 +162,71 @@ onMount(async () => {
     grid-template-columns: minmax(0, 1fr);
     align-items: start;
 
-    @media (min-width: 56rem) {
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    @container main (min-width: 54rem) {
+      display: flex;
       column-gap: var(--space-2xl);
-      padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-      padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+      padding-inline-start: var(--gutter-start);
+      padding-inline-end: var(--gutter-end);
     }
   }
 
   .main {
     min-width: 0;
-    padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+    padding-inline-start: var(--gutter-start);
+    padding-inline-end: var(--gutter-end);
 
     @media (min-width: 56rem) {
-      width: 100%;
-      max-width: 40rem;
-      justify-self: center;
       padding-block-start: var(--space-xl);
+    }
+
+    @container main (min-width: 54rem) {
+      flex: 1 1 40rem;
+      min-width: 26rem;
+      max-width: 40rem;
+      margin-inline: auto;
       padding-inline: 0;
     }
   }
 
   .comparison {
     max-width: 40rem;
+    margin-inline: auto;
+
+    @media (width >= 56rem) {
+      margin-inline: 0;
+    }
   }
 
   .header {
     padding-block: var(--space-xl);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
     text-wrap: pretty;
 
     :global(.tags) {
-      justify-content: flex-start;
+      justify-content: center;
     }
 
     @media (min-width: 56rem) {
+      align-items: flex-start;
+      text-align: start;
       padding-block-start: 0;
+
+      :global(.tags) {
+        justify-content: flex-start;
+      }
     }
   }
 
   .title {
     position: relative;
+    font-size: var(--step-4);
   }
 
   .subtitle {
-    font-size: var(--step-2);
+    font-size: var(--step-1);
     line-height: var(--line-height-h3);
     color: var(--color-text-muted);
     margin-block-start: var(--space-m);
@@ -242,6 +259,12 @@ onMount(async () => {
     font-size: var(--step--1);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+
+    @media (width >= 56rem) {
+      align-items: flex-start;
+      text-align: start;
+    }
   }
 </style>

@@ -34,7 +34,6 @@ let {
         original={cover.original}
         cover={cover.cover}
         slug={cover.slug}
-        sizes="(max-width: 29rem) calc(50vw - 1.5rem), calc(1.2 * clamp(8.5rem, 7rem + 3vw, 11rem))"
         lazy={index >= 30}
         priority={index < 3}
       />
@@ -75,7 +74,7 @@ let {
     align-items: flex-start;
     gap: var(--space-2xs);
     padding-block-start: var(--space-xl);
-    padding-inline: max(var(--space-l), env(safe-area-inset-left));
+    padding-inline: var(--gutter-start);
   }
 
   .backLink {
@@ -106,8 +105,8 @@ let {
     align-items: start;
     gap: var(--space-l) var(--space-m);
     padding-block: var(--space-xl);
-    padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
+    padding-inline-start: var(--gutter-start);
+    padding-inline-end: var(--gutter-end);
   }
 
   .empty {

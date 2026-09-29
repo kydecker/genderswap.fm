@@ -65,12 +65,30 @@ const closeSearch = () => {
 </script>
 
 <nav class="nav" class:searching aria-label="Site">
-  <div class="tabs" inert={searching}>
+  <form class="search" role="search" onsubmit={(e) => e.preventDefault()}>
+    <button type="button" class="close bubble" aria-label="Close search" onclick={closeSearch}>
+      <BackIcon aria-hidden="true" />
+    </button>
+    <div class="field bubble">
+      <SearchIcon aria-hidden="true" />
+      <input
+        bind:this={input}
+        bind:value={query}
+        id="search"
+        type="search"
+        aria-label="Search covers"
+        {placeholder}
+        oninput={search}
+        onkeydown={(e) => e.key === "Escape" && closeSearch()}
+      />
+    </div>
+  </form>
+  <div class="tabs">
     <a class="tab" href="/" aria-current={current("/") ?? (browsing || undefined)}>
       {#if browsing}<HomeFillIcon aria-hidden="true" />{:else}<HomeIcon aria-hidden="true" />{/if}
       <span>Browse</span>
     </a>
-    <button type="button" class="tab" data-search-toggle onclick={openSearch}>
+    <button type="button" class="tab toggle" data-search-toggle onclick={openSearch}>
       <SearchIcon aria-hidden="true" />
       <span>Search</span>
     </button>
@@ -84,56 +102,18 @@ const closeSearch = () => {
     </a>
     <a class="add" href="/new" aria-label="Add a cover" aria-current={current("/new")}>
       <AddIcon aria-hidden="true" />
+      <span>Add a cover</span>
     </a>
   </div>
-  {#if searching}
-    <form class="search" role="search" onsubmit={(e) => e.preventDefault()}>
-      <button type="button" class="close bubble" aria-label="Close search" onclick={closeSearch}>
-        <BackIcon aria-hidden="true" />
-      </button>
-      <div class="field bubble">
-        <SearchIcon aria-hidden="true" />
-        <input
-          bind:this={input}
-          bind:value={query}
-          id="search"
-          type="search"
-          aria-label="Search covers"
-          {placeholder}
-          oninput={search}
-          onkeydown={(e) => e.key === "Escape" && closeSearch()}
-        />
-      </div>
-    </form>
-  {/if}
 </nav>
 
 <style>
   .nav {
     --icon-size: min(var(--step-2), 1.375rem);
     --nav-padding: var(--space-2xs);
-
-    position: relative;
-    width: 24rem;
-    padding: var(--nav-padding);
-
-    &.searching {
-      background: none;
-      box-shadow: none;
-      backdrop-filter: none;
-    }
-
-    @media (max-width: 599.98px) {
-      position: fixed;
-      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
-      inset-inline-start: 50%;
-      translate: -50% 0;
-      z-index: 100;
-      width: min(24rem, calc(100% - 2 * var(--space-s)));
-    }
+    --nav-item-size: 2.75rem;
   }
 
-  .nav,
   .bubble {
     border: 1px solid transparent;
     border-radius: var(--radius-full);
@@ -144,12 +124,7 @@ const closeSearch = () => {
 
   .tabs {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-auto-rows: 2.75rem;
-
-    .searching & {
-      visibility: hidden;
-    }
+    grid-auto-rows: var(--nav-item-size);
   }
 
   .tab {
@@ -187,8 +162,6 @@ const closeSearch = () => {
   }
 
   .add {
-    display: grid;
-    place-items: center;
     border-radius: var(--radius-full);
     background: var(--color-text);
     color: var(--color-bg);
@@ -201,13 +174,6 @@ const closeSearch = () => {
   }
 
   .search {
-    position: absolute;
-    inset: -1px;
-    display: grid;
-    grid-template-columns:
-      calc((100% - 2 * var(--nav-padding) - 2px) / 5 + 2 * var(--nav-padding) + 2px)
-      minmax(0, 1fr);
-    gap: var(--nav-padding);
     color: var(--color-text-muted);
   }
 
@@ -273,6 +239,117 @@ const closeSearch = () => {
     &:focus-visible {
       outline: var(--focus-ring);
       outline-offset: 0;
+    }
+  }
+
+  @media (width < 56rem) {
+    .nav {
+      position: fixed;
+      inset-block-end: max(var(--space-s), env(safe-area-inset-bottom));
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      z-index: 100;
+      width: min(24rem, calc(100% - 2 * var(--space-s)));
+      padding: var(--nav-padding);
+      border: 1px solid transparent;
+      border-radius: var(--radius-full);
+
+      &:not(.searching) {
+        background: var(--color-surface);
+        backdrop-filter: var(--backdrop-surface);
+        box-shadow: var(--shadow-bar);
+      }
+    }
+
+    .tabs {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+
+      .searching & {
+        visibility: hidden;
+      }
+    }
+
+    .add {
+      display: grid;
+      place-items: center;
+
+      span {
+        display: none;
+      }
+    }
+
+    .search {
+      position: absolute;
+      inset: -1px;
+      display: grid;
+      grid-template-columns:
+        calc(var(--nav-item-size) + 2 * var(--nav-padding) + 2px)
+        minmax(0, 1fr);
+      gap: var(--nav-padding);
+
+      .nav:not(.searching) & {
+        display: none;
+      }
+    }
+  }
+
+  @media (width >= 56rem) {
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-l);
+    }
+
+    .tabs {
+      gap: calc(var(--space-2xs) / 2);
+    }
+
+    .tab,
+    .add {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      padding-inline: var(--space-m);
+      font-size: var(--step-0);
+    }
+
+    .tab {
+      flex-direction: row;
+      justify-content: flex-start;
+
+      :global(svg) {
+        margin-block-start: 0;
+      }
+
+      &[aria-current] {
+        background: var(--color-surface);
+      }
+
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+    }
+
+    .add {
+      font-weight: var(--font-weight-bold);
+      font-feature-settings: var(--font-unstable);
+      line-height: 1;
+      text-decoration: none;
+
+      :global(svg) {
+        font-size: var(--icon-size);
+      }
+    }
+
+    .field {
+      block-size: var(--nav-item-size);
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .toggle,
+    .close {
+      display: none;
     }
   }
 </style>

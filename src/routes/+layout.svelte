@@ -36,23 +36,25 @@ afterNavigate(resetPageColor);
 <style>
   .siteHeader {
     width: 100%;
-    padding-block: var(--space-l) var(--space-s);
-    padding-inline-start: max(var(--space-l), env(safe-area-inset-left));
-    padding-inline-end: max(var(--space-l), env(safe-area-inset-right));
-    gap: var(--space-l);
+    padding-block: max(var(--space-2xl), env(safe-area-inset-top)) var(--space-s);
+    text-align: center;
+    padding-inline-start: var(--gutter-start);
+    padding-inline-end: var(--gutter-end);
 
-    @media (min-width: 600px) {
-      display: flex;
+    @media (min-width: 56rem) {
       position: sticky;
       top: 0;
       z-index: 100;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
-
-      > :global(*) {
-        pointer-events: auto;
-      }
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+      flex: none;
+      width: 17rem;
+      height: 100dvh;
+      padding-block: var(--space-l) var(--space-m);
+      padding-inline: max(var(--space-l), env(safe-area-inset-left)) var(--space-xs);
+      text-align: start;
+      overflow-y: auto;
     }
   }
 
@@ -61,10 +63,19 @@ afterNavigate(resetPageColor);
     width: 100%;
     display: flex;
     flex-direction: column;
+    container: main / inline-size;
     padding-block-end: calc(var(--space-3xl) * 2);
 
-    @media (min-width: 600px) {
+    @media (min-width: 56rem) {
+      min-width: 0;
+      align-self: stretch;
       padding-block-end: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 56rem) {
+    :global(body) {
+      flex-direction: row;
     }
   }
 </style>

@@ -193,15 +193,17 @@ const handleSubmit = () => {
   .submitForm {
     inline-size: 100%;
     max-inline-size: 50ch;
-    margin-inline: auto;
-    padding-inline: var(--space-l);
+    padding-inline: var(--gutter-start) var(--gutter-end);
     padding-block-end: var(--space-2xl);
   }
 
   .header {
-    text-align: center;
     font-size: var(--step-4);
     padding-block: var(--space-m) var(--space-xl);
+
+    @media (min-width: 56rem) {
+      padding-block-start: var(--space-xl);
+    }
   }
 
   .submitButton {
