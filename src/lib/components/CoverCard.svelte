@@ -14,7 +14,6 @@ let {
   original,
   cover,
   slug,
-  sizes,
   lazy,
   priority,
   tintOnHover = true,
@@ -22,7 +21,6 @@ let {
   original: Omit<Album, "artwork">;
   cover: Album;
   slug: string;
-  sizes: string;
   lazy?: boolean;
   priority?: boolean;
   tintOnHover?: boolean;
@@ -43,7 +41,7 @@ function formatArtists(artists: string[]) {
       <img
         src={artworkUrl(cover.artwork, 384)}
         srcset={artworkSrcset(cover.artwork)}
-        {sizes}
+        sizes={lazy ? 'auto, 15rem' : '15rem'}
         alt={`${cover.name} album art`}
         loading={lazy ? 'lazy' : 'eager'}
         fetchpriority={priority ? 'high' : 'auto'}

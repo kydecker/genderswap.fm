@@ -67,7 +67,6 @@ $effect(() => {
             original={cover.original}
             cover={cover.cover}
             slug={cover.slug}
-            sizes="clamp(8.75rem, 7.5rem + 3vw, 12rem)"
             {lazy}
             priority={priority && index < 3}
           />

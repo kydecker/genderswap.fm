@@ -10,7 +10,6 @@ describe("CoverCard", () => {
         original: album,
         cover: album,
         slug: "test-slug",
-        sizes: "10rem",
       },
     });
 
@@ -32,7 +31,7 @@ describe("CoverCard", () => {
     };
 
     const { container } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug", sizes: "10rem", lazy: true },
+      props: { original, cover, slug: "test-slug", lazy: true },
     });
 
     const coverImage = container.querySelector("img");
@@ -55,7 +54,7 @@ describe("CoverCard", () => {
     };
 
     const { container } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug", sizes: "10rem" },
+      props: { original, cover, slug: "test-slug" },
     });
 
     const coverImage = container.querySelector("img");
@@ -78,7 +77,7 @@ describe("CoverCard", () => {
     };
 
     const { container, getByText } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug", sizes: "10rem" },
+      props: { original, cover, slug: "test-slug" },
     });
 
     const originalNameElement = getByText("Original Name");
@@ -104,7 +103,7 @@ describe("CoverCard", () => {
     };
 
     const { container, getByText } = render(CoverCard, {
-      props: { original, cover, slug: "test-slug", sizes: "10rem" },
+      props: { original, cover, slug: "test-slug" },
     });
 
     const originalArtistElement = container.querySelector(".covering .name");

@@ -19,7 +19,6 @@ let { covers }: { covers: Cover[] } = $props();
           <div class="item">
             <CoverCard
               {...cover}
-              sizes="(min-width: 81rem) 11rem, (min-width: 71rem) 15rem, clamp(8.75rem, 7.5rem + 3vw, 12rem)"
               lazy={index >= 4}
               tintOnHover={false}
             />
@@ -39,7 +38,6 @@ let { covers }: { covers: Cover[] } = $props();
     flex-direction: column;
     gap: var(--space-2xs);
     min-width: 0;
-    container: related / inline-size;
 
     @container main (min-width: 54rem) {
       flex: 0 100 24rem;
@@ -87,23 +85,19 @@ let { covers }: { covers: Cover[] } = $props();
     }
 
     @media (width >= 56rem) {
-      @container main (width < 54rem) {
-        mask-image: var(--mask-fade-start);
-      }
+      mask-image: var(--mask-fade-start);
     }
 
     @container main (min-width: 54rem) {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
       align-items: start;
       gap: var(--space-l) var(--space-m);
       overflow: visible;
       scroll-snap-type: none;
       padding-inline: 0;
       padding-block: var(--space-2xs) var(--space-xl);
-
-      @container related (width >= 15rem) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      mask-image: none;
     }
   }
 
@@ -111,9 +105,5 @@ let { covers }: { covers: Cover[] } = $props();
     flex: 0 0 var(--item-width);
     align-self: flex-start;
     scroll-snap-align: start;
-
-    @container main (min-width: 54rem) {
-      flex: initial;
-    }
   }
 </style>

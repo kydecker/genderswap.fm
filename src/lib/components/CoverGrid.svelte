@@ -34,7 +34,6 @@ let {
         original={cover.original}
         cover={cover.cover}
         slug={cover.slug}
-        sizes="(max-width: 29rem) calc(50vw - 1.5rem), calc(1.2 * clamp(8.5rem, 7rem + 3vw, 11rem))"
         lazy={index >= 30}
         priority={index < 3}
       />
