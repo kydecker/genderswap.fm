@@ -168,6 +168,7 @@ $effect(() => {
   }
 
   .seeAll {
+    position: relative;
     flex: 0 0 var(--item-width);
     align-self: flex-start;
     aspect-ratio: 1;
