@@ -82,7 +82,7 @@ const {
 
 selected.set(value ? { value } : undefined);
 
-const whenCurrent = async <T>(
+const whenCurrent = async <T,>(
   track: ITunesTrack,
   request: Promise<T>,
   set: (data: T) => void,
@@ -167,9 +167,8 @@ const handleClearSelection = () => {
   value = undefined;
 };
 
-const handleUseEarlierRelease = async () => {
-  const earlierRelease = await discoveredEarlierRelease;
-  if (earlierRelease) value = earlierRelease;
+const handleUseEarlierRelease = () => {
+  if (discoveredEarlierRelease) value = discoveredEarlierRelease;
 };
 
 $effect(() => {
