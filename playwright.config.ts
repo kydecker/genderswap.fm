@@ -2,7 +2,7 @@ import type { PlaywrightTestConfig } from "@playwright/test";
 
 const config: PlaywrightTestConfig = {
   webServer: {
-    command: "pnpm build && pnpm preview --port 4173",
+    command: "pnpm build --mode e2e && pnpm preview --port 4173",
     port: 4173,
     gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
   },

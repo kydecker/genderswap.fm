@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => ({
         preprocessMeltUI(),
       ]),
       inlineStyleThreshold: 16 * 1024,
+      output: { bundleStrategy: mode === "e2e" ? "inline" : "split" },
       adapter: adapter(),
     }),
     Icons({ compiler: "svelte" }),
