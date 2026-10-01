@@ -41,8 +41,6 @@
     ]
   },
   "dependencies": {
-    "@cf-wasm/resvg": "^0.4.0",
-    "@cf-wasm/satori": "^0.4.2",
     "@lhci/cli": "^0.15.1",
     "@sveltejs/adapter-cloudflare": "^7.2.9",
     "@tsparticles/confetti": "^3.9.1",
@@ -50,7 +48,8 @@
     "drizzle-orm": "^0.45.3",
     "jpeg-js": "^0.4.4",
     "svelte-autosize": "^1.1.5",
-    "svelte-preprocess": "^6.0.5"
+    "svelte-preprocess": "^6.0.5",
+    "takumi-js": "^2.14.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",

@@ -38,9 +38,6 @@ export const faviconKey = (name: string) => `${FAVICON_SIZE}/${name}.jpg`;
 export const artworkWidthKey = (name: string, width: ArtworkWidth) =>
   `${width}/${name}.webp`;
 
-export const artworkOriginalUrl = (name: string) =>
-  encodeURI(`${ARTWORK_ORIGIN}/${artworkKey(name)}`);
-
 export const artworkFaviconUrl = (name: string) =>
   encodeURI(`${ARTWORK_ORIGIN}/${faviconKey(name)}`);
 

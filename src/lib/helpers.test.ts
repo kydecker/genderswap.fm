@@ -232,7 +232,6 @@ describe("getSortedTags", () => {
     expect(
       getSortedTags([
         "acousticness_up",
-        "danceability_down",
         "duration_down",
         "energy_down",
         "tempo_up",
@@ -251,8 +250,7 @@ describe("getSortedTags", () => {
       "duration_down", // Duration fourth
       "energy_down", // Energy fifth
       "acousticness_up", // Acousticness sixth
-      "danceability_down", // Danceability seventh
-      "years_apart_10", // Years apart eighth
+      "years_apart_10", // Years apart seventh
       "transition_mtm", // MTM and FTF last
     ]);
   });

@@ -114,6 +114,10 @@ export const pageColorOnFocus = (node: HTMLElement) => {
     if (!frame) frame = requestAnimationFrame(update);
   };
 
+  const onResize = () => {
+    if (focused) schedule();
+  };
+
   const onScroll = (event: Event) => {
     const { target } = event;
     if (
@@ -131,7 +135,7 @@ export const pageColorOnFocus = (node: HTMLElement) => {
     cancelAnimationFrame(frame);
     frame = 0;
     window.removeEventListener("scroll", onScroll, { capture: true });
-    window.removeEventListener("resize", schedule);
+    window.removeEventListener("resize", onResize);
   };
 
   const onModeChange = () => {
@@ -143,8 +147,7 @@ export const pageColorOnFocus = (node: HTMLElement) => {
         capture: true,
         passive: true,
       });
-      window.addEventListener("resize", schedule);
-      schedule();
+      window.addEventListener("resize", onResize);
     } else {
       releasePageColor();
     }
