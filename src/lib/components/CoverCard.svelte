@@ -17,6 +17,7 @@ let {
   lazy,
   priority,
   tintOnHover = true,
+  sizes,
 }: {
   original: Omit<Album, "artwork">;
   cover: Album;
@@ -24,6 +25,7 @@ let {
   lazy?: boolean;
   priority?: boolean;
   tintOnHover?: boolean;
+  sizes: string;
 } = $props();
 
 function formatArtists(artists: string[]) {
@@ -41,7 +43,7 @@ function formatArtists(artists: string[]) {
       <img
         src={artworkUrl(cover.artwork, 384)}
         srcset={artworkSrcset(cover.artwork)}
-        sizes={lazy ? 'auto, 15rem' : '15rem'}
+        sizes={lazy ? `auto, ${sizes}` : sizes}
         alt={`${cover.name} album art`}
         loading={lazy ? 'lazy' : 'eager'}
         fetchpriority={priority ? 'high' : 'auto'}

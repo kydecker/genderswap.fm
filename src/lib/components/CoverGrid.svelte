@@ -36,6 +36,7 @@ let {
         slug={cover.slug}
         lazy={index >= 30}
         priority={index < 3}
+        sizes="(min-width: 56rem) 12rem, min(50vw - 1.5rem, 14rem)"
       />
     {/each}
   </div>

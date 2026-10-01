@@ -21,6 +21,7 @@ let { covers }: { covers: Cover[] } = $props();
               {...cover}
               lazy={index >= 4}
               tintOnHover={false}
+              sizes="clamp(8.75rem, 7.5rem + 3vw, 12rem)"
             />
           </div>
         {/each}

@@ -18,6 +18,7 @@ const config = {
     preprocessMeltUI(),
   ]),
   kit: {
+    inlineStyleThreshold: 16 * 1024,
     adapter: adapter({
       runtime: "nodejs24.x",
     }),

@@ -50,7 +50,7 @@ let { data } = $props();
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-block-start: var(--space-l);
+    margin-block: var(--space-l);
     padding-inline: var(--gutter-start) var(--gutter-end);
     color: var(--color-text-muted);
     text-align: center;
@@ -58,6 +58,7 @@ let { data } = $props();
 
     @media (width >= 56rem) {
       justify-content: start;
+      margin-block-end: 0;
       block-size: var(--space-2xl);
       text-align: start;
     }
