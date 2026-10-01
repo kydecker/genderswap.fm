@@ -29,7 +29,6 @@
     "db:migrate:remote": "wrangler d1 migrations apply genderswap-fm --remote",
     "db:seed:local": "wrangler d1 execute genderswap-fm --local --file tests/fixtures/seed.sql",
     "db:pull": "node scripts/pull-prod-db.ts",
-    "fonts:subset": "node scripts/subset-fonts.ts",
     "lhci:mobile": "lhci autorun",
     "lhci:desktop": "lhci autorun --collect.settings.preset=desktop"
   },

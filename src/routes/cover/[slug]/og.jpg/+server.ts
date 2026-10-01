@@ -26,8 +26,8 @@ const loadStaticAssets = (url: URL, platform: App.Platform | undefined) => {
   const assets = platform?.env.ASSETS ?? globalThis;
   staticAssets ??= Promise.all(
     [
-      "/fonts/LabilGrotesk-Regular.ttf",
-      "/fonts/LabilGrotesk-Bold.ttf",
+      "/fonts/labil-grotesk-400.ttf",
+      "/fonts/labil-grotesk-700.ttf",
       SHADOW_PATH,
     ].map(async (path) => {
       const res = await assets.fetch(new URL(path, url));
