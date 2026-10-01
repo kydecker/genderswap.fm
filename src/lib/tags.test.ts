@@ -4,7 +4,6 @@ import { computeTags } from "./tags";
 const song = (overrides = {}) => ({
   acousticness: 0.5,
   album_year: 2000,
-  danceability: 0.5,
   duration_ms: 200000,
   energy: 0.5,
   gender: ["other" as const],
@@ -20,7 +19,6 @@ describe("computeTags", () => {
 
   it.each([
     ["acousticness", 0.1, 0.85, "acousticness_up", "acousticness_down"],
-    ["danceability", 0.1, 0.5, "danceability_up", "danceability_down"],
     ["duration_ms", 100000, 220000, "duration_up", "duration_down"],
     ["energy", 0.25, 0.75, "energy_up", "energy_down"],
     ["tempo", 100, 140, "tempo_up", "tempo_down"],

@@ -3,7 +3,6 @@ import {
   artworkFaviconUrl,
   artworkId,
   artworkName,
-  artworkOriginalUrl,
   artworkSrcset,
   artworkUrl,
   itunesArtworkSrcset,
@@ -62,18 +61,15 @@ describe("artworkUrl", () => {
     );
   });
 
-  it("should point at the stored original and favicon", () => {
-    expect(artworkOriginalUrl("abba-voulez-vous")).toBe(
-      "https://img.genderswap.fm/640/abba-voulez-vous.jpg",
-    );
+  it("should point at the stored favicon", () => {
     expect(artworkFaviconUrl("abba-voulez-vous")).toBe(
       "https://img.genderswap.fm/32/abba-voulez-vous.jpg",
     );
   });
 
   it("should encode non-ASCII names", () => {
-    expect(artworkOriginalUrl("半吨兄弟")).toBe(
-      "https://img.genderswap.fm/640/%E5%8D%8A%E5%90%A8%E5%85%84%E5%BC%9F.jpg",
+    expect(artworkUrl("半吨兄弟", 512)).toBe(
+      "https://img.genderswap.fm/512/%E5%8D%8A%E5%90%A8%E5%85%84%E5%BC%9F.webp",
     );
   });
 });

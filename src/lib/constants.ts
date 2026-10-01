@@ -23,16 +23,6 @@ const tags = {
     label: "less acoustic",
     description: "Covers taking an acoustic song somewhere new.",
   },
-  danceability_up: {
-    slug: "more-danceable",
-    label: "more danceable",
-    description: "Club mixes and more.",
-  },
-  danceability_down: {
-    slug: "less-danceable",
-    label: "less danceable",
-    description: "Finding beauty in irregularity.",
-  },
   duration_up: {
     slug: "longer",
     label: "longer",
@@ -140,8 +130,6 @@ export const ORDERED_TAGS: Enums<"tags">[] = [
   "energy_down",
   "acousticness_up",
   "acousticness_down",
-  "danceability_up",
-  "danceability_down",
   "years_apart_10",
   "years_apart_20",
   "years_apart_30",

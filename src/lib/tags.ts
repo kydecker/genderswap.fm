@@ -4,7 +4,6 @@ type TagSong = Pick<
   Tables<"songs">,
   | "acousticness"
   | "album_year"
-  | "danceability"
   | "duration_ms"
   | "energy"
   | "gender"
@@ -40,7 +39,6 @@ export const computeTags = (
   };
 
   upDown("acousticness", 0.7);
-  upDown("danceability", 0.4);
   upDown("duration_ms", 120000, "duration");
   upDown("energy", 0.5);
   upDown("tempo", 40);

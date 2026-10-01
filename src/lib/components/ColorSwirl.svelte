@@ -106,8 +106,7 @@ const swirl = (canvas: HTMLCanvasElement) => {
   let bottomDepth: Float32Array;
   let frame = 0;
 
-  const resize = () => {
-    const aspect = window.innerHeight / window.innerWidth;
+  const resize = (aspect: number) => {
     canvas.width = aspect > 1 ? Math.round(RESOLUTION / aspect) : RESOLUTION;
     canvas.height = aspect > 1 ? RESOLUTION : Math.round(RESOLUTION * aspect);
     image = context.createImageData(canvas.width, canvas.height);
@@ -173,19 +172,19 @@ const swirl = (canvas: HTMLCanvasElement) => {
     else frame = requestAnimationFrame(loop);
   };
 
-  const onResize = () => {
-    resize();
-    if (reducedMotion.matches) draw(0);
-  };
+  const observer = new ResizeObserver(([entry]) => {
+    const { width, height } = entry.contentRect;
+    if (!width || !height) return;
+    resize(height / width);
+    start();
+  });
 
-  resize();
-  start();
-  window.addEventListener("resize", onResize);
+  observer.observe(canvas);
   reducedMotion.addEventListener("change", start);
 
   return () => {
     cancelAnimationFrame(frame);
-    window.removeEventListener("resize", onResize);
+    observer.disconnect();
     reducedMotion.removeEventListener("change", start);
   };
 };
