@@ -1,7 +1,7 @@
 <script lang="ts">
-import { artworkSrcset, artworkUrl } from "$lib/artwork";
-import { getArtistLink, getYouTubeLink, smartquotes } from "$lib/helpers";
-import type { Tables } from "$lib/types/types";
+import { artworkSrcset, artworkUrl } from "#lib/artwork.js";
+import { getArtistLink, getYouTubeLink, smartquotes } from "#lib/helpers.js";
+import type { Tables } from "#lib/types/types.js";
 import AppleMusicIcon from "~icons/simple-icons/applemusic";
 import SpotifyIcon from "~icons/simple-icons/spotify";
 import TidalIcon from "~icons/simple-icons/tidal";

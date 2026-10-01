@@ -1,8 +1,8 @@
 import { and, count, desc, inArray, ne, type SQL, sql } from "drizzle-orm";
-import { HIDDEN_TAGS, ORDERED_TAGS } from "$lib/constants";
-import type { getDb } from "$lib/server/db";
-import { covers, tagCounts } from "$lib/server/db/schema";
-import type { Enums } from "$lib/types/types";
+import { HIDDEN_TAGS, ORDERED_TAGS } from "#lib/constants.js";
+import type { getDb } from "#lib/server/db/index.js";
+import { covers, tagCounts } from "#lib/server/db/schema.js";
+import type { Enums } from "#lib/types/types.js";
 
 type Db = ReturnType<typeof getDb>;
 

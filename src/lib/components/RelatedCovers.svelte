@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { ComponentProps } from "svelte";
-import CoverCard from "$lib/components/CoverCard.svelte";
+import CoverCard from "#lib/components/CoverCard.svelte";
 
 type Cover = Pick<
   ComponentProps<typeof CoverCard>,

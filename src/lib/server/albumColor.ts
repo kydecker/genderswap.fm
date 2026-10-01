@@ -1,5 +1,5 @@
 import { decode } from "jpeg-js";
-import { extractAlbumColor } from "$lib/albumColor";
+import { extractAlbumColor } from "#lib/albumColor.js";
 
 export const getAlbumColor = async (url: string): Promise<string | null> => {
   const response = await fetch(url);

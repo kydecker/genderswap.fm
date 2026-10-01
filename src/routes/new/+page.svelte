@@ -2,24 +2,24 @@
 import type { FormEventHandler } from "svelte/elements";
 import autosize from "svelte-autosize";
 import { superForm } from "sveltekit-superforms";
-import { browser } from "$app/environment";
-import { page } from "$app/state";
-import { albumColorFromImage } from "$lib/albumColor";
-import { itunesArtworkUrl } from "$lib/artwork";
-import ColorSwirl from "$lib/components/ColorSwirl.svelte";
-import ErrorMessage from "$lib/components/ErrorMessage.svelte";
-import GenderSelect from "$lib/components/GenderSelect.svelte";
-import NewCoverIcon from "$lib/components/NewCoverIcon.svelte";
-import SongSelect from "$lib/components/SongSelect.svelte";
-import Step from "$lib/components/Step.svelte";
-import Steps from "$lib/components/Steps.svelte";
+import { albumColorFromImage } from "#lib/albumColor.js";
+import { itunesArtworkUrl } from "#lib/artwork.js";
+import ColorSwirl from "#lib/components/ColorSwirl.svelte";
+import ErrorMessage from "#lib/components/ErrorMessage.svelte";
+import GenderSelect from "#lib/components/GenderSelect.svelte";
+import NewCoverIcon from "#lib/components/NewCoverIcon.svelte";
+import SongSelect from "#lib/components/SongSelect.svelte";
+import Step from "#lib/components/Step.svelte";
+import Steps from "#lib/components/Steps.svelte";
 import {
   MAX_CONTRIBUTOR_CHARS,
   MAX_DESCRIPTION_CHARS,
   SITE_URL,
-} from "$lib/constants";
-import { getMaxCharacterHelpText } from "$lib/helpers";
-import { setPageColor } from "$lib/pageColor";
+} from "#lib/constants.js";
+import { getMaxCharacterHelpText } from "#lib/helpers.js";
+import { setPageColor } from "#lib/pageColor.js";
+import { browser } from "$app/env";
+import { page } from "$app/state";
 import AlertIcon from "~icons/ri/alert-line";
 import LoaderIcon from "~icons/ri/loader-4-line";
 
@@ -165,7 +165,7 @@ const handleSubmit = () => {
       </label>
       {#if $errors?._errors}
         {#each $errors._errors as error}
-          <ErrorMessage {error} banner />
+          <ErrorMessage error={error} banner />
         {/each}
       {/if}
     </Step>

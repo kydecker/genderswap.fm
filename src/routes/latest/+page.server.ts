@@ -1,8 +1,8 @@
-import { loadGrid } from "$lib/server/browse";
-import { getDb } from "$lib/server/db";
+import { loadGrid } from "#lib/server/browse.js";
+import { getDb } from "#lib/server/db/index.js";
 
-export async function load({ url, platform, setHeaders }) {
+export async function load({ url, setHeaders }) {
   setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
 
-  return loadGrid(getDb(platform), url, null);
+  return loadGrid(getDb(), url, null);
 }

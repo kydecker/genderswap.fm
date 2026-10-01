@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createToggleGroup, melt } from "@melt-ui/svelte";
-import ErrorMessage from "$lib/components/ErrorMessage.svelte";
-import type { Enums } from "$lib/types/types";
+import ErrorMessage from "#lib/components/ErrorMessage.svelte";
+import type { Enums } from "#lib/types/types.js";
 import MenIcon from "~icons/ri/men-line";
 import SparklingIcon from "~icons/ri/sparkling-line";
 import WomenIcon from "~icons/ri/women-line";

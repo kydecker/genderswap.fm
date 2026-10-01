@@ -165,7 +165,7 @@ export const pageColorOnFocus = (node: HTMLElement) => {
 export const resolveColorToken = (token: string) => {
   const probe = document.createElement("span");
   probe.style.color = `var(${token})`;
-  document.body.append(probe);
+  document.body.appendChild(probe);
   const color = getComputedStyle(probe).color;
   probe.remove();
 

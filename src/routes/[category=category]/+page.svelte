@@ -1,8 +1,8 @@
 <script lang="ts">
-import CoverGrid from "$lib/components/CoverGrid.svelte";
-import PageMeta from "$lib/components/PageMeta.svelte";
-import { TAGS } from "$lib/constants";
-import { tagTitle } from "$lib/helpers";
+import CoverGrid from "#lib/components/CoverGrid.svelte";
+import PageMeta from "#lib/components/PageMeta.svelte";
+import { TAGS } from "#lib/constants.js";
+import { tagTitle } from "#lib/helpers.js";
 
 let { data } = $props();
 

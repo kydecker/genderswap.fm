@@ -1,31 +1,32 @@
+import { env } from "cloudflare:workers";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, between, eq, inArray, isNull, sql } from "drizzle-orm";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { env } from "$env/dynamic/private";
-import { artworkName, itunesArtworkUrl } from "$lib/artwork";
-import { slugifyCover } from "$lib/helpers";
+import { artworkName, itunesArtworkUrl } from "#lib/artwork.js";
+import { slugifyCover } from "#lib/helpers.js";
 import {
   albumName,
   type ITunesTrack,
   releaseYear,
   songName,
   trackIdentity,
-} from "$lib/itunes";
-import { appleTrackUrl, bestMatch, songRowIdentity } from "$lib/matching";
-import { newCoverSchema } from "$lib/schemas";
-import { getAlbumColor } from "$lib/server/albumColor";
-import { type ArtworkBucket, saveTrackArtwork } from "$lib/server/artwork";
-import { getDb } from "$lib/server/db";
-import { covers, songs } from "$lib/server/db/schema";
+} from "#lib/itunes.js";
+import { appleTrackUrl, bestMatch, songRowIdentity } from "#lib/matching.js";
+import { newCoverSchema } from "#lib/schemas.js";
+import { getAlbumColor } from "#lib/server/albumColor.js";
+import { type ArtworkBucket, saveTrackArtwork } from "#lib/server/artwork.js";
+import { getDb } from "#lib/server/db/index.js";
+import { covers, songs } from "#lib/server/db/schema.js";
 import {
   findDeezerMatch,
   getAudioFeatures,
   NO_AUDIO_FEATURES,
-} from "$lib/server/enrich";
-import { findTidalLink } from "$lib/server/links";
-import { computeTags } from "$lib/tags";
-import type { Enums, Tables } from "$lib/types/types";
+} from "#lib/server/enrich.js";
+import { findTidalLink } from "#lib/server/links.js";
+import { computeTags } from "#lib/tags.js";
+import type { Enums, Tables } from "#lib/types/types.js";
+import { TIDAL_CLIENT_ID, TIDAL_CLIENT_SECRET } from "$app/env/private";
 
 type Db = ReturnType<typeof getDb>;
 type NewSong = Omit<Tables<"songs">, "id">;
@@ -81,7 +82,7 @@ export const load = async () => {
 };
 
 export const actions = {
-  default: async ({ request, platform }) => {
+  default: async ({ request }) => {
     const form = await superValidate(request, zod4(newCoverSchema));
 
     if (!form.valid) {
@@ -97,10 +98,9 @@ export const actions = {
       contributor,
     } = form.data;
 
-    const db = getDb(platform);
-    const bucket = platform?.env.ARTWORK;
+    const db = getDb();
+    const bucket = env.ARTWORK;
     const appleIds = [String(original.trackId), String(cover.trackId)];
-
     const existingSongs = await db.query.songs.findMany({
       where: inArray(songs.apple_id, appleIds),
     });
@@ -145,10 +145,7 @@ export const actions = {
             disc_number: track.discNumber,
             track_number: track.trackNumber,
           },
-          {
-            clientId: env.TIDAL_CLIENT_ID,
-            clientSecret: env.TIDAL_CLIENT_SECRET,
-          },
+          { clientId: TIDAL_CLIENT_ID, clientSecret: TIDAL_CLIENT_SECRET },
         ),
         getAlbumColor(itunesArtworkUrl(track.artwork, 64, "jpg")).catch(
           () => null,

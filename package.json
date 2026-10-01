@@ -16,8 +16,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "wrangler dev",
     "prepare": "svelte-kit sync",
+    "cf-typegen": "wrangler types",
     "test": "npm run test:integration && npm run test:unit",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -42,7 +43,6 @@
   },
   "dependencies": {
     "@lhci/cli": "^0.15.1",
-    "@sveltejs/adapter-cloudflare": "^7.2.9",
     "@tsparticles/confetti": "^3.9.1",
     "dayjs": "^1.11.21",
     "drizzle-orm": "^0.45.3",
@@ -58,25 +58,26 @@
     "@melt-ui/pp": "^0.3.2",
     "@melt-ui/svelte": "^0.86.6",
     "@playwright/test": "^1.62.1",
-    "@sveltejs/kit": "^2.70.2",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@sveltejs/adapter-cloudflare": "^8.0.0-next.0",
+    "@sveltejs/kit": "^3.0.0-next.0",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@testing-library/svelte": "^5.4.2",
     "@vitest/coverage-v8": "^4.1.11",
     "jsdom": "^29.0.2",
     "mdsvex": "^0.12.8",
     "nano-staged": "^1.0.2",
     "simple-git-hooks": "^2.13.1",
-    "svelte": "^5.56.8",
-    "svelte-check": "^4.7.4",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.6",
     "svelte-sequential-preprocessor": "^2.0.3",
-    "sveltekit-superforms": "^2.30.2",
+    "sveltekit-superforms": "^3.0.0-next.1",
     "tslib": "^2.8.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.0",
     "unplugin-icons": "^23.0.1",
-    "vite": "^6.4.3",
+    "vite": "^8.0.12",
     "vitest": "^4.1.11",
-    "wrangler": "^4.120.0",
-    "zod": "^4.4.3"
+    "wrangler": "^4.145.0",
+    "zod": "^4.6.5"
   },
   "bugs": {
     "url": "https://github.com/kydecker/genderswap.fm/issues"
@@ -84,5 +85,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/kydecker/genderswap.fm"
+  },
+  "imports": {
+    "#lib": "./src/lib/index.js",
+    "#lib/*": "./src/lib/*"
   }
 }

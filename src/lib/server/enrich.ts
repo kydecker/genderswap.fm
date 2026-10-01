@@ -1,5 +1,5 @@
-import { type ITunesTrack, trackIdentity } from "$lib/itunes";
-import { bestMatch } from "$lib/matching";
+import { type ITunesTrack, trackIdentity } from "#lib/itunes.js";
+import { bestMatch } from "#lib/matching.js";
 import { fetchJson } from "./fetchJson";
 
 type DeezerSearch = {

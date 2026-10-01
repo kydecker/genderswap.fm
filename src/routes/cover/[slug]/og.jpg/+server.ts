@@ -1,14 +1,15 @@
+import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { render as renderHtml } from "svelte/server";
 import { render } from "takumi-js";
-import { getPagePalette } from "$lib/albumColor";
-import { artworkUrl } from "$lib/artwork";
-import OgImage from "$lib/components/OgImage.svelte";
-import { OG_HEIGHT, OG_WIDTH, TAGS } from "$lib/constants";
-import { getReadableTitle, getSortedTags } from "$lib/helpers";
-import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
-import logoSvg from "$lib/server/og-logo.svg?raw";
+import { getPagePalette } from "#lib/albumColor.js";
+import { artworkUrl } from "#lib/artwork.js";
+import OgImage from "#lib/components/OgImage.svelte";
+import { OG_HEIGHT, OG_WIDTH, TAGS } from "#lib/constants.js";
+import { getReadableTitle, getSortedTags } from "#lib/helpers.js";
+import { getDb } from "#lib/server/db/index.js";
+import { covers } from "#lib/server/db/schema.js";
+import logoSvg from "#lib/server/og-logo.svg?raw";
 
 const songColumns = { name: true, artists: true, artwork: true } as const;
 const SHADOW_PATH = "/images/og-shadow.png";
@@ -22,8 +23,8 @@ const getLogo = (text: string, fill: string) =>
 
 let staticAssets: Promise<ArrayBuffer[]> | undefined;
 
-const loadStaticAssets = (url: URL, platform: App.Platform | undefined) => {
-  const assets = platform?.env.ASSETS ?? globalThis;
+const loadStaticAssets = (url: URL) => {
+  const assets = env.ASSETS ?? globalThis;
   staticAssets ??= Promise.all(
     [
       "/fonts/labil-grotesk-400.ttf",
@@ -41,11 +42,11 @@ const loadStaticAssets = (url: URL, platform: App.Platform | undefined) => {
   return staticAssets;
 };
 
-export async function GET({ params, url, platform }) {
+export async function GET({ params, url }) {
   const { slug } = params;
 
   const [data, [labil, labilBold, shadow]] = await Promise.all([
-    getDb(platform).query.covers.findFirst({
+    getDb().query.covers.findFirst({
       columns: { tags: true },
       with: {
         original: { columns: songColumns },
@@ -53,7 +54,7 @@ export async function GET({ params, url, platform }) {
       },
       where: eq(covers.slug, slug),
     }),
-    loadStaticAssets(url, platform),
+    loadStaticAssets(url),
   ]);
 
   if (!data) {

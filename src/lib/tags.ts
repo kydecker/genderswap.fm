@@ -1,4 +1,4 @@
-import type { Enums, Tables } from "$lib/types/types";
+import type { Enums, Tables } from "#lib/types/types.js";
 
 type TagSong = Pick<
   Tables<"songs">,

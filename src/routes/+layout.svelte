@@ -1,14 +1,14 @@
 <script lang="ts">
-import "$lib/styles/reset.css";
-import "$lib/styles/theme.css";
-import "$lib/styles/base.css";
+import "#lib/styles/reset.css";
+import "#lib/styles/theme.css";
+import "#lib/styles/base.css";
 
+import Logo from "#lib/components/Logo.svelte";
+import Nav from "#lib/components/Nav.svelte";
+import { resetPageColor } from "#lib/pageColor.js";
 import { afterNavigate } from "$app/navigation";
 import { asset } from "$app/paths";
 import { page } from "$app/state";
-import Logo from "$lib/components/Logo.svelte";
-import Nav from "$lib/components/Nav.svelte";
-import { resetPageColor } from "$lib/pageColor";
 
 let { children } = $props();
 
@@ -19,8 +19,8 @@ afterNavigate(resetPageColor);
   {#if page.data.favicon}
     <link rel="icon" href={page.data.favicon} type="image/jpeg" />
   {:else}
-    <link rel="icon" href={asset("/favicon.ico")} sizes="48x48" />
-    <link rel="icon" href={asset("/favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={asset("favicon.ico")} sizes="48x48" />
+    <link rel="icon" href={asset("favicon.svg")} type="image/svg+xml" />
   {/if}
 </svelte:head>
 

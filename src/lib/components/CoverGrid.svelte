@@ -1,8 +1,8 @@
 <script lang="ts">
+import CoverCard from "#lib/components/CoverCard.svelte";
+import { getPageHref } from "#lib/helpers.js";
+import type { GridData } from "#lib/server/browse.js";
 import { page } from "$app/state";
-import CoverCard from "$lib/components/CoverCard.svelte";
-import { getPageHref } from "$lib/helpers";
-import type { GridData } from "$lib/server/browse";
 import ArrowLeftIcon from "~icons/ri/arrow-left-line";
 import ArrowRightIcon from "~icons/ri/arrow-right-line";
 

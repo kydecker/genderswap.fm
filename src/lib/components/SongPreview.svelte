@@ -3,18 +3,18 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import type { MouseEventHandler } from "svelte/elements";
 import { slide } from "svelte/transition";
-import { itunesArtworkSrcset, itunesArtworkUrl } from "$lib/artwork";
+import { itunesArtworkSrcset, itunesArtworkUrl } from "#lib/artwork.js";
 import {
   getReadableTitle,
   getYearsEarlierText,
   smartquotes,
-} from "$lib/helpers";
+} from "#lib/helpers.js";
 import {
   albumName,
   type ITunesTrack,
   releaseYear,
   songName,
-} from "$lib/itunes";
+} from "#lib/itunes.js";
 import AlertIcon from "~icons/ri/alert-line";
 import CheckIcon from "~icons/ri/check-line";
 import CloseCircleIcon from "~icons/ri/close-circle-line";

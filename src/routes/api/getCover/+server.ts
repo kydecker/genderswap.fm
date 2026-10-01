@@ -1,6 +1,6 @@
 import { eq, inArray } from "drizzle-orm";
-import { getDb } from "$lib/server/db";
-import { covers, songs } from "$lib/server/db/schema";
+import { getDb } from "#lib/server/db/index.js";
+import { covers, songs } from "#lib/server/db/schema.js";
 
 export type ExistingCover = {
   original: {
@@ -14,14 +14,14 @@ export type ExistingCover = {
   created_at: string;
 };
 
-export async function GET({ url, platform }) {
+export async function GET({ url }) {
   const appleId = url.searchParams.get("appleId");
 
   if (!appleId) {
     return Response.json(null, { status: 400 });
   }
 
-  const db = getDb(platform);
+  const db = getDb();
   const existingCover: ExistingCover | undefined =
     await db.query.covers.findFirst({
       columns: { slug: true, created_at: true },

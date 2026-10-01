@@ -1,6 +1,6 @@
 <script lang="ts">
+import { SITE_URL } from "#lib/constants.js";
 import { page } from "$app/state";
-import { SITE_URL } from "$lib/constants";
 
 let { title, description }: { title?: string; description: string } = $props();
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { ITunesTrack } from "$lib/itunes";
+import type { ITunesTrack } from "#lib/itunes.js";
 import { findDeezerMatch, getAudioFeatures, NO_AUDIO_FEATURES } from "./enrich";
 
 const mockFetch = (...bodies: unknown[]) => {

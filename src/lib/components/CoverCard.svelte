@@ -1,7 +1,7 @@
 <script lang="ts">
-import { artworkSrcset, artworkUrl } from "$lib/artwork";
-import { smartquotes } from "$lib/helpers";
-import { pageColorOnHover } from "$lib/pageColor";
+import { artworkSrcset, artworkUrl } from "#lib/artwork.js";
+import { smartquotes } from "#lib/helpers.js";
+import { pageColorOnHover } from "#lib/pageColor.js";
 
 type Album = {
   name: string;

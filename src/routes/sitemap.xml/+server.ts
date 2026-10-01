@@ -1,7 +1,7 @@
 import { desc } from "drizzle-orm";
-import { SITE_URL, TAGS } from "$lib/constants";
-import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
+import { SITE_URL, TAGS } from "#lib/constants.js";
+import { getDb } from "#lib/server/db/index.js";
+import { covers } from "#lib/server/db/schema.js";
 
 const STATIC_PATHS = [
   "/",
@@ -17,8 +17,8 @@ function urlEntry(path: string, lastmod?: string) {
   </url>`;
 }
 
-export async function GET({ platform }) {
-  const rows = await getDb(platform)
+export async function GET() {
+  const rows = await getDb()
     .select({ slug: covers.slug, created_at: covers.created_at })
     .from(covers)
     .orderBy(desc(covers.created_at));
