@@ -19,9 +19,8 @@ afterNavigate(resetPageColor);
   {#if page.data.favicon}
     <link rel="icon" href={page.data.favicon} type="image/jpeg" />
   {:else}
+    <link rel="icon" href={asset("/favicon.ico")} sizes="48x48" />
     <link rel="icon" href={asset("/favicon.svg")} type="image/svg+xml" />
-    <link rel="icon" href={asset("/favicon-light.png")} type="image/png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" href={asset("/favicon-dark.png")} type="image/png" media="(prefers-color-scheme: dark)" />
   {/if}
 </svelte:head>
 
