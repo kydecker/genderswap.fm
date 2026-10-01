@@ -1,7 +1,7 @@
 <script lang="ts">
-import CoverGrid from "$lib/components/CoverGrid.svelte";
-import PageMeta from "$lib/components/PageMeta.svelte";
-import { LATEST_DESCRIPTION, LATEST_TITLE } from "$lib/constants";
+import CoverGrid from "#lib/components/CoverGrid.svelte";
+import PageMeta from "#lib/components/PageMeta.svelte";
+import { LATEST_DESCRIPTION, LATEST_TITLE } from "#lib/constants.js";
 
 let { data } = $props();
 </script>

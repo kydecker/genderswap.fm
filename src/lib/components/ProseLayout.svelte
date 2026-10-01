@@ -1,7 +1,7 @@
 <script lang="ts">
 import dayjs from "dayjs";
+import { SITE_URL } from "#lib/constants.js";
 import { page } from "$app/state";
-import { SITE_URL } from "$lib/constants";
 
 let { title, description, datePublished, dateModified, children } = $props();
 

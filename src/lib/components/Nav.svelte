@@ -1,9 +1,9 @@
 <script lang="ts">
 import { tick, untrack } from "svelte";
+import { TAG_BY_SLUG } from "#lib/constants.js";
+import { createDebouncer, tagTitle } from "#lib/helpers.js";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
-import { TAG_BY_SLUG } from "$lib/constants";
-import { createDebouncer, tagTitle } from "$lib/helpers";
 import AddIcon from "~icons/ri/add-line";
 import BackIcon from "~icons/ri/arrow-left-s-line";
 import HomeFillIcon from "~icons/ri/home-5-fill";
@@ -51,16 +51,16 @@ const search = () =>
   debounce(() => {
     const params = query ? `?${new URLSearchParams({ q: query })}` : "";
     goto(`${searchPath}${params}`, {
-      keepFocus: true,
-      replaceState: page.url.pathname === searchPath,
-    });
+      reset: false,
+      replace: page.url.pathname === searchPath,
+    }).then(() => window.scrollTo(0, 0));
   });
 
 const closeSearch = () => {
   debounce.cancel();
   open = false;
   query = "";
-  if (urlQuery) goto(page.url.pathname, { replaceState: true });
+  if (urlQuery) goto(page.url.pathname, { replace: true });
 };
 </script>
 

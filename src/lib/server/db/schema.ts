@@ -8,7 +8,7 @@ import {
   sqliteTable,
   text,
 } from "drizzle-orm/sqlite-core";
-import type { TAGS } from "$lib/constants";
+import type { TAGS } from "#lib/constants.js";
 
 export type Gender = "male" | "female" | "other";
 export type Tag = keyof typeof TAGS;

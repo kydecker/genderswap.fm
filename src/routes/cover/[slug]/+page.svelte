@@ -3,16 +3,16 @@ import { type ConfettiOptions, confetti } from "@tsparticles/confetti";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { onMount } from "svelte";
+import ColorSwirl from "#lib/components/ColorSwirl.svelte";
+import CoverComparison from "#lib/components/CoverComparison.svelte";
+import RelatedCovers from "#lib/components/RelatedCovers.svelte";
+import Sparkle from "#lib/components/Sparkle.svelte";
+import Tag from "#lib/components/Tag.svelte";
+import TagCloud from "#lib/components/TagCloud.svelte";
+import { OG_HEIGHT, OG_WIDTH, SITE_URL, TAGS } from "#lib/constants.js";
+import { getArtistLink, getSortedTags } from "#lib/helpers.js";
+import { resolveColorToken } from "#lib/pageColor.js";
 import { page } from "$app/state";
-import ColorSwirl from "$lib/components/ColorSwirl.svelte";
-import CoverComparison from "$lib/components/CoverComparison.svelte";
-import RelatedCovers from "$lib/components/RelatedCovers.svelte";
-import Sparkle from "$lib/components/Sparkle.svelte";
-import Tag from "$lib/components/Tag.svelte";
-import TagCloud from "$lib/components/TagCloud.svelte";
-import { OG_HEIGHT, OG_WIDTH, SITE_URL, TAGS } from "$lib/constants";
-import { getArtistLink, getSortedTags } from "$lib/helpers.js";
-import { resolveColorToken } from "$lib/pageColor";
 
 let { data } = $props();
 

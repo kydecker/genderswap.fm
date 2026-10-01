@@ -1,7 +1,10 @@
 import { z } from "zod";
-import { MAX_CONTRIBUTOR_CHARS, MAX_DESCRIPTION_CHARS } from "$lib/constants";
-import { type ITunesTrack, parseAppleMusicUrl } from "$lib/itunes";
-import type { Enums } from "$lib/types/types";
+import {
+  MAX_CONTRIBUTOR_CHARS,
+  MAX_DESCRIPTION_CHARS,
+} from "#lib/constants.js";
+import { type ITunesTrack, parseAppleMusicUrl } from "#lib/itunes.js";
+import type { Enums } from "#lib/types/types.js";
 
 const itunesTrack = z
   .object({

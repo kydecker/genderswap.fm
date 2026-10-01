@@ -1,11 +1,11 @@
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { artworkFaviconUrl } from "$lib/artwork";
-import { getReadableTitle, smartquotes } from "$lib/helpers";
-import { loadRelated } from "$lib/server/browse";
-import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
-import type { Enums, Tables } from "$lib/types/types";
+import { artworkFaviconUrl } from "#lib/artwork.js";
+import { getReadableTitle, smartquotes } from "#lib/helpers.js";
+import { loadRelated } from "#lib/server/browse.js";
+import { getDb } from "#lib/server/db/index.js";
+import { covers } from "#lib/server/db/schema.js";
+import type { Enums, Tables } from "#lib/types/types.js";
 
 export type Cover = {
   original: Tables<"songs">;
@@ -34,8 +34,8 @@ const songColumns = {
   tidal_url: true,
 } as const;
 
-export async function load({ params: { slug }, platform, setHeaders }) {
-  const db = getDb(platform);
+export async function load({ params: { slug }, setHeaders }) {
+  const db = getDb();
 
   const data = await db.query.covers.findFirst({
     columns: {
@@ -53,9 +53,7 @@ export async function load({ params: { slug }, platform, setHeaders }) {
   });
 
   if (!data) {
-    return error(404, {
-      message: "Cover not found",
-    });
+    return error(404, "Cover not found");
   }
 
   setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });

@@ -104,8 +104,11 @@ export const getYouTubeLink = (name: string, artists: string[]) => {
   return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${artists[0]} ${name}`)}`;
 };
 
-export const getPageHref = (url: URL, page: number) => {
-  const params = new URLSearchParams(url.searchParams);
+export const getPageHref = (
+  url: Pick<URL, "pathname" | "search">,
+  page: number,
+) => {
+  const params = new URLSearchParams(url.search);
   if (page === 1) params.delete("page");
   else params.set("page", String(page));
   return params.size ? `${url.pathname}?${params}` : url.pathname;

@@ -1,9 +1,9 @@
 <script lang="ts">
 import { createCombobox, melt } from "@melt-ui/svelte";
 import { scale } from "svelte/transition";
-import { itunesArtworkSrcset, itunesArtworkUrl } from "$lib/artwork";
-import SongPreview from "$lib/components/SongPreview.svelte";
-import { createDebouncer } from "$lib/helpers";
+import { itunesArtworkSrcset, itunesArtworkUrl } from "#lib/artwork.js";
+import SongPreview from "#lib/components/SongPreview.svelte";
+import { createDebouncer } from "#lib/helpers.js";
 import {
   findEarliestRelease,
   type ITunesTrack,
@@ -11,7 +11,7 @@ import {
   parseAppleMusicUrl,
   releaseYear,
   searchTracks,
-} from "$lib/itunes";
+} from "#lib/itunes.js";
 import LoaderIcon from "~icons/ri/loader-4-line";
 import SearchIcon from "~icons/ri/search-line";
 import type { ExistingCover } from "../../routes/api/getCover/+server";
@@ -67,7 +67,7 @@ const {
         whenCurrent(
           track,
           fetch(`/api/getCover?appleId=${track.trackId}`).then((response) =>
-            response.ok ? response.json() : null,
+            response.ok ? (response.json() as Promise<ExistingCover>) : null,
           ),
           (data: ExistingCover | null) => {
             discoveredExistingCover = data;

@@ -1,10 +1,10 @@
 import { error, redirect } from "@sveltejs/kit";
 import { gte, sql } from "drizzle-orm";
-import { getDb } from "$lib/server/db";
-import { covers } from "$lib/server/db/schema";
+import { getDb } from "#lib/server/db/index.js";
+import { covers } from "#lib/server/db/schema.js";
 
-export async function GET({ platform }) {
-  const random = await getDb(platform)
+export async function GET() {
+  const random = await getDb()
     .select({ slug: covers.slug })
     .from(covers)
     .where(
@@ -14,7 +14,7 @@ export async function GET({ platform }) {
     .limit(1)
     .get();
 
-  if (!random) error(404, { message: "No covers yet" });
+  if (!random) error(404, "No covers yet");
 
   redirect(302, `/cover/${random.slug}`);
 }

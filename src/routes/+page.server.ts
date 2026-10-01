@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
-import { TAGS } from "$lib/constants";
-import { loadGrid, loadRows } from "$lib/server/browse";
-import { getDb } from "$lib/server/db";
+import { TAGS } from "#lib/constants.js";
+import { loadGrid, loadRows } from "#lib/server/browse.js";
+import { getDb } from "#lib/server/db/index.js";
 
 const legacyPath = (url: URL) => {
   const tag = url.searchParams.get("tag");
   if (tag !== null) {
-    if (!Object.hasOwn(TAGS, tag)) error(404, { message: "Tag not found" });
+    if (!Object.hasOwn(TAGS, tag)) error(404, "Tag not found");
     return `/${TAGS[tag as keyof typeof TAGS].slug}`;
   }
   if (
@@ -17,7 +17,7 @@ const legacyPath = (url: URL) => {
   }
 };
 
-export async function load({ url, platform, setHeaders }) {
+export async function load({ url, setHeaders }) {
   const path = legacyPath(url);
   if (path) {
     const params = new URLSearchParams(url.searchParams);
@@ -28,7 +28,7 @@ export async function load({ url, platform, setHeaders }) {
   }
 
   setHeaders({ "cache-control": "public, max-age=0, s-maxage=300" });
-  const db = getDb(platform);
+  const db = getDb();
 
   if (url.searchParams.get("q")) {
     return { view: "grid" as const, ...(await loadGrid(db, url, null)) };

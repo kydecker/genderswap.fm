@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { ComponentProps } from "svelte";
-import CoverCard from "$lib/components/CoverCard.svelte";
+import CoverCard from "#lib/components/CoverCard.svelte";
 import ArrowLeftIcon from "~icons/ri/arrow-left-s-line";
 import ArrowRightIcon from "~icons/ri/arrow-right-s-line";
 

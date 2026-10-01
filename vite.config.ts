@@ -1,4 +1,9 @@
+import { preprocessMeltUI } from "@melt-ui/pp";
+import adapter from "@sveltejs/adapter-cloudflare";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { mdsvex } from "mdsvex";
+import { sveltePreprocess } from "svelte-preprocess";
+import sequence from "svelte-sequential-preprocessor";
 import Icons from "unplugin-icons/vite";
 import { defineConfig } from "vite";
 
@@ -23,9 +28,19 @@ export default defineConfig(({ mode }) => ({
     conditions: mode === "test" ? ["browser"] : undefined,
   },
   plugins: [
-    sveltekit(),
-    Icons({
-      compiler: "svelte",
+    sveltekit({
+      extensions: [".svelte", ".md"],
+      preprocess: sequence([
+        sveltePreprocess(),
+        mdsvex({
+          extensions: [".md"],
+          layout: `${import.meta.dirname}/src/lib/components/ProseLayout.svelte`,
+        }),
+        preprocessMeltUI(),
+      ]),
+      inlineStyleThreshold: 16 * 1024,
+      adapter: adapter(),
     }),
+    Icons({ compiler: "svelte" }),
   ],
 }));
