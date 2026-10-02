@@ -101,23 +101,19 @@ const swirl = (canvas: HTMLCanvasElement) => {
   const fbm = createNoise();
   const gradient = buildGradient(colors[0], colors[1]);
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  let image: ImageData;
-  let topDepth: Float32Array;
-  let bottomDepth: Float32Array;
   let frame = 0;
 
-  const resize = (aspect: number) => {
-    canvas.width = aspect > 1 ? Math.round(RESOLUTION / aspect) : RESOLUTION;
-    canvas.height = aspect > 1 ? RESOLUTION : Math.round(RESOLUTION * aspect);
-    image = context.createImageData(canvas.width, canvas.height);
-    topDepth = new Float32Array(canvas.width);
-    bottomDepth = new Float32Array(canvas.width);
-  };
+  const aspect = canvas.clientHeight / canvas.clientWidth || 1;
+  canvas.width = aspect > 1 ? Math.round(RESOLUTION / aspect) : RESOLUTION;
+  canvas.height = aspect > 1 ? RESOLUTION : Math.round(RESOLUTION * aspect);
+  const image = context.createImageData(canvas.width, canvas.height);
+  const topDepth = new Float32Array(canvas.width);
+  const bottomDepth = new Float32Array(canvas.width);
+  const { width, height, data } = image;
+  const scale = BLOB_SCALE / RESOLUTION;
 
   const draw = (time: number) => {
     const t = time * SPEED;
-    const { width, height, data } = image;
-    const scale = BLOB_SCALE / Math.max(width, height);
     const fadeDepth = (column: number, seed: number) => {
       const n = fbm(column * scale * 1.3 + seed, t * 1.5 + seed);
       const k = clamp01((n - 0.3) / 0.4);
@@ -172,19 +168,11 @@ const swirl = (canvas: HTMLCanvasElement) => {
     else frame = requestAnimationFrame(loop);
   };
 
-  const observer = new ResizeObserver(([entry]) => {
-    const { width, height } = entry.contentRect;
-    if (!width || !height) return;
-    resize(height / width);
-    start();
-  });
-
-  observer.observe(canvas);
+  start();
   reducedMotion.addEventListener("change", start);
 
   return () => {
     cancelAnimationFrame(frame);
-    observer.disconnect();
     reducedMotion.removeEventListener("change", start);
   };
 };
@@ -198,7 +186,7 @@ const swirl = (canvas: HTMLCanvasElement) => {
     inset: 0;
     z-index: -1;
     width: 100%;
-    height: 100%;
+    height: 100lvh;
     pointer-events: none;
     opacity: 0;
     transition: opacity 1.2s ease;
