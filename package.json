@@ -60,7 +60,7 @@
     "@playwright/test": "^1.62.1",
     "@sveltejs/adapter-cloudflare": "^8.0.0",
     "@sveltejs/kit": "^3.0.1",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@testing-library/svelte": "^5.4.2",
     "@vitest/coverage-v8": "^4.1.11",
     "jsdom": "^29.0.2",
