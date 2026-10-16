@@ -44,7 +44,7 @@
   "dependencies": {
     "@lhci/cli": "^0.15.1",
     "@tsparticles/confetti": "^3.9.1",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.3",
     "jpeg-js": "^0.4.4",
     "svelte-autosize": "^1.1.5",
