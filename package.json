@@ -54,7 +54,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.7",
     "@iconify-json/ri": "^1.2.10",
-    "@iconify-json/simple-icons": "^1.2.97",
+    "@iconify-json/simple-icons": "^1.2.99",
     "@melt-ui/pp": "^0.3.2",
     "@melt-ui/svelte": "^0.86.6",
     "@playwright/test": "^1.62.1",
